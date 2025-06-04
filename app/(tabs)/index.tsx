@@ -20,6 +20,16 @@ export default function TabOneScreen() {
       <Button onPress={() => router.push("/login")}>Login</Button>
       <Button onPress={() => router.push("/login")}>Login</Button>
       <Button onPress={() => router.push("/login")}>Login</Button>
+      <Button onPress={() => router.push("/login")}>Login</Button>
+      <Button onPress={() => router.push("/login")}>Login</Button>
+      <Button onPress={() => router.push("/login")}>Login</Button>
+      <Button onPress={() => router.push("/login")}>Login</Button>
+      <Button onPress={() => router.push("/login")}>Login</Button>
+      <Button onPress={() => router.push("/login")}>Login</Button>
+      <Button onPress={() => router.push("/login")}>Login</Button>
+      <Button onPress={() => router.push("/login")}>Login</Button>
+      <Button onPress={() => router.push("/login")}>Login</Button>
+      <Button onPress={() => router.push("/login")}>Login</Button>
     </YStack>
   );
 }

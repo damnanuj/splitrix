@@ -27,19 +27,42 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [interLoaded, interError] = useFonts({
-    Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
-    InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
+  // const [interLoaded, interError] = useFonts({
+  //   Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
+  //   InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
+  //   NeonRegular: require("../assets/fonts/SpaceMono-Regular.ttf"),
+  // });
+
+  // useEffect(() => {
+  //   if (interLoaded || interError) {
+  //     // Hide the splash screen after the fonts have loaded (or an error was returned) and the UI is ready.
+  //     SplashScreen.hideAsync();
+  //   }
+  // }, [interLoaded, interError]);
+
+  // if (!interLoaded && !interError) {
+  //   return null;
+  // }
+
+  const [fontsLoaded] = useFonts({
+    "Neon": require("../assets/fonts/neon2.ttf"), // key = exact name to use in fontFamily
   });
 
   useEffect(() => {
-    if (interLoaded || interError) {
+    console.log("Fonts loaded?", fontsLoaded);
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  useEffect(() => {
+    if (fontsLoaded) {
       // Hide the splash screen after the fonts have loaded (or an error was returned) and the UI is ready.
       SplashScreen.hideAsync();
     }
-  }, [interLoaded, interError]);
+  }, [fontsLoaded]);
 
-  if (!interLoaded && !interError) {
+  if (!fontsLoaded) {
     return null;
   }
 
@@ -62,13 +85,18 @@ function RootLayoutNav() {
       <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
       <Stack>
         <Stack.Screen
-          name="(tabs)"
+          name="index"
           options={{
             headerShown: false,
+            animation: "simple_push",
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
           }}
         />
 
-       
         <Stack.Screen
           name="login"
           options={{
@@ -79,6 +107,12 @@ function RootLayoutNav() {
             contentStyle: {
               backgroundColor: theme.background.val,
             },
+          }}
+        />
+        <Stack.Screen
+          name="(tabs)"
+          options={{
+            headerShown: false,
           }}
         />
       </Stack>

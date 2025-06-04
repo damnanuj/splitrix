@@ -26,7 +26,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
   const insets = useSafeAreaInsets();
 
   return (
-    <BlurView intensity={20 }  style={[styles.container, { overflow: "hidden" }]}>
+    <BlurView intensity={20} style={[styles.container, { overflow: "hidden" }]}>
       <LinearGradient
         colors={["rgba(255, 255, 255, 0.23)", "rgba(255,255,255,0.0)"]}
         start={{ x: 0, y: 0.7 }}
@@ -99,13 +99,11 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
     </BlurView>
   );
 
-//    <Ionicons name="home-outline" size={18} color={color} />;
-//    <Ionicons name="home=" size={18} color={color} />;
+  //    <Ionicons name="home-outline" size={18} color={color} />;
+  //    <Ionicons name="home=" size={18} color={color} />;
 
-//   <Feather name="users" size={18} color={color} />;
-// <FontAwesome5 name="user-friends" size={18} color={color} />; 
-
-
+  //   <Feather name="users" size={18} color={color} />;
+  // <FontAwesome5 name="user-friends" size={18} color={color} />;
 
   function getIconByRouteName(routeName: string, color: string) {
     switch (routeName) {
@@ -135,8 +133,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-  
-zIndex:999,
+
+    zIndex: 999,
     width: "100%",
     height: 80,
 
@@ -153,7 +151,6 @@ zIndex:999,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
-
   },
   shine: {
     position: "absolute",
@@ -163,23 +160,21 @@ zIndex:999,
     height: "100%",
     borderTopLeftRadius: 30,
     backgroundColor: "transparent",
-    
   },
-
 
   tabItemWrapper: {
     height: 43,
     borderRadius: 30,
-    overflow: "hidden", 
+    overflow: "hidden",
     marginHorizontal: 5,
   },
-  
+
   focusedBlurBackground: {
     ...StyleSheet.absoluteFillObject,
     borderRadius: 30,
     // backgroundColor: 'rgba(0, 0, 0, 0.31)',
   },
-  
+
   tabItemContent: {
     flexDirection: "row",
     justifyContent: "center",
@@ -188,7 +183,7 @@ zIndex:999,
     paddingHorizontal: 20,
     zIndex: 10, // ensure content is above blur
   },
-  
+
   text: {
     textTransform: "capitalize",
     color: PRIMARY_COLOR,
