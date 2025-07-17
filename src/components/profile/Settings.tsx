@@ -5,7 +5,6 @@ import Feather from "@expo/vector-icons/Feather";
 import Entypo from "@expo/vector-icons/Entypo";
 import { SwitchUnstyledDemo } from "./Switch";
 const Settings = () => {
-  const theme = useTheme();
   return (
     <YStack
       //   borderWidth={1}
@@ -36,7 +35,6 @@ const Settings = () => {
               iconColor={bill.iconColor}
               icon={bill.icon}
               title={bill.title}
-              theme={theme}
             />
           ))}
         </ScrollView>
@@ -47,7 +45,8 @@ const Settings = () => {
 
 export default Settings;
 
-const SettingsItem = ({ icon, title, iconColor, theme }: any) => {
+const SettingsItem = ({ icon, title, iconColor }: any) => {
+  const theme = useTheme();
   return (
     <XStack
       borderBottomWidth={1}

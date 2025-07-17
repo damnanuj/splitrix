@@ -6,7 +6,6 @@ import UserHeader from "src/components/Home/UserHeader";
 import RecentBills from "../../components/Home/RecentBills";
 import AllTransactions from "src/components/Home/AllTransactions";
 import { useState } from "react";
-import { MenuPopover } from "src/components/Home/MenuPopover";
 
 const Homepage = () => {
   console.log("homepage render");
@@ -22,8 +21,6 @@ const Homepage = () => {
       <UserHeader />
       <RecentBills />
       <AllTransactions />
-
-     
     </YStack>
   );
 };
