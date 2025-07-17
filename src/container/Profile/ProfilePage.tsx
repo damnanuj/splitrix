@@ -4,15 +4,15 @@ import { Avatar, Stack, useTheme, XStack, YStack } from "tamagui";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import ProfileHeader from "src/components/profile/ProfileHeader";
 import Settings from "src/components/profile/Settings";
-import { SwitchDemo } from "src/components/profile/Switch";
 const ProfilePage = () => {
+  console.log("ProfilePage render");
   return (
     <YStack
       //   borderWidth={3}
       borderColor={"green"}
       bg={"$background"}
-      flex={1}
       px={scale(25)}
+      flex={1}
       pt={scale(15)}
       justify={"space-between"}
     >

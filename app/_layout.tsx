@@ -121,6 +121,7 @@ function RootLayoutNav() {
           name="notification"
           options={{
             headerShown: false,
+            animation: "slide_from_right",
           }}
         />
       </Stack>

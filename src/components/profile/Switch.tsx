@@ -54,7 +54,7 @@ export function SwitchUnstyledDemo() {
       onCheckedChange={toggleTheme}
       id="unstyled-switch"
     >
-      <Switch.Thumb animation="bouncy" />
+      <Switch.Thumb animation="quick" />
     </Switch>
   );
 }
