@@ -12,6 +12,10 @@ import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import Provider from "./Provider";
 import { useTheme } from "tamagui";
+import {
+  ThemeProviderCustom,
+  useThemeController,
+} from "src/context/theme-context";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -45,11 +49,20 @@ export default function RootLayout() {
   // }
 
   const [fontsLoaded] = useFonts({
-    "Neon": require("../assets/fonts/neon2.ttf"), // key = exact name to use in fontFamily
+    Sparkle: require("../assets/fonts/Sparkle.ttf"),
+    SparkleFilled: require("../assets/fonts/SparkleFilled.ttf"),
+    Neon: require("../assets/fonts/neon2.ttf"),
+    NeoNeon: require("../assets/fonts/NeoNeon.otf"),
+    MPlusRounded300: require("../assets/fonts/MPLUSRounded/MPLUSRounded1c-Light.ttf"),
+    MPlusRounded400: require("../assets/fonts/MPLUSRounded/MPLUSRounded1c-Regular.ttf"),
+    MPlusRounded500: require("../assets/fonts/MPLUSRounded/MPLUSRounded1c-Medium.ttf"),
+    MPlusRounded700: require("../assets/fonts/MPLUSRounded/MPLUSRounded1c-Bold.ttf"),
+    MPlusRounded800: require("../assets/fonts/MPLUSRounded/MPLUSRounded1c-ExtraBold.ttf"),
+    // key = exact name to use in fontFamily
   });
 
   useEffect(() => {
-    console.log("Fonts loaded?", fontsLoaded);
+    // console.log("Fonts loaded?", fontsLoaded);
     if (fontsLoaded) {
       SplashScreen.hideAsync();
     }
@@ -74,43 +87,38 @@ export default function RootLayout() {
 }
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
-  return <Provider>{children}</Provider>;
+  return (
+    <ThemeProviderCustom>
+      <Provider>{children}</Provider>
+    </ThemeProviderCustom>
+  );
 };
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const theme = useTheme();
+  console.log(colorScheme, "colorScheme");
+  const { theme } = useThemeController();
+
+  // const theme = useTheme();
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={theme === "dark" ? DarkTheme : DefaultTheme}>
       <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+
       <Stack>
         <Stack.Screen
-          name="index"
+          name="(tabs)"
           options={{
             headerShown: false,
-            animation: "simple_push",
-            gestureEnabled: true,
-            gestureDirection: "horizontal",
-            contentStyle: {
-              backgroundColor: theme.background.val,
-            },
           }}
         />
-
         <Stack.Screen
           name="login"
           options={{
             headerShown: false,
-            animation: "simple_push",
-            gestureEnabled: true,
-            gestureDirection: "horizontal",
-            contentStyle: {
-              backgroundColor: theme.background.val,
-            },
           }}
         />
         <Stack.Screen
-          name="(tabs)"
+          name="notification"
           options={{
             headerShown: false,
           }}

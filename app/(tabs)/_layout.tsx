@@ -1,28 +1,20 @@
-import { Link, Tabs } from "expo-router";
-import { Button, useTheme } from "tamagui";
-import {
-  Atom,
-  AudioWaveform,
-  Contact,
-  Home,
-  Image,
-  User,
-} from "@tamagui/lucide-icons";
-import CustomTabBar from "components/CustomTabBar";
+import { Tabs } from "expo-router";
+import BottomTabBar from "src/components/customTabBars/BottomTabBar";
+import { useTheme } from "tamagui";
 
 export default function TabLayout() {
   const theme = useTheme();
 
   return (
     <Tabs
-      tabBar={(props) => <CustomTabBar {...props} />}
-      screenOptions={{
-        tabBarActiveTintColor: theme.red10.val,
-        tabBarStyle: {
-          backgroundColor: theme.background.val,
-          borderTopColor: theme.borderColor.val,
-        },
-      }}
+      tabBar={(props) => <BottomTabBar {...props} />}
+      // screenOptions={{
+      //   tabBarActiveTintColor: theme.red10.val,
+      //   tabBarStyle: {
+      //     backgroundColor: theme.background.val,
+      //     borderTopColor: theme.borderColor.val,
+      //   },
+      // }}
     >
       <Tabs.Screen
         name="index"
@@ -35,7 +27,7 @@ export default function TabLayout() {
         name="friends"
         options={{
           headerShown: false,
-          title: "Friends",
+          title: "Groups",
         }}
       />
       <Tabs.Screen

@@ -1,9 +1,7 @@
 import { TouchableOpacity, StyleSheet } from "react-native";
 import { BlurView } from "expo-blur";
 import Feather from "@expo/vector-icons/Feather";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Animated, {
   FadeIn,
@@ -11,22 +9,36 @@ import Animated, {
   LinearTransition,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { View } from "tamagui";
+import { useTheme, View } from "tamagui";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 const AnimatedTouchableOpacity =
   Animated.createAnimatedComponent(TouchableOpacity);
 import { LinearGradient } from "expo-linear-gradient";
+import { scale } from "src/utils/functions/dimensions";
 
 const PRIMARY_COLOR = "#130057";
 const BACKGROUND_COLOR = "#000";
 const SECONDARY_COLOR = "#fff";
 const YELLOW_COLOR = "#ffc23f";
 
-const CustomTabBar = ({ state, descriptors, navigation }) => {
+const BottomTabBar = ({ state, descriptors, navigation }) => {
   const insets = useSafeAreaInsets();
 
+  const filterdRoutes = state.routes.filter((item) => item.name !== "setting");
+  // console.log(filterdRoutes);
+
+  const fth = false;
+
+  const theme = useTheme();
+
   return (
-    <BlurView intensity={20} style={[styles.container, { overflow: "hidden" }]}>
+    <BlurView
+      intensity={20}
+      style={[
+        styles.container,
+        { backgroundColor: theme.backgroundSecondary.val, overflow: "hidden" },
+      ]}
+    >
       <LinearGradient
         colors={["rgba(255, 255, 255, 0.23)", "rgba(255,255,255,0.0)"]}
         start={{ x: 0, y: 0.7 }}
@@ -35,7 +47,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
       />
       {state.routes.map((route, index) => {
         if (["_sitemap", "+not-found"].includes(route.name)) return null;
-
+        // console.log(route.name, "routename");
         const { options } = descriptors[route.key];
         const label =
           options.tabBarLabel !== undefined
@@ -76,7 +88,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
             <View style={styles.tabItemContent}>
               {getIconByRouteName(
                 route.name,
-                isFocused ? YELLOW_COLOR : SECONDARY_COLOR
+                isFocused ? YELLOW_COLOR : theme.textPrimary.val
               )}
               {isFocused && (
                 <Animated.Text
@@ -99,12 +111,6 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
     </BlurView>
   );
 
-  //    <Ionicons name="home-outline" size={18} color={color} />;
-  //    <Ionicons name="home=" size={18} color={color} />;
-
-  //   <Feather name="users" size={18} color={color} />;
-  // <FontAwesome5 name="user-friends" size={18} color={color} />;
-
   function getIconByRouteName(routeName: string, color: string) {
     switch (routeName) {
       case "index":
@@ -113,6 +119,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
         return <Feather name="users" size={18} color={color} />;
       case "activity":
         return <Feather name="activity" size={18} color={color} />;
+
       case "profile":
         return (
           <MaterialCommunityIcons
@@ -131,18 +138,18 @@ const styles = StyleSheet.create({
   container: {
     position: "absolute",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     alignItems: "center",
 
     zIndex: 999,
     width: "100%",
-    height: 80,
+    height: scale(80),
 
     alignSelf: "center",
     bottom: 0,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    paddingHorizontal: 25,
+    paddingHorizontal: 10,
     borderWidth: 1.5,
     borderColor: "rgba(255, 255, 255, 0.55)",
     borderTopWidth: 0.3,
@@ -156,17 +163,19 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     left: 0,
-    width: 150, // Adjust width for size of shine
+    width: 150,
     height: "100%",
     borderTopLeftRadius: 30,
     backgroundColor: "transparent",
   },
 
   tabItemWrapper: {
+    // borderWidth: 1,
     height: 43,
     borderRadius: 30,
     overflow: "hidden",
-    marginHorizontal: 5,
+    // marginHorizontal: 5,
+    flexShrink: 1,
   },
 
   focusedBlurBackground: {
@@ -181,15 +190,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: "100%",
     paddingHorizontal: 20,
-    zIndex: 10, // ensure content is above blur
+    zIndex: 10,
   },
 
   text: {
     textTransform: "capitalize",
-    color: PRIMARY_COLOR,
+
     marginLeft: 8,
     fontWeight: "500",
   },
 });
 
-export default CustomTabBar;
+export default BottomTabBar;

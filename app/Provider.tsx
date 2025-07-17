@@ -2,19 +2,22 @@ import { useColorScheme } from "react-native";
 import { TamaguiProvider, type TamaguiProviderProps } from "tamagui";
 import { ToastProvider, ToastViewport } from "@tamagui/toast";
 import { CurrentToast } from "./CurrentToast";
-import { config } from "../tamagui.config";
 import CustomSafeArea from "providers/CustomSafeArea";
+import config from "tamagui.config";
+import { useThemeController } from "src/context/theme-context";
 
 export default function Provider({
   children,
   ...rest
 }: Omit<TamaguiProviderProps, "config">) {
-  const colorScheme = useColorScheme();
+  // const colorScheme = useColorScheme();
+  const { theme } = useThemeController();
 
   return (
     <TamaguiProvider
       config={config}
-      defaultTheme={colorScheme === "dark" ? "dark" : "light"}
+      // defaultTheme={colorScheme === "dark" ? "dark" : "light"}
+      defaultTheme={theme}
       {...rest}
     >
       <ToastProvider
