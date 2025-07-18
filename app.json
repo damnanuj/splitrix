@@ -13,9 +13,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.splitrix.damnanuj"
@@ -35,6 +33,7 @@
     "plugins": [
       "expo-router",
       "expo-font",
+      ["@react-native-google-signin/google-signin"],
       [
         "expo-build-properties",
         {

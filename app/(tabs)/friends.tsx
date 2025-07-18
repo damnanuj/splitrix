@@ -7,6 +7,7 @@ export default function TabTwoScreen() {
     //     Tab Two
     //   </Text>
     // </View>
-    <Login />
+    // <Login />
+    null
   );
 }

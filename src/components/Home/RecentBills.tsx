@@ -7,11 +7,13 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import BackAndForthMarqueeText from "src/components/common/MarqueeText";
 import { useState } from "react";
 import { PopoverDemo } from "./MenuPopover";
+import { useRouter } from "expo-router";
 
 const RecentBills = () => {
   console.log("RecentBills render");
 
   const theme = useTheme();
+  const router = useRouter();
 
   return (
     <YStack
@@ -34,6 +36,7 @@ const RecentBills = () => {
           borderColor={"white"}
           bg={"$backgroundSecondary"}
           px={scale(15)}
+          onPress={() => router.push("/login")}
         >
           <XStack gap={scale(3)}>
             <Feather name="plus" size={20} color={theme.accentYellow.val} />

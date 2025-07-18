@@ -16,6 +16,11 @@ import {
   ThemeProviderCustom,
   useThemeController,
 } from "src/context/theme-context";
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+} from "@react-native-google-signin/google-signin";
+import { ENV } from "src/utils/constants/env";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -47,6 +52,16 @@ export default function RootLayout() {
   // if (!interLoaded && !interError) {
   //   return null;
   // }
+
+  // console.log(ENV.GOOGLE_WEB_CLIENT_ID, "sfsds");
+
+  GoogleSignin.configure({
+    webClientId: ENV.GOOGLE_WEB_CLIENT_ID,
+    scopes: ["profile", "email"], // what API you want to access on behalf of the user, default is email and profile
+    offlineAccess: false, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+    forceCodeForRefreshToken: false,
+    // iosClientId: process.env.EXPO_PUBLIC_IOS_ID,
+  });
 
   const [fontsLoaded] = useFonts({
     Sparkle: require("../assets/fonts/Sparkle.ttf"),
