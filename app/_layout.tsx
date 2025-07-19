@@ -21,6 +21,7 @@ import {
   GoogleSigninButton,
 } from "@react-native-google-signin/google-signin";
 import { ENV } from "src/utils/constants/env";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -100,11 +101,13 @@ export default function RootLayout() {
     </Providers>
   );
 }
-
+const queryClient = new QueryClient();
 const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <ThemeProviderCustom>
-      <Provider>{children}</Provider>
+      <QueryClientProvider client={queryClient}>
+        <Provider>{children}</Provider>
+      </QueryClientProvider>
     </ThemeProviderCustom>
   );
 };
@@ -119,26 +122,15 @@ function RootLayoutNav() {
     <ThemeProvider value={theme === "dark" ? DarkTheme : DefaultTheme}>
       <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
 
-      <Stack>
-        <Stack.Screen
-          name="(tabs)"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="login"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="notification"
-          options={{
-            headerShown: false,
-            animation: "slide_from_right",
-          }}
-        />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          animation: "slide_from_right",
+        }}
+      >
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="login" />
+        <Stack.Screen name="notification" />
       </Stack>
     </ThemeProvider>
   );

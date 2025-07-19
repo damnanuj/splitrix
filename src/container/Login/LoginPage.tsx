@@ -27,6 +27,17 @@ import {
   isErrorWithCode,
   statusCodes,
 } from "@react-native-google-signin/google-signin";
+import axiosInstance from "src/api/api";
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { getUserData } from "src/api/queryFunctions/user";
+import { loginUser } from "src/api/queryFunctions/auth";
+import useLogin from "./hook";
+import ToastControl, { CurrentToast } from "app/CurrentToast";
 
 const LoginPage = () => {
   console.log("LoginPage render");
@@ -113,7 +124,7 @@ function SigninForm() {
     } catch (error) {}
   };
 
-  const [signInForm, setSignInForm] = useState({
+  const [signInForm, setSignInForm]: any = useState({
     email: "",
     password: "",
   });
@@ -125,12 +136,15 @@ function SigninForm() {
     }));
   };
 
+  const { login } = useLogin();
+
   const handleSigninForm = async (e: any) => {
-    console.log("Sign In Form Submitted:", signInForm);
+    e.preventDefault();
+    const res = await login(signInForm);
+    console.log(res);
   };
 
   const isFieldError = false;
-
   const inputBordercolor = isFieldError ? "red" : "$borderPrimary";
 
   return (
@@ -153,6 +167,7 @@ function SigninForm() {
           <MyText color={"$textPrimary"} fontSize={scale(16)}>
             Email Address
           </MyText>
+
           <Input
             placeholderTextColor={"$textSecondary"}
             focusStyle={{ borderColor: theme.accentYellow }}
@@ -256,6 +271,7 @@ function SigninForm() {
           <MyText color={"$textPrimary"}>Sign in with Google</MyText>
         </Button>
       </Form>
+      {/* <ToastControl title={"Login"} message={"Failed"} /> */}
     </>
   );
 }
