@@ -2,8 +2,19 @@ import { scale } from "src/utils/functions/dimensions";
 import { Avatar, Stack, useTheme, XStack, YStack } from "tamagui";
 import MyText from "../customTabBars/styleComponents/MyText";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useAuthStore } from "src/stores/authStore";
+import { useRouter } from "expo-router";
 export default function ProfileHeader() {
   const theme = useTheme();
+  const router = useRouter();
+  // const logout = useAuthStore((state) => state.logout);
+  const { authData, logout }: any = useAuthStore();
+
+  const handleLogout = async () => {
+    await logout();
+    router.replace("/");
+  };
+
   return (
     <YStack
       gap={scale(15)}
@@ -20,7 +31,10 @@ export default function ProfileHeader() {
         <Avatar circular size={scale(50)}>
           <Avatar.Image
             accessibilityLabel="Nate Wienert"
-            src="https://newprofilepic.photo-cdn.net//assets/images/article/profile.jpg?90af0c8"
+            src={
+              authData?.profilePicture ||
+              "https://newprofilepic.photo-cdn.net//assets/images/article/profile.jpg?90af0c8"
+            }
           />
           <Avatar.Fallback delayMs={600} backgroundColor="lightgray" />
         </Avatar>
@@ -35,7 +49,7 @@ export default function ProfileHeader() {
             style={{ fontFamily: "MPlusRounded700" }}
             fontSize={scale(21)}
           >
-            Hi, Anuj!
+            {authData?.name}
           </MyText>
           <MyText fontSize={scale(12)} color={"$textSecondary"}>
             Premium user
@@ -48,6 +62,7 @@ export default function ProfileHeader() {
           p={scale(10)}
           rounded={scale(10)}
           self={"center"}
+          onPress={handleLogout}
         >
           <MaterialIcons
             name="logout"

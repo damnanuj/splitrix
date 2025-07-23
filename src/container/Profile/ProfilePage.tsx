@@ -4,8 +4,18 @@ import { Avatar, Stack, useTheme, XStack, YStack } from "tamagui";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import ProfileHeader from "src/components/profile/ProfileHeader";
 import Settings from "src/components/profile/Settings";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const ProfilePage = () => {
-  console.log("ProfilePage render");
+  // console.log("ProfilePage render");
+
+  // const getAuth = async () => {
+  //   try {
+  //     const data = await AsyncStorage.removeItem("authData");
+  //     console.log(data, "authdata>>>>>>.");
+  //   } catch (error) {}
+  // };
+  // getAuth();
+
   return (
     <YStack
       //   borderWidth={3}

@@ -9,7 +9,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { SplashScreen, Stack } from "expo-router";
+import { SplashScreen, Stack, useRouter } from "expo-router";
 import Provider from "./Provider";
 import { useTheme } from "tamagui";
 import {
@@ -22,6 +22,7 @@ import {
 } from "@react-native-google-signin/google-signin";
 import { ENV } from "src/utils/constants/env";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useAuthStore } from "src/stores/authStore";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -30,7 +31,7 @@ export {
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: "(tabs)",
+  initialRouteName: "/",
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -114,22 +115,49 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  console.log(colorScheme, "colorScheme");
   const { theme } = useThemeController();
+  const router = useRouter();
+  // isLoading is true initially, while we check for a stored token
+  const { authData, isLoading, initializeAuth } = useAuthStore();
 
-  // const theme = useTheme();
+  useEffect(() => {
+    // Check for a stored auth token when the app loads
+    initializeAuth();
+  }, []);
+
+  useEffect(() => {
+    // This effect will run whenever isLoading or authData changes
+    if (isLoading) {
+      return; // Do nothing while we're still loading
+    }
+
+    if (authData) {
+      // User is signed in, go to the main app
+      router.replace("/(tabs)/home");
+    } else {
+      // User is not signed in, go to the login screen
+      router.replace("/");
+    }
+  }, [isLoading, authData, router]);
+
+  // While isLoading is true, return null. The splash screen will remain visible.
+  if (isLoading) {
+    return null;
+  }
+
+  // Once loading is complete, render the navigator. The useEffect above will
+  // have already triggered the correct navigation route.
   return (
     <ThemeProvider value={theme === "dark" ? DarkTheme : DefaultTheme}>
       <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-
       <Stack
         screenOptions={{
           headerShown: false,
           animation: "slide_from_right",
         }}
       >
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="login" />
+        <Stack.Screen name="(tabs)" options={{ animation: "simple_push" }} />
+        <Stack.Screen name="index" options={{ animation: "simple_push" }} />
         <Stack.Screen name="notification" />
       </Stack>
     </ThemeProvider>

@@ -13,7 +13,7 @@ import {
   useTheme,
   Form,
 } from "tamagui";
-import { useRouter } from "expo-router";
+import { router, useRouter } from "expo-router";
 import { StyleSheet, ScrollView, useColorScheme } from "react-native";
 import MyText from "src/components/customTabBars/styleComponents/MyText";
 import { scale } from "src/utils/functions/dimensions";
@@ -34,13 +34,12 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { getUserData } from "src/api/queryFunctions/user";
-import { loginUser } from "src/api/queryFunctions/auth";
-import useLogin from "./hook";
-import ToastControl, { CurrentToast } from "app/CurrentToast";
+import { googleLoginService, loginService } from "src/api/queryFunctions/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuthStore } from "src/stores/authStore";
 
 const LoginPage = () => {
-  console.log("LoginPage render");
+  // console.log("LoginPage render");
 
   return (
     <ScrollView
@@ -107,21 +106,27 @@ function SigninForm() {
     try {
       await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
+
       if (isSuccessResponse(response)) {
-        const { idToken, user } = response.data;
+        const { user } = response.data;
         const { name, photo, email } = user;
-        console.log(email, name, "googleResponse");
+
+        const data = await googleLoginService({ email, name, photo });
+        console.log(data, "<<<<");
+        if (data.success) {
+          await setAuth({
+            token: data.token,
+            user: { provider: "google", ...data.user },
+          });
+          console.log("Google login success");
+        } else {
+          // console.log(data);
+          alert(data.message || "Google login failed");
+        }
       }
     } catch (error) {
       console.log(error || "error while google login");
     }
-  };
-
-  const handleGoogleLogout = async () => {
-    try {
-      const response = await GoogleSignin.signOut();
-      console.log(response, "logout response google");
-    } catch (error) {}
   };
 
   const [signInForm, setSignInForm]: any = useState({
@@ -136,16 +141,22 @@ function SigninForm() {
     }));
   };
 
-  const { login } = useLogin();
-
-  const handleSigninForm = async (e: any) => {
-    e.preventDefault();
-    const res = await login(signInForm);
-    console.log(res);
-  };
-
   const isFieldError = false;
   const inputBordercolor = isFieldError ? "red" : "$borderPrimary";
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const mutation = useMutation({
+    mutationFn: loginService,
+    onSuccess: async (data) => {
+      if (data.success) {
+        await setAuth({
+          token: data.token,
+          user: { provider: "local", ...data.user },
+        });
+      } else {
+        alert("Invalid credentials");
+      }
+    },
+  });
 
   return (
     <>
@@ -155,7 +166,7 @@ function SigninForm() {
         items="center"
         // borderWidth={1}
         borderColor={"red"}
-        onSubmit={() => handleSigninForm}
+        // onSubmit={() => handleSigninForm}
       >
         <YStack
           width="100%"
@@ -232,7 +243,7 @@ function SigninForm() {
             width="100%"
             bg={themeColors.dark.YELLOW}
             size="$4"
-            onPress={handleSigninForm}
+            onPress={() => mutation.mutate(signInForm)}
           >
             <MyText>Sign In</MyText>
           </Button>

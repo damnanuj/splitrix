@@ -5,7 +5,7 @@ import themeColors from "src/utils/theme/colors";
 import Feather from "@expo/vector-icons/Feather";
 
 const AllTransactions = () => {
-  console.log("AllTransactions render");
+  // console.log("AllTransactions render");
   return (
     <YStack
       //   borderWidth={1}

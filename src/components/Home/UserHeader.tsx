@@ -5,11 +5,15 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { scale } from "src/utils/functions/dimensions";
 import { Avatar } from "tamagui";
 import { useRouter } from "expo-router";
+import { useAuthStore } from "src/stores/authStore";
 
 const UserHeader = () => {
   const theme = useTheme();
 
   const router = useRouter();
+
+  const { authData }: any = useAuthStore();
+  // console.log(authData, "sfdsfdfdfsdfsdfs");
 
   return (
     <XStack
@@ -22,7 +26,10 @@ const UserHeader = () => {
       <Avatar circular size={scale(50)}>
         <Avatar.Image
           accessibilityLabel="Nate Wienert"
-          src="https://newprofilepic.photo-cdn.net//assets/images/article/profile.jpg?90af0c8"
+          src={
+            authData?.profilePicture ||
+            "https://newprofilepic.photo-cdn.net//assets/images/article/profile.jpg?90af0c8"
+          }
         />
         <Avatar.Fallback delayMs={600} backgroundColor="lightgray" />
       </Avatar>
@@ -36,7 +43,7 @@ const UserHeader = () => {
           style={{ fontFamily: "MPlusRounded700" }}
           fontSize={scale(21)}
         >
-          Hi, Anuj !
+          Hi, {authData?.name}!
         </MyText>
 
         <MyText fontSize={scale(12)} color={"$textSecondary"}>

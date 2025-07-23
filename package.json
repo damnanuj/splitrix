@@ -27,6 +27,7 @@
     "@tanstack/react-query": "^5.83.0",
     "axios": "^1.10.0",
     "babel-preset-expo": "~13.0.0",
+    "base-64": "^1.0.0",
     "burnt": "^0.12.2",
     "expo": "53.0.19",
     "expo-blur": "~14.1.5",
@@ -49,7 +50,8 @@
     "react-native-screens": "~4.11.1",
     "react-native-svg": "15.11.2",
     "react-native-web": "^0.20.0",
-    "tamagui": "^1.126.13"
+    "tamagui": "^1.126.13",
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@babel/core": "^7.24.6",

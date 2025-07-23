@@ -1,4 +1,4 @@
-import Login from "app/login";
+import Login from "app";
 
 export default function TabTwoScreen() {
   return (

@@ -6,9 +6,14 @@ import UserHeader from "src/components/Home/UserHeader";
 import RecentBills from "../../components/Home/RecentBills";
 import AllTransactions from "src/components/Home/AllTransactions";
 import { useState } from "react";
+import { useAuthStore } from "src/stores/authStore";
 
 const Homepage = () => {
-  console.log("homepage render");
+  // console.log("homepage render");
+
+  const { authData } = useAuthStore();
+  // console.log(authData, "-<<<<<<authdata");
+
   return (
     <YStack
       bg={"$background"}

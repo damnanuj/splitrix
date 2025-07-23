@@ -14,9 +14,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   async (config) => {
     try {
-      const token =
-        (await AsyncStorage.getItem("token")) ||
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4N2IzMTRmYzgwZjkwYWM5NTRkYzBmMyIsImVtYWlsIjoiYW51amtyZ3VwdGEyMUBnbWFpbC5jb20iLCJpYXQiOjE3NTI5MTc0MjksImV4cCI6MTc1MzUyMjIyOX0.Bo37d2_f5xgRPtE4jq5NSZUFH_-HTUeRCRbjYfRZHYI";
+      const token = await AsyncStorage.getItem("TOKEN");
       //   console.log(token);
       if (token) {
         config.headers["Authorization"] = `Bearer ${token}`;
@@ -24,8 +22,8 @@ axiosInstance.interceptors.request.use(
       //   console.log(config);
       return config;
     } catch (error) {
-      throw error;
       console.error("Token fetch error:", error);
+      throw error;
       return config;
     }
   },
