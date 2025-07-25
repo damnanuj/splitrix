@@ -17,6 +17,10 @@
   "jest": {
     "preset": "jest-expo"
   },
+  "resolutions": {
+    "metro-cache": "0.76.5",
+    "metro-transform-worker": "0.76.5"
+  },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-google-signin/google-signin": "^15.0.0",
@@ -55,7 +59,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.24.6",
-    "@expo/metro-config": "~0.20.0",
+    "@expo/metro-config": "^0.20.17",
     "@expo/metro-runtime": "~5.0.4",
     "@tamagui/babel-plugin": "^1.126.13",
     "@tamagui/cli": "^1.126.13",
