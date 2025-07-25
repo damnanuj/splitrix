@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Button,
   Input,
-  Separator,
-  Text,
   YStack,
   XStack,
   Stack,
@@ -37,6 +35,8 @@ import {
 import { googleLoginService, loginService } from "src/api/queryFunctions/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuthStore } from "src/stores/authStore";
+import { Spinner } from "tamagui";
+import { useToastController } from "@tamagui/toast";
 
 const LoginPage = () => {
   // console.log("LoginPage render");
@@ -80,7 +80,7 @@ const LoginPage = () => {
           <MyText
             //   borderWidth={2}
             borderColor={"green"}
-            style={styles.text}
+            style={{ fontFamily: "NeoNeon" }}
             color={themeColors.dark.YELLOW}
             fontSize={scale(60)}
           >
@@ -101,9 +101,12 @@ export default LoginPage;
 
 function SigninForm() {
   const theme = useTheme();
-
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const toast = useToastController();
   const handleGoogleSignin = async () => {
     try {
+      setGoogleLoading(true);
+
       await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
 
@@ -113,36 +116,76 @@ function SigninForm() {
 
         const data = await googleLoginService({ email, name, photo });
         console.log(data, "<<<<");
+
         if (data.success) {
           await setAuth({
             token: data.token,
             user: { provider: "google", ...data.user },
           });
-          console.log("Google login success");
+          toast.show("Login Successful", {
+            message: "You have been signed in with Google.",
+          });
         } else {
-          // console.log(data);
-          alert(data.message || "Google login failed");
+          toast.show("Google Sign-In Failed", {
+            message:
+              data.message || "Something went wrong during Google login.",
+          });
         }
       }
     } catch (error) {
       console.log(error || "error while google login");
+    } finally {
+      setGoogleLoading(false); // stop loading
     }
   };
 
-  const [signInForm, setSignInForm]: any = useState({
+  const [signInForm, setSignInForm] = useState({
     email: "",
     password: "",
   });
 
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+
   const handleChange = (name: string, value: string) => {
-    setSignInForm((prevForm) => ({
-      ...prevForm,
+    const updatedForm = {
+      ...signInForm,
       [name]: value,
-    }));
+    };
+
+    setSignInForm(updatedForm);
+
+    // Real-time validation only *after first submit*
+    if (hasSubmitted) {
+      validateForm(updatedForm);
+    }
   };
 
-  const isFieldError = false;
-  const inputBordercolor = isFieldError ? "red" : "$borderPrimary";
+  const validateForm = (formData = signInForm) => {
+    const newErrors: any = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = "Invalid email format";
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 4) {
+      newErrors.password = "Password must be at least 4 characters";
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
   const setAuth = useAuthStore((state) => state.setAuth);
   const mutation = useMutation({
     mutationFn: loginService,
@@ -153,11 +196,13 @@ function SigninForm() {
           user: { provider: "local", ...data.user },
         });
       } else {
-        alert("Invalid credentials");
+        toast.show("Sign-In Failed", {
+          message:
+            data.message || "The email or passoword you entered is incorrect",
+        });
       }
     },
   });
-
   return (
     <>
       <Form
@@ -191,14 +236,14 @@ function SigninForm() {
             height={scale(50)}
             rounded={scale(8)}
             borderWidth={scale(1.5)}
-            borderColor={inputBordercolor}
+            borderColor={errors.email ? "red" : "$borderPrimary"}
             style={{
               fontFamily: "MPlusRounded500",
               fontSize: scale(14),
               color: theme.textPrimary.val,
             }}
           />
-          {isFieldError && <MyText color={"red"}>Email is required</MyText>}
+          {errors.email && <MyText color={"red"}>{errors.email}</MyText>}
         </YStack>
 
         <YStack
@@ -223,14 +268,14 @@ function SigninForm() {
             height={scale(50)}
             rounded={scale(8)}
             borderWidth={scale(1.5)}
-            borderColor={inputBordercolor}
+            borderColor={errors.password ? "red" : "$borderPrimary"}
             style={{
               fontFamily: "MPlusRounded500",
               fontSize: scale(14),
               color: theme.textPrimary.val,
             }}
           />
-          {isFieldError && <MyText color={"red"}>Password is required</MyText>}
+          {errors.password && <MyText color={"red"}>{errors.password}</MyText>}
         </YStack>
         <XStack width="100%" items={"center"} justify={"space-between"}>
           <CheckboxWithLabel size="$3" />
@@ -243,9 +288,22 @@ function SigninForm() {
             width="100%"
             bg={themeColors.dark.YELLOW}
             size="$4"
-            onPress={() => mutation.mutate(signInForm)}
+            onPress={() => {
+              const isValid = validateForm();
+              setHasSubmitted(true);
+
+              if (isValid) {
+                mutation.mutate(signInForm);
+              }
+            }}
+            disabled={mutation.isPending}
+            opacity={mutation.isPending ? 0.7 : 1}
           >
-            <MyText>Sign In</MyText>
+            <MyText color={"$textPrimary"}>
+              {mutation.isPending ? "Signing in..." : "Sign In"}
+            </MyText>
+
+            {mutation.isPending && <Spinner size="small" color="$white1" />}
           </Button>
         </Form.Trigger>
         <XStack
@@ -275,11 +333,17 @@ function SigninForm() {
           borderWidth={scale(1.5)}
           borderColor={themeColors.dark.TEXT_SECONDARY}
           size="$4"
-          bg={"transparent"}
+          bg="transparent"
           icon={<GoogleIcon size={30} />}
           onPress={handleGoogleSignin}
+          disabled={googleLoading}
+          opacity={googleLoading ? 0.7 : 1}
         >
-          <MyText color={"$textPrimary"}>Sign in with Google</MyText>
+          <MyText color={"$textPrimary"}>
+            {googleLoading ? "Signing in with Google" : "Sign in with Google"}
+          </MyText>
+
+          {googleLoading && <Spinner size="small" color="$white1" />}
         </Button>
       </Form>
       {/* <ToastControl title={"Login"} message={"Failed"} /> */}
@@ -326,9 +390,3 @@ function GoogleIcon({ size }) {
     />
   );
 }
-
-const styles = StyleSheet.create({
-  text: {
-    fontFamily: "NeoNeon",
-  },
-});

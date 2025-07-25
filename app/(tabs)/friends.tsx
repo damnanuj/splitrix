@@ -1,4 +1,5 @@
 import Login from "app";
+import ToastControl from "app/CurrentToast";
 
 export default function TabTwoScreen() {
   return (
@@ -8,6 +9,6 @@ export default function TabTwoScreen() {
     //   </Text>
     // </View>
     // <Login />
-    null
+    <ToastControl />
   );
 }

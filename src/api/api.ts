@@ -1,16 +1,15 @@
-// utils/axiosInstance.js
-
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-export const baseURL = "http://192.168.31.53:8000/api";
-// Create Axios instance
+import { ENV } from "src/utils/constants/env";
+export const baseURL = ENV.EXPO_PUBLIC_BASE_URL;
+
 const axiosInstance = axios.create({
   baseURL,
   headers: {
     "Content-Type": "application/json",
   },
 });
-// Add request interceptor
+
 axiosInstance.interceptors.request.use(
   async (config) => {
     try {

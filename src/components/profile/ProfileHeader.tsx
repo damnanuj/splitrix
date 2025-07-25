@@ -1,5 +1,5 @@
 import { scale } from "src/utils/functions/dimensions";
-import { Avatar, Stack, useTheme, XStack, YStack } from "tamagui";
+import { Avatar, Spinner, Stack, useTheme, XStack, YStack } from "tamagui";
 import MyText from "../customTabBars/styleComponents/MyText";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useAuthStore } from "src/stores/authStore";
@@ -64,11 +64,7 @@ export default function ProfileHeader() {
           self={"center"}
           onPress={handleLogout}
         >
-          <MaterialIcons
-            name="logout"
-            size={20}
-            color={theme.textPrimary.val}
-          />
+          <Spinner size="small" color={"$backgroundSecondary"} />
         </Stack>
       </XStack>
     </YStack>
