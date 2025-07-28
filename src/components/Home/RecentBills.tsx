@@ -36,7 +36,7 @@ const RecentBills = () => {
           borderColor={"white"}
           bg={"$backgroundSecondary"}
           px={scale(15)}
-          // onPress={() => router.push("/splashscreen")}
+          onPress={() => router.push("/addBill")}
         >
           <XStack gap={scale(3)}>
             <Feather name="plus" size={20} color={theme.accentYellow.val} />

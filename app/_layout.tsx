@@ -1,5 +1,4 @@
 import "../tamagui-web.css";
-
 import { useEffect } from "react";
 import { useColorScheme } from "react-native";
 import { StatusBar } from "expo-status-bar";
@@ -8,26 +7,29 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { useFonts } from "expo-font";
+import {
+  useFonts,
+  MPLUSRounded1c_100Thin,
+  MPLUSRounded1c_300Light,
+  MPLUSRounded1c_400Regular as MPlusRounded400,
+  MPLUSRounded1c_500Medium as MPlusRounded500,
+  MPLUSRounded1c_700Bold as MPlusRounded700,
+  MPLUSRounded1c_800ExtraBold as MPlusRounded800,
+  MPLUSRounded1c_900Black as MPlusRounded900,
+} from "@expo-google-fonts/m-plus-rounded-1c";
 import { SplashScreen, Stack, useRouter } from "expo-router";
 import Provider from "./Provider";
-import { useTheme } from "tamagui";
+
 import {
   ThemeProviderCustom,
   useThemeController,
 } from "src/context/theme-context";
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-} from "@react-native-google-signin/google-signin";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { ENV } from "src/utils/constants/env";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useAuthStore } from "src/stores/authStore";
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from "expo-router";
+export { ErrorBoundary } from "expo-router";
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
@@ -67,17 +69,21 @@ export default function RootLayout() {
 
   const [fontsLoaded] = useFonts({
     Sparkle: require("../assets/fonts/Sparkle.ttf"),
-  
+
     NeoNeon: require("../assets/fonts/NeoNeon.otf"),
 
+    // MPlusRounded400: require("../assets/fonts/MPLUSRounded/MPLUSRounded1c-Regular.ttf"),
+    // MPlusRounded500: require("../assets/fonts/MPLUSRounded/MPLUSRounded1c-Medium.ttf"),
+    // MPlusRounded700: require("../assets/fonts/MPLUSRounded/MPLUSRounded1c-Bold.ttf"),
+    // MPlusRounded800: require("../assets/fonts/MPLUSRounded/MPLUSRounded1c-ExtraBold.ttf"),
 
-
-  
-    MPlusRounded400: require("../assets/fonts/MPLUSRounded/MPLUSRounded1c-Regular.ttf"),
-    MPlusRounded500: require("../assets/fonts/MPLUSRounded/MPLUSRounded1c-Medium.ttf"),
-    MPlusRounded700: require("../assets/fonts/MPLUSRounded/MPLUSRounded1c-Bold.ttf"),
-    MPlusRounded800: require("../assets/fonts/MPLUSRounded/MPLUSRounded1c-ExtraBold.ttf"),
-    // key = exact name to use in fontFamily
+    MPLUSRounded1c_100Thin,
+    MPLUSRounded1c_300Light,
+    MPlusRounded400,
+    MPlusRounded500,
+    MPlusRounded700,
+    MPlusRounded800,
+    MPlusRounded900,
   });
 
   useEffect(() => {
@@ -161,6 +167,7 @@ function RootLayoutNav() {
         <Stack.Screen name="(tabs)" options={{ animation: "simple_push" }} />
         <Stack.Screen name="index" options={{ animation: "simple_push" }} />
         <Stack.Screen name="notification" />
+        <Stack.Screen name="addBill" />
       </Stack>
     </ThemeProvider>
   );

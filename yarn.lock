@@ -925,6 +925,11 @@
   resolved "https://registry.yarnpkg.com/@esbuild/win32-x64/-/win32-x64-0.25.8.tgz#610d7ea539d2fcdbe39237b5cc175eb2c4451f9c"
   integrity sha512-cn3Yr7+OaaZq1c+2pe+8yxC8E144SReCQjN6/2ynubzYjvyqZjTXfQJpAcQpsdJq3My7XADANiYGHoFC69pLQw==
 
+"@expo-google-fonts/m-plus-rounded-1c@^0.4.2":
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/@expo-google-fonts/m-plus-rounded-1c/-/m-plus-rounded-1c-0.4.2.tgz#b988c32500aaefe08b84f666e68795bf714722bc"
+  integrity sha512-hbXds5FRhWyPPsF1+ENoidacW5YeB2g8Ad0DqDWrEIYALpt+ov+3TO/kzGXOtYOXTNO1IqWWQx0ydvKuhlcszA==
+
 "@expo/cli@0.24.20":
   version "0.24.20"
   resolved "https://registry.yarnpkg.com/@expo/cli/-/cli-0.24.20.tgz#c9a3ad7eb93b0d6a39da20ef8804976b65838790"
@@ -1510,6 +1515,13 @@
   integrity sha512-dvlNq4AlGWC+ehtH12p65+17V0Dx7IecOWl6WanF2ja38O1Dcjjvn7jVzkUHJ5oWkQBlyASurTPlTHgKXyYiow==
   dependencies:
     merge-options "^3.0.4"
+
+"@react-native-community/datetimepicker@^8.4.3":
+  version "8.4.3"
+  resolved "https://registry.yarnpkg.com/@react-native-community/datetimepicker/-/datetimepicker-8.4.3.tgz#a69fd05d73b57e5f2a8f908635f6961a0119e64d"
+  integrity sha512-i5jpbJSoiDMdmle1kJlsW0EowTYQQKJCUIXH/KEZuqzWyBu+rm3v3MduPIEzyRWBaPpY0pv3MvGkJltg26WnWw==
+  dependencies:
+    invariant "^2.2.4"
 
 "@react-native-google-signin/google-signin@^15.0.0":
   version "15.0.0"
