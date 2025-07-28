@@ -4,15 +4,19 @@ import MyText from "../customTabBars/styleComponents/MyText";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useAuthStore } from "src/stores/authStore";
 import { useRouter } from "expo-router";
+import { useState } from "react";
 export default function ProfileHeader() {
   const theme = useTheme();
   const router = useRouter();
   // const logout = useAuthStore((state) => state.logout);
   const { authData, logout }: any = useAuthStore();
+  const [logoutLoading, setLoogoutLoading] = useState(false);
 
   const handleLogout = async () => {
+    setLoogoutLoading(true);
     await logout();
     router.replace("/");
+    setLoogoutLoading(false);
   };
 
   return (
@@ -64,7 +68,15 @@ export default function ProfileHeader() {
           self={"center"}
           onPress={handleLogout}
         >
-          <Spinner size="small" color={"$backgroundSecondary"} />
+          {logoutLoading ? (
+            <Spinner size="small" color={"$white1"} />
+          ) : (
+            <MaterialIcons
+              name="logout"
+              size={20}
+              color={theme.textPrimary.val}
+            />
+          )}
         </Stack>
       </XStack>
     </YStack>

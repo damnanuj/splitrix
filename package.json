@@ -2,8 +2,7 @@
   "name": "splitrix",
   "main": "expo-router/entry",
   "version": "1.0.0",
-  "packageManager": "yarn@4.5.0",
-  "private": true,
+  "pyarnrivate": true,
   "scripts": {
     "upgrade:tamagui": "yarn up '*tamagui*'@latest '@tamagui/*'@latest",
     "upgrade:tamagui:canary": "yarn up '*tamagui*'@canary '@tamagui/*'@canary",
@@ -18,7 +17,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-google-signin/google-signin": "^15.0.0",
     "@react-navigation/native": "^7.1.6",
     "@tamagui/config": "^1.126.13",
@@ -29,7 +28,7 @@
     "babel-preset-expo": "~13.0.0",
     "base-64": "^1.0.0",
     "burnt": "^0.12.2",
-    "expo": "^53.0.20",
+    "expo": "^53.0.19",
     "expo-blur": "~14.1.5",
     "expo-build-properties": "~0.14.8",
     "expo-dev-client": "~5.2.4",
@@ -41,6 +40,10 @@
     "expo-status-bar": "~2.2.3",
     "expo-system-ui": "~5.0.10",
     "expo-web-browser": "~14.2.0",
+    "metro": "0.82.3",
+    "metro-config": "0.82.3",
+    "metro-resolver": "0.82.3",
+    "metro-transform-worker": "0.82.3",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-native": "0.79.5",
@@ -55,13 +58,12 @@
   },
   "devDependencies": {
     "@babel/core": "^7.24.6",
-    "@expo/metro-config": "~0.20.0",
+    "@expo/metro-config": "^0.20.17",
     "@expo/metro-runtime": "~5.0.4",
     "@tamagui/babel-plugin": "^1.126.13",
     "@tamagui/cli": "^1.126.13",
     "@tamagui/metro-plugin": "^1.126.13",
     "@types/react": "~19.0.10",
-    "@types/react-native": "^0.73.0",
     "typescript": "~5.8.3"
   }
 }

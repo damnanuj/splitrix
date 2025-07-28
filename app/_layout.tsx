@@ -67,10 +67,12 @@ export default function RootLayout() {
 
   const [fontsLoaded] = useFonts({
     Sparkle: require("../assets/fonts/Sparkle.ttf"),
-    SparkleFilled: require("../assets/fonts/SparkleFilled.ttf"),
-    Neon: require("../assets/fonts/neon2.ttf"),
+  
     NeoNeon: require("../assets/fonts/NeoNeon.otf"),
-    MPlusRounded300: require("../assets/fonts/MPLUSRounded/MPLUSRounded1c-Light.ttf"),
+
+
+
+  
     MPlusRounded400: require("../assets/fonts/MPLUSRounded/MPLUSRounded1c-Regular.ttf"),
     MPlusRounded500: require("../assets/fonts/MPLUSRounded/MPLUSRounded1c-Medium.ttf"),
     MPlusRounded700: require("../assets/fonts/MPLUSRounded/MPLUSRounded1c-Bold.ttf"),

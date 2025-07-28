@@ -9,7 +9,7 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/splash.jpg",
+      "image": "./assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -42,7 +42,8 @@
           },
           "android": {
             "newArchEnabled": true
-          }
+          },
+          "node": "20.19.4"
         }
       ],
       "expo-web-browser"
