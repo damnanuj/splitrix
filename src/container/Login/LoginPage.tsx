@@ -11,29 +11,18 @@ import {
   useTheme,
   Form,
 } from "tamagui";
-import { router, useRouter } from "expo-router";
-import { StyleSheet, ScrollView, useColorScheme } from "react-native";
+import { ScrollView } from "react-native";
 import MyText from "src/components/customTabBars/styleComponents/MyText";
 import { scale } from "src/utils/functions/dimensions";
 import themeColors from "src/utils/theme/colors";
-import { Check } from "@tamagui/lucide-icons";
 import { Check as CheckIcon } from "@tamagui/lucide-icons";
 import { Label } from "tamagui";
 import {
   GoogleSignin,
   isSuccessResponse,
-  isErrorWithCode,
-  statusCodes,
 } from "@react-native-google-signin/google-signin";
-import axiosInstance from "src/api/api";
-import {
-  QueryClient,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { googleLoginService, loginService } from "src/api/queryFunctions/auth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuthStore } from "src/stores/authStore";
 import { Spinner } from "tamagui";
 import { useToastController } from "@tamagui/toast";
@@ -187,7 +176,8 @@ function SigninForm() {
   };
 
   const setAuth = useAuthStore((state) => state.setAuth);
-  const mutation = useMutation({
+  
+  const { mutate, isPending } = useMutation({
     mutationFn: loginService,
     onSuccess: async (data) => {
       if (data.success) {
@@ -293,17 +283,17 @@ function SigninForm() {
               setHasSubmitted(true);
 
               if (isValid) {
-                mutation.mutate(signInForm);
+                mutate(signInForm);
               }
             }}
-            disabled={mutation.isPending}
-            opacity={mutation.isPending ? 0.7 : 1}
+            disabled={isPending}
+            opacity={isPending ? 0.7 : 1}
           >
             <MyText color={"$textPrimary"}>
-              {mutation.isPending ? "Signing in..." : "Sign In"}
+              {isPending ? "Signing in..." : "Sign In"}
             </MyText>
 
-            {mutation.isPending && <Spinner size="small" color="$white1" />}
+            {isPending && <Spinner size="small" color="$white1" />}
           </Button>
         </Form.Trigger>
         <XStack
