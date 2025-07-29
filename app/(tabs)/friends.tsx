@@ -1,5 +1,6 @@
 import Login from "app";
 import ToastControl from "app/CurrentToast";
+import FriendsGroupPage from "src/container/FriendsGroup/FriendsGroupPage";
 
 export default function TabTwoScreen() {
   return (
@@ -9,6 +10,7 @@ export default function TabTwoScreen() {
     //   </Text>
     // </View>
     // <Login />
-    <ToastControl />
+    // <ToastControl />
+    <FriendsGroupPage />
   );
 }

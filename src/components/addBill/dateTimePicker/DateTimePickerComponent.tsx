@@ -1,7 +1,10 @@
 // DateTimePickerComponent.js
 import React, { useState } from "react";
-import { View, Text, Button, Platform, StyleSheet } from "react-native";
+import { View, Text, Platform, StyleSheet } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { Button, Stack, XStack } from "tamagui";
+import MyText from "src/components/customTabBars/styleComponents/MyText";
+import { scale } from "src/utils/functions/dimensions";
 
 const DateTimePickerComponent = ({ mode = "date", onChangeDate }) => {
   const [date, setDate] = useState(new Date());
@@ -20,17 +23,19 @@ const DateTimePickerComponent = ({ mode = "date", onChangeDate }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>
-        {mode === "date" ? "Selected Date:" : "Selected Time:"}
-      </Text>
-      <Text style={styles.value}>
+    <>
+      <Button
+        bg={"transparent"}
+        borderWidth={1}
+        borderColor={"$borderPrimary"}
+        onPress={showMode}
+      >
         {mode === "date"
           ? date.toLocaleDateString()
           : date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-      </Text>
+      </Button>
 
-      <Button title={`Pick ${mode}`} onPress={showMode} />
+      {/* <Button title={`Pick ${mode}`} onPress={showMode} /> */}
 
       {showPicker && (
         <DateTimePicker
@@ -40,12 +45,12 @@ const DateTimePickerComponent = ({ mode = "date", onChangeDate }) => {
           onChange={handleChange}
         />
       )}
-    </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { margin: 20 },
+  container: { borderWidth: 1, borderColor: "red" },
   label: { fontSize: 16, fontWeight: "bold" },
   value: { fontSize: 18, marginVertical: 10 },
 });

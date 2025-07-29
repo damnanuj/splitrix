@@ -17,6 +17,7 @@ const config = createTamagui({
       accentYellow: themeColors.dark.YELLOW,
       accentWhite: themeColors.dark.WHITE,
       accentBlack: themeColors.dark.BLACK,
+      accentGreen: themeColors.dark.GREEN,
       borderPrimary: themeColors.dark.BORDER_PRIMARY,
     },
 
@@ -29,6 +30,7 @@ const config = createTamagui({
       accentYellow: themeColors.light.YELLOW,
       accentWhite: themeColors.light.WHITE,
       accentBlack: themeColors.light.BLACK,
+      accentGreen: themeColors.dark.GREEN,
       borderPrimary: themeColors.light.BORDER_PRIMARY,
     },
   },

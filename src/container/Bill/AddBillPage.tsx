@@ -4,7 +4,7 @@ import DateTimePickerComponent from "src/components/addBill/dateTimePicker/DateT
 import BackButtonWithHeader from "src/components/common/BackButtonWithHeader";
 import MyText from "src/components/customTabBars/styleComponents/MyText";
 import { scale } from "src/utils/functions/dimensions";
-import { useTheme, XStack } from "tamagui";
+import { Button, Spinner, useTheme, XStack } from "tamagui";
 import { Form, Input, YStack } from "tamagui";
 
 const AddBillPage = () => {
@@ -16,7 +16,7 @@ const AddBillPage = () => {
     <YStack px={scale(25)} flex={1} bg={"$background"}>
       <BackButtonWithHeader title="Create New Bill" />
       <Form
-        mt={scale(60)}
+        mt={scale(25)}
         width="100%"
         items="center"
         // borderWidth={1}
@@ -56,79 +56,80 @@ const AddBillPage = () => {
           {false && <MyText color={"red"}>Something err</MyText>}
         </YStack>
 
-        <XStack
-          gap={scale(20)}
-          //   borderWidth={1}
-          borderColor={"red"}
-          width="100%"
-        >
-          <YStack
-            gap={scale(10)}
-            //   borderWidth={1}
-            borderColor={"white"}
-            mb={scale(20)}
-            flex={1}
-          >
-            <MyText color={"$textPrimary"} fontSize={scale(16)}>
-              Date
-            </MyText>
+        {/* ------time and date section ---------- */}
 
-            <Input
-              placeholderTextColor={"$textSecondary"}
-              focusStyle={{ borderColor: theme.accentYellow }}
-              // value={}
-
-              // onChangeText={(text) => handleChange("email", text)}
-              htmlFor="email"
-              bg={"transparent"}
-              placeholder="Enter expense title"
-              height={scale(50)}
-              rounded={scale(8)}
-              borderWidth={scale(1.5)}
-              borderColor={false ? "red" : "$borderPrimary"}
-              style={{
-                fontFamily: "MPlusRounded500",
-                fontSize: scale(14),
-                color: theme.textPrimary.val,
-              }}
+        <XStack mb={scale(20)} borderColor={"red"} gap={scale(20)}>
+          <YStack flex={1} gap={scale(10)}>
+            <MyText>Date</MyText>
+            <DateTimePickerComponent
+              mode="date"
+              onChangeDate={handleDateChange}
             />
-            {false && <MyText color={"red"}>Something err</MyText>}
           </YStack>
-          <YStack
-            // width="100%"
-            gap={scale(10)}
-            //   borderWidth={1}
-            borderColor={"white"}
-            mb={scale(20)}
-            flex={1}
-          >
-            <MyText color={"$textPrimary"} fontSize={scale(16)}>
-              Time
-            </MyText>
-
-            <Input
-              placeholderTextColor={"$textSecondary"}
-              focusStyle={{ borderColor: theme.accentYellow }}
-              // value={}
-              // onChangeText={(text) => handleChange("email", text)}
-              htmlFor="email"
-              bg={"transparent"}
-              placeholder="Enter expense title"
-              //   width="100%"
-              height={scale(50)}
-              rounded={scale(8)}
-              borderWidth={scale(1.5)}
-              borderColor={false ? "red" : "$borderPrimary"}
-              style={{
-                fontFamily: "MPlusRounded500",
-                fontSize: scale(14),
-                color: theme.textPrimary.val,
-              }}
+          <YStack flex={1} gap={scale(10)}>
+            <MyText>Time</MyText>
+            <DateTimePickerComponent
+              mode="time"
+              onChangeDate={handleDateChange}
             />
-            {false && <MyText color={"red"}>Something err</MyText>}
           </YStack>
         </XStack>
-        {/* <DateTimePickerComponent mode="date" onChangeDate={handleDateChange} /> */}
+
+        {/* ----------amount------- */}
+        <YStack
+          width="100%"
+          gap={scale(10)}
+          //   borderWidth={1}
+          borderColor={"white"}
+          mb={scale(20)}
+        >
+          <MyText color={"$textPrimary"} fontSize={scale(16)}>
+            Enter Amount
+          </MyText>
+
+          <Input
+            placeholderTextColor={"$textSecondary"}
+            focusStyle={{ borderColor: theme.accentYellow }}
+            // value={}
+            // onChangeText={(text) => handleChange("email", text)}
+            htmlFor="email"
+            bg={"transparent"}
+            placeholder="Enter expense amount"
+            width="100%"
+            height={scale(50)}
+            rounded={scale(8)}
+            borderWidth={scale(1.5)}
+            borderColor={false ? "red" : "$borderPrimary"}
+            style={{
+              fontFamily: "MPlusRounded500",
+              fontSize: scale(14),
+              color: theme.textPrimary.val,
+            }}
+          />
+          {false && <MyText color={"red"}>Something err</MyText>}
+        </YStack>
+
+        <Form.Trigger asChild>
+          <Button
+            // width="100%"
+            bg={"$accentYellow"}
+            size="$4"
+            // onPress={() => {
+            //   const isValid = validateForm();
+            //   setHasSubmitted(true);
+
+            //   if (isValid) {
+            //     mutate(signInForm);
+            //   }
+            // }}
+            // disabled={isPending}
+            // opacity={isPending ? 0.7 : 1}
+          >
+            <MyText color={"$accentBlack"}>Create Split</MyText>
+
+            {false && <Spinner size="small" color="$white1" />}
+          </Button>
+        </Form.Trigger>
       </Form>
     </YStack>
   );

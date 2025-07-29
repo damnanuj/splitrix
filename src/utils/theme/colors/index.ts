@@ -7,7 +7,8 @@ const themeColors = {
     TEXT_PRIMARY: "#FFF" as const,
     TEXT_SECONDARY: "#707070" as const,
     BORDER_PRIMARY: "#707070" as const,
-    BLACK: "#1E1E1E",
+    BLACK: "#1E1E1E" as const,
+    GREEN: "#008a20ff" as const,
   },
   light: {
     PRIMARY: "#FFF" as const,
@@ -17,8 +18,9 @@ const themeColors = {
     TEXT_PRIMARY: "#1E1E1E" as const,
     TEXT_SECONDARY: "#2F2F2F" as const,
     PINK: "#cf6ccf" as const,
-    BLACK: "#1E1E1E",
+    BLACK: "#1E1E1E" as const,
     BORDER_PRIMARY: "#707070" as const,
+    GREEN: "#008a20ff" as const,
   },
 };
 
