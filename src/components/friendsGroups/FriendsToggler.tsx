@@ -9,7 +9,7 @@ const FriendsToggler = ({ selected, setSelected }) => {
     setSelected(button);
   };
   return (
-    <Stack borderWidth={1} borderColor={"yellow"}>
+    <Stack borderColor={"yellow"}>
       <CustomTabs
         tabs={[
           { key: "groups", label: "Groups" },

@@ -14,12 +14,12 @@ const FriendsGroupPage = () => {
   return (
     <YStack
       //   borderWidth={3}
-      borderColor={"green"}
       bg={"$background"}
+      flex={1}
       px={scale(25)}
-      //   flex={1}
-      pt={scale(15)}
-      justify={"space-between"}
+      //   borderWidth={2}
+      borderColor={"green"}
+      overflow="hidden"
       gap={scale(20)}
     >
       <FriendsHeader />
