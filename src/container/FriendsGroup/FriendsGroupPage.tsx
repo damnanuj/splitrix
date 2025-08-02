@@ -2,6 +2,7 @@ import { useState } from "react";
 import BackButtonWithHeader from "src/components/common/BackButtonWithHeader";
 import CustomTabs from "src/components/common/CustomTabs";
 import MyText from "src/components/customTabBars/styleComponents/MyText";
+import FriendsGroups from "src/components/friendsGroups/FriendsGroups";
 import FriendsHeader from "src/components/friendsGroups/FriendsHeader";
 import FriendsList from "src/components/friendsGroups/FriendsList";
 import FriendsToggler from "src/components/friendsGroups/FriendsToggler";
@@ -13,7 +14,7 @@ const FriendsGroupPage = () => {
 
   return (
     <YStack
-      //   borderWidth={3}
+      borderWidth={1}
       bg={"$background"}
       flex={1}
       px={scale(25)}
@@ -24,7 +25,7 @@ const FriendsGroupPage = () => {
     >
       <FriendsHeader />
       <FriendsToggler selected={selected} setSelected={setSelected} />
-      {selected === "friends" ? <FriendsList /> : null}
+      {selected === "friends" ? <FriendsList /> : <FriendsGroups />}
     </YStack>
   );
 };

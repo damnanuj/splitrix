@@ -6,8 +6,8 @@ const FriendsHeader = () => {
   const theme = useTheme();
   return (
     <XStack
-      //   borderWidth={1}
-      borderColor={"red"}
+      borderWidth={1}
+      borderColor={"yellow"}
       justify={"space-between"}
       items={"center"}
     >
