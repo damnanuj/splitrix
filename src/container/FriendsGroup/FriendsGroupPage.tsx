@@ -14,7 +14,7 @@ const FriendsGroupPage = () => {
 
   return (
     <YStack
-      borderWidth={1}
+      // borderWidth={1}
       bg={"$background"}
       flex={1}
       px={scale(25)}

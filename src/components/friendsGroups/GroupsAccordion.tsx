@@ -1,15 +1,48 @@
 import { ChevronDown } from "@tamagui/lucide-icons";
-import { Accordion, Paragraph, Square } from "tamagui";
+import { scale } from "src/utils/functions/dimensions";
+import { Accordion, Paragraph, Square, Stack, XStack, YStack } from "tamagui";
+import Feather from "@expo/vector-icons/Feather";
+import MyText from "../customTabBars/styleComponents/MyText";
 
 export function AccordionDemo({ icon, title, amount, time, iconColor }: any) {
   return (
     <Accordion overflow="hidden" width="100%" type="multiple">
       <Accordion.Item value="a1">
-        <Accordion.Trigger flexDirection="row" justify="space-between">
+        <Accordion.Trigger
+          flexDirection="row"
+          px={0}
+          //   borderWidth={1}
+          //   borderColor={"red"}
+          justify="space-between"
+        >
           {({ open }: { open: boolean }) => (
             <>
-              <Paragraph>{title}</Paragraph>
-              <Square animation="quick" rotate={open ? "180deg" : "0deg"}>
+              <XStack
+                gap={scale(20)}
+                items={"center"}
+                // borderWidth={1}
+                borderColor={"red"}
+              >
+                <Stack
+                  bg={"$backgroundSecondary"}
+                  width={55}
+                  height={55}
+                  rounded={scale(10)}
+                  justify="center"
+                  items="center"
+                >
+                  <Feather name={icon} size={25} color={iconColor} />
+                </Stack>
+
+                <MyText
+                  color={"$textPrimary"}
+                  fontSize={scale(16)}
+                  style={{ fontFamily: "MPlusRounded700" }}
+                >
+                  {title}
+                </MyText>
+              </XStack>
+              <Square animation="quick" rotate={open ? "-180deg" : "-90deg"}>
                 <ChevronDown size="$1" />
               </Square>
             </>
