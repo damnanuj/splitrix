@@ -52,9 +52,9 @@ export function SwitchUnstyledDemo() {
     <Switch
       checked={theme === "dark"}
       onCheckedChange={toggleTheme}
-      id="unstyled-switch"
+      // id="unstyled-switch"
     >
-      <Switch.Thumb animation="quick" />
+      <Switch.Thumb animation="quicker" />
     </Switch>
   );
 }

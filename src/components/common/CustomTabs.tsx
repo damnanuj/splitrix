@@ -24,19 +24,20 @@ const CustomTabs = ({ tabs, activeTab, setActiveTab }: any) => {
   return (
     <Stack
       width="100%"
-      height={scale(45)}
+      height={scale(50)}
       justify="center"
       items="center"
-      // borderWidth={1}
-      borderColor={"red"}
+      borderWidth={1}
+      borderColor={"$accentYellow"}
+      rounded={scale(150)}
     >
       <XStack
-        borderWidth={1.3}
+        // borderWidth={1.3}
         borderColor={"$accentYellow"}
         width="100%"
         height="100%"
         // bg={"green"}
-        rounded={scale(150)}
+        // rounded={scale(150)}
         position="relative"
         overflow="hidden"
         onLayout={(event) => {
@@ -53,7 +54,7 @@ const CustomTabs = ({ tabs, activeTab, setActiveTab }: any) => {
           style={{
             position: "absolute",
             width: `${100 / tabs.length}%`,
-            height: "103%",
+            height: "100%",
             backgroundColor: theme.accentYellow.val,
             borderRadius: scale(100),
             // borderWidth: 1,
