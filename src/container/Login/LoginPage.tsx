@@ -22,17 +22,15 @@ import {
   isSuccessResponse,
 } from "@react-native-google-signin/google-signin";
 import { useMutation } from "@tanstack/react-query";
-import { googleLoginService, loginService } from "src/api/queryFunctions/auth";
 import { useAuthStore } from "src/stores/authStore";
 import { Spinner } from "tamagui";
 import { useToastController } from "@tamagui/toast";
-
+import { getUserData } from "src/services/user.service";
+import { googleLoginService } from "src/services/auth.service";
+import { loginService } from "src/services/auth.service";
 const LoginPage = () => {
-  // console.log("LoginPage render");
-
   return (
     <ScrollView
-      // borderWidth={1}
       contentContainerStyle={{
         flexGrow: 1,
       }}
@@ -104,7 +102,6 @@ function SigninForm() {
         const { name, photo, email } = user;
 
         const data = await googleLoginService({ email, name, photo });
-        console.log(data, "<<<<");
 
         if (data.success) {
           await setAuth({
@@ -176,9 +173,15 @@ function SigninForm() {
   };
 
   const setAuth = useAuthStore((state) => state.setAuth);
-  
+
   const { mutate, isPending } = useMutation({
     mutationFn: loginService,
+    mutationKey: ["login"],
+    onError: (error) => {
+      toast.show("Login Failed", {
+        message: error.message || "Something went wrong during login.",
+      });
+    },
     onSuccess: async (data) => {
       if (data.success) {
         await setAuth({

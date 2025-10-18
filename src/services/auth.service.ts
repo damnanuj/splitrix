@@ -1,9 +1,8 @@
-import axios from "axios";
-import axiosInstance from "../api";
-
+import { API_ENDPOINTS } from "src/config/api.config";
+import apiService from "./api.service";
 export const loginService = async (payload: any) => {
   try {
-    const res = await axiosInstance.post("/auth/login", payload);
+    const res = await apiService.post(API_ENDPOINTS.auth.login, payload);
     return res.data;
   } catch (err) {
     return err.response.data;
@@ -12,7 +11,7 @@ export const loginService = async (payload: any) => {
 
 export const googleLoginService = async (payload: any) => {
   try {
-    const res = await axiosInstance.post("/auth/google", payload);
+    const res = await apiService.post(API_ENDPOINTS.auth.google, payload);
     return res.data;
   } catch (err: any) {
     return (

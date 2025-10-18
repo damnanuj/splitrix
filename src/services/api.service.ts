@@ -3,14 +3,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ENV } from "src/utils/constants/env";
 export const baseURL = ENV.EXPO_PUBLIC_BASE_URL;
 
-const axiosInstance = axios.create({
-  baseURL,
+const apiService = axios.create({
+  baseURL: baseURL + "/api",
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-axiosInstance.interceptors.request.use(
+apiService.interceptors.request.use(
   async (config) => {
     try {
       const token = await AsyncStorage.getItem("TOKEN");
@@ -31,4 +31,4 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-export default axiosInstance;
+export default apiService;
