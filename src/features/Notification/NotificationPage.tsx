@@ -4,9 +4,9 @@ import { scale } from "src/utils/functions/dimensions";
 import { ScrollView, Stack, useTheme, XStack, YStack } from "tamagui";
 import Feather from "@expo/vector-icons/Feather";
 import { formatDate } from "src/utils/functions/formatDate";
-import { NotificationItem } from "src/components/notification/NotificationItem";
+import { NotificationItem } from "src/features/Notification/components/NotificationItem";
 import { expenses } from "./notificationDummyData";
-import ExpensesHistory from "./ExpensesHistory";
+import ExpensesHistory from "./components/ExpensesHistory";
 
 
 const NotificationPage = () => {

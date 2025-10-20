@@ -2,12 +2,12 @@ import { useState } from "react";
 import BackButtonWithHeader from "src/components/common/BackButtonWithHeader";
 import CustomTabs from "src/components/common/CustomTabs";
 import MyText from "src/components/customTabBars/styleComponents/MyText";
-import FriendsGroups from "src/components/friendsGroups/FriendsGroups";
-import FriendsHeader from "src/components/friendsGroups/FriendsHeader";
-import FriendsList from "src/components/friendsGroups/FriendsList";
-import FriendsToggler from "src/components/friendsGroups/FriendsToggler";
+import FriendsHeader from "src/features/FriendsGroup/components/FriendsHeader";
+import FriendsToggler from "src/features/FriendsGroup/components/FriendsToggler";
 import { scale } from "src/utils/functions/dimensions";
 import { Stack, XStack, YStack } from "tamagui";
+import FriendsList from "./components/FriendsList";
+import FriendsGroups from "./components/FriendsGroups";
 
 const FriendsGroupPage = () => {
   const [selected, setSelected] = useState("groups");

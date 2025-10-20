@@ -1,6 +1,6 @@
 import { scale } from "src/utils/functions/dimensions";
 import { Avatar, Spinner, Stack, useTheme, XStack, YStack } from "tamagui";
-import MyText from "../customTabBars/styleComponents/MyText";
+import MyText from "../../../components/customTabBars/styleComponents/MyText";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useAuthStore } from "src/stores/authStore";
 import { useRouter } from "expo-router";

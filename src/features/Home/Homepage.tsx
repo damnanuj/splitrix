@@ -2,12 +2,11 @@ import { scale } from "src/utils/functions/dimensions";
 import themeColors from "src/utils/theme/colors";
 import { YStack } from "tamagui";
 
-import UserHeader from "src/components/Home/UserHeader";
-import RecentBills from "../../components/Home/RecentBills";
-import AllTransactions from "src/components/Home/AllTransactions";
 import { useState } from "react";
 import { useAuthStore } from "src/stores/authStore";
-
+import UserHeader from "./components/UserHeader";
+import RecentBills from "./components/RecentBills";
+import AllTransactions from "./components/AllTransactions";
 const Homepage = () => {
   // console.log("homepage render");
 

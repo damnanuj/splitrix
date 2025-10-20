@@ -1,4 +1,3 @@
-// DateTimePickerComponent.js
 import React, { useState } from "react";
 import { View, Text, Platform, StyleSheet } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -40,7 +39,7 @@ const DateTimePickerComponent = ({ mode = "date", onChangeDate }) => {
       {showPicker && (
         <DateTimePicker
           value={date}
-          mode={mode}
+          mode={mode as any}
           display="default"
           onChange={handleChange}
         />

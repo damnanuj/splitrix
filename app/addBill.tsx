@@ -1,4 +1,4 @@
-import AddBillPage from "src/container/Bill/AddBillPage";
+import AddBillPage from "src/features/billing/AddBillPage";
 
 const AddBill = () => {
   return <AddBillPage />;

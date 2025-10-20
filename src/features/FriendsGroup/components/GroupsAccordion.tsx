@@ -2,7 +2,7 @@ import { ChevronDown } from "@tamagui/lucide-icons";
 import { scale } from "src/utils/functions/dimensions";
 import { Accordion, Paragraph, Square, Stack, XStack, YStack } from "tamagui";
 import Feather from "@expo/vector-icons/Feather";
-import MyText from "../customTabBars/styleComponents/MyText";
+import MyText from "../../../components/customTabBars/styleComponents/MyText";
 
 export function AccordionDemo({ icon, title, amount, time, iconColor }: any) {
   return (

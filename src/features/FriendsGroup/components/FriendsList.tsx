@@ -1,7 +1,7 @@
 import { Avatar, XStack, YStack } from "tamagui";
-import MyText from "../customTabBars/styleComponents/MyText";
 import { scale } from "src/utils/functions/dimensions";
 import { FlatList } from "react-native";
+import MyText from "src/components/customTabBars/styleComponents/MyText";
 
 const FriendsList = () => {
   return (

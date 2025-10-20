@@ -1,5 +1,5 @@
 import { ScrollView, Stack, Switch, useTheme, XStack, YStack } from "tamagui";
-import MyText from "../customTabBars/styleComponents/MyText";
+import MyText from "../../../components/customTabBars/styleComponents/MyText";
 import { scale } from "src/utils/functions/dimensions";
 import Feather from "@expo/vector-icons/Feather";
 import Entypo from "@expo/vector-icons/Entypo";

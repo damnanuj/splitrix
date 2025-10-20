@@ -1,5 +1,5 @@
 import { Stack, useTheme, XStack } from "tamagui";
-import MyText from "../customTabBars/styleComponents/MyText";
+import MyText from "../../../components/customTabBars/styleComponents/MyText";
 import { scale } from "src/utils/functions/dimensions";
 import Feather from "@expo/vector-icons/Feather";
 const FriendsHeader = () => {

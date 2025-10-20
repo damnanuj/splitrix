@@ -1,5 +1,5 @@
 import { Circle, Image, Stack, useTheme, XStack, YStack } from "tamagui";
-import MyText from "../customTabBars/styleComponents/MyText";
+import MyText from "../../../components/customTabBars/styleComponents/MyText";
 import themeColors from "src/utils/theme/colors";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { scale } from "src/utils/functions/dimensions";

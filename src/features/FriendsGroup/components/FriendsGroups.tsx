@@ -1,11 +1,13 @@
-import { ScrollView, Stack, XStack, YStack } from "tamagui";
-import MyText from "../customTabBars/styleComponents/MyText";
+import { ScrollView, XStack, YStack, Stack, Square } from "tamagui";
+import MyText from "../../../components/customTabBars/styleComponents/MyText";
 import { scale } from "src/utils/functions/dimensions";
-import themeColors from "src/utils/theme/colors";
 import Feather from "@expo/vector-icons/Feather";
+import { AccordionDemo } from "./GroupsAccordion";
+import { ChevronDown } from "@tamagui/lucide-icons";
+import { useState } from "react";
+import { AnimatePresence, styled } from "tamagui";
 
-const AllTransactions = () => {
-  // console.log("AllTransactions render");
+const FriendsGroups = () => {
   return (
     <YStack
       //   borderWidth={1}
@@ -16,17 +18,12 @@ const AllTransactions = () => {
     >
       <XStack justify={"space-between"} items={"center"}>
         <MyText color={"$textPrimary"} fontSize={scale(16)}>
-          All Transactions
+          All Groups
         </MyText>
-        <MyText color={"$accentYellow"}>View All</MyText>
+        <MyText color={"$accentYellow"}>+ Add New</MyText>
       </XStack>
 
-      <YStack
-        //   borderWidth={1}
-        borderColor={"white"}
-        flex={1}
-        pb={scale(80)}
-      >
+      <YStack borderColor={"red"} flex={1} pb={scale(80)}>
         <ScrollView
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{
@@ -35,8 +32,10 @@ const AllTransactions = () => {
             // gap: scale(15),
           }}
         >
+          {/* <AccordionDemo /> */}
+
           {billsData.map((bill, idx) => (
-            <TransactionItem
+            <GroupItem
               key={idx}
               iconColor={bill.iconColor}
               icon={bill.icon}
@@ -50,8 +49,7 @@ const AllTransactions = () => {
     </YStack>
   );
 };
-
-export default AllTransactions;
+export default FriendsGroups;
 
 interface TransactionItemProps {
   icon: string;
@@ -61,15 +59,34 @@ interface TransactionItemProps {
   iconColor: string;
 }
 
-const TransactionItem = ({
+const GroupItem = ({
   icon,
   title,
   amount,
   time,
   iconColor,
 }: TransactionItemProps) => {
+  const [accordionOpen, setAccordionOpen] = useState(false);
+
+  const toggleAccordion = () => {
+    setAccordionOpen(!accordionOpen);
+  };
+
+  const AnimatedYStack = styled(YStack, {
+    name: "AnimatedYStack",
+    animation: "quicker",
+    layout: true,
+  });
+
   return (
-    <XStack gap={scale(20)} items="center" mb={scale(15)}>
+    <XStack
+      onPress={toggleAccordion}
+      gap={scale(20)}
+      borderBottomWidth={1}
+      borderColor={"$backgroundSecondary"}
+      items="center"
+      py={scale(20)}
+    >
       <Stack
         bg={"$backgroundSecondary"}
         width={55}
@@ -81,7 +98,13 @@ const TransactionItem = ({
         <Feather name={icon} size={25} color={iconColor} />
       </Stack>
 
-      <YStack justify="center" flex={1}>
+      {/* Group details with animated layout */}
+      <AnimatedYStack
+        onPress={toggleAccordion}
+        justify="center"
+        flex={1}
+        pressStyle={{ opacity: 0.6 }}
+      >
         <MyText
           color={"$textPrimary"}
           fontSize={scale(16)}
@@ -89,20 +112,37 @@ const TransactionItem = ({
         >
           {title}
         </MyText>
-        <MyText fontSize={scale(12)} color={"$textSecondary"}>
-          {time}
-        </MyText>
-      </YStack>
 
-      <Stack>
-        <MyText
-          color={"$textPrimary"}
-          fontSize={scale(16)}
-          style={{ fontFamily: "MPlusRounded700" }}
-        >
-          ₹{amount.toFixed(2)}
-        </MyText>
-      </Stack>
+        <AnimatePresence>
+          {accordionOpen && (
+            <YStack
+              key="extra-details"
+              animation="quicker"
+              enterStyle={{ opacity: 0, y: -5 }}
+              exitStyle={{ opacity: 0, y: -5 }}
+              opacity={1}
+              y={0}
+            >
+              <MyText fontSize={scale(12)} color={"$textSecondary"}>
+                {time}
+              </MyText>
+              <MyText fontSize={scale(12)} color={"$textSecondary"}>
+                {time}
+              </MyText>
+            </YStack>
+          )}
+        </AnimatePresence>
+      </AnimatedYStack>
+
+      {/* Chevron icon */}
+      <Square
+        // borderWidth={1}
+        // borderColor={"red"}
+        animation="quick"
+        rotate={accordionOpen ? "-180deg" : "-90deg"}
+      >
+        <ChevronDown size="$1" />
+      </Square>
     </XStack>
   );
 };
@@ -110,7 +150,7 @@ const TransactionItem = ({
 const billsData = [
   {
     icon: "film",
-    title: "Movie Tickets",
+    title: "Movie Fun",
     amount: 320,
     time: "Jul 14 25 | 08:30 PM",
     iconColor: "#3498db", // blue

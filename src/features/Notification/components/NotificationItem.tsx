@@ -1,7 +1,7 @@
 import { scale } from "src/utils/functions/dimensions";
 import { Stack, XStack } from "tamagui";
 import Feather from "@expo/vector-icons/Feather";
-import MyText from "../customTabBars/styleComponents/MyText";
+import MyText from "../../../components/customTabBars/styleComponents/MyText";
 
 export const NotificationItem = ({
   title,
@@ -27,7 +27,7 @@ export const NotificationItem = ({
         justify="center"
         items="center"
       >
-        <Feather name={icon} size={25} color={iconColor} />
+        <Feather name={icon as any} size={25} color={iconColor} />
       </Stack>
 
       <Stack flex={1}>

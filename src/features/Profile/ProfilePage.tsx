@@ -2,8 +2,8 @@ import MyText from "src/components/customTabBars/styleComponents/MyText";
 import { scale } from "src/utils/functions/dimensions";
 import { Avatar, Stack, useTheme, XStack, YStack } from "tamagui";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import ProfileHeader from "src/components/profile/ProfileHeader";
-import Settings from "src/components/profile/Settings";
+import ProfileHeader from "src/features/Profile/components/ProfileHeader";
+import Settings from "src/features/Profile/components/Settings";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 const ProfilePage = () => {
   // console.log("ProfilePage render");

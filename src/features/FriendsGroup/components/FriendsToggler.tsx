@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
-import CustomTabs from "../common/CustomTabs";
+import CustomTabs from "src/components/common/CustomTabs";
 import { Stack } from "tamagui";
 import { scale } from "src/utils/functions/dimensions";
 

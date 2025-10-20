@@ -23,7 +23,7 @@ import {
   XStack,
   YStack,
 } from "tamagui";
-import MyText from "../customTabBars/styleComponents/MyText";
+import MyText from "src/components/customTabBars/styleComponents/MyText";
 import { scale } from "src/utils/functions/dimensions";
 
 export function PopoverDemo() {
@@ -65,11 +65,11 @@ export function Demo({
       {shouldAdapt && (
         <Adapt when="maxMd" platform="touch">
           <Sheet animation="medium" modal dismissOnSnapToBottom>
-            <Sheet.Frame padding="$4">
+            <Sheet.Frame p="$4">
               <Adapt.Contents />
             </Sheet.Frame>
             <Sheet.Overlay
-              backgroundColor="$shadowColor"
+              background="$shadow"
               animation="lazy"
               enterStyle={{ opacity: 0 }}
               exitStyle={{ opacity: 0 }}

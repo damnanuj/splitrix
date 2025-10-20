@@ -1,11 +1,11 @@
 import { StyleSheet, Text, View } from "react-native";
-import DateTimePickerComponent from "src/components/addBill/dateTimePicker/DateTimePickerComponent";
 
 import BackButtonWithHeader from "src/components/common/BackButtonWithHeader";
 import MyText from "src/components/customTabBars/styleComponents/MyText";
 import { scale } from "src/utils/functions/dimensions";
 import { Button, Spinner, useTheme, XStack } from "tamagui";
 import { Form, Input, YStack } from "tamagui";
+import DateTimePickerComponent from "./components/DateTimePickerComponent";
 
 const AddBillPage = () => {
   const theme = useTheme();
