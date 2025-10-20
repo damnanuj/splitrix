@@ -168,6 +168,8 @@ function RootLayoutNav() {
         <Stack.Screen name="index" options={{ animation: "simple_push" }} />
         <Stack.Screen name="notification" />
         <Stack.Screen name="addBill" />
+        <Stack.Screen name="addNewGroup" />
+        <Stack.Screen name="addNewFriend" />
       </Stack>
     </ThemeProvider>
   );

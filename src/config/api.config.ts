@@ -6,6 +6,9 @@ export const API_ENDPOINTS = {
   user: {
     get: "/user",
     getById: (id: string) => `/user/${id}`,
+    list: "/user/",
+    addFriend: "/user/friends",
+    friendsList: "/user/friends/list",
   },
 };
 

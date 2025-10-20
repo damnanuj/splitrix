@@ -2,20 +2,12 @@ import { create } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { decode as atob } from "base-64";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-interface AuthData {
-  token: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    profilePicture?: string;
-  };
-}
+import { User } from "./types";
 
 interface AuthState {
-  authData: AuthData | null;
+  authData: User | null;
   isLoading: boolean;
-  setAuth: (data: AuthData) => Promise<void>;
+  setAuth: (data: { token: string; user: User }) => Promise<void>;
   logout: () => Promise<void>;
   initializeAuth: () => Promise<void>;
 }
@@ -24,29 +16,30 @@ export const useAuthStore = create<AuthState>((set) => ({
   authData: null,
   isLoading: true,
 
-  setAuth: async (data: any) => {
+  setAuth: async (data: { token: string; user: User }) => {
     const { token, user } = data;
-    await AsyncStorage.setItem("authData", JSON.stringify(user));
+    
+    // Store token and user data separately
     await AsyncStorage.setItem("TOKEN", JSON.stringify(token));
+    await AsyncStorage.setItem("USER_DATA", JSON.stringify(user));
 
+    // Store user object directly in authData
     set({ authData: user });
   },
 
   logout: async () => {
     try {
-      const storedAuthData = await AsyncStorage.getItem("authData");
-      const parsedAuthData = storedAuthData ? JSON.parse(storedAuthData) : null;
+      const storedUserData = await AsyncStorage.getItem("USER_DATA");
+      const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
 
       // -------if user logged in via Google-------
-      if (parsedAuthData?.provider === "google") {
+      if (parsedUserData?.provider === "google") {
         await GoogleSignin.revokeAccess();
         await GoogleSignin.signOut();
-        await AsyncStorage.removeItem("authData");
-        await AsyncStorage.removeItem("TOKEN");
       }
 
-      // ------if normal local user-------
-      await AsyncStorage.removeItem("authData");
+      // ------clear all auth data-------
+      await AsyncStorage.removeItem("USER_DATA");
       await AsyncStorage.removeItem("TOKEN");
       set({ authData: null });
     } catch (error) {
@@ -55,17 +48,17 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
   initializeAuth: async () => {
     try {
-      const storedUser = await AsyncStorage.getItem("authData");
+      const storedUserData = await AsyncStorage.getItem("USER_DATA");
       const storedToken = await AsyncStorage.getItem("TOKEN");
 
-      if (storedUser && storedToken) {
+      if (storedUserData && storedToken) {
         const token = JSON.parse(storedToken);
-        const user = JSON.parse(storedUser);
+        const user = JSON.parse(storedUserData);
 
         if (!isTokenExpired(token)) {
           set({ authData: user });
         } else {
-          await AsyncStorage.removeItem("authData");
+          await AsyncStorage.removeItem("USER_DATA");
           await AsyncStorage.removeItem("TOKEN");
         }
       }
