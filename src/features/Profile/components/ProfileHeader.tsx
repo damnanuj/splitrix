@@ -55,7 +55,10 @@ export default function ProfileHeader() {
           >
             {authData?.name}
           </MyText>
-          <MyText fontSize={scale(12)} color={"$textSecondary"}>
+          <MyText fontSize={scale(14)} color={"$textSecondary"}>
+            {authData?.email}
+          </MyText>
+          <MyText fontSize={scale(10)} color={"$accentYellow"}>
             Premium user
           </MyText>
         </YStack>

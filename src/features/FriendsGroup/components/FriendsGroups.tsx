@@ -16,13 +16,6 @@ const FriendsGroups = () => {
       //   pb={scale(80)}
       gap={scale(20)}
     >
-      <XStack justify={"space-between"} items={"center"}>
-        <MyText color={"$textPrimary"} fontSize={scale(16)}>
-          All Groups
-        </MyText>
-        <MyText color={"$accentYellow"}>+ Add New</MyText>
-      </XStack>
-
       <YStack borderColor={"red"} flex={1} pb={scale(80)}>
         <ScrollView
           showsHorizontalScrollIndicator={false}

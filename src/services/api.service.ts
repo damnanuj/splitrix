@@ -14,9 +14,10 @@ apiService.interceptors.request.use(
   async (config) => {
     try {
       const token = await AsyncStorage.getItem("TOKEN");
-      //   console.log(token);
-      if (token) {
-        config.headers["Authorization"] = `Bearer ${token}`;
+      const parsedToken = token ? JSON.parse(token) : null;
+      // console.log(parsedToken, "-<<<<<<token");
+      if (parsedToken) {
+        config.headers["Authorization"] = `Bearer ${parsedToken}`;
       }
       //   console.log(config);
       return config;
