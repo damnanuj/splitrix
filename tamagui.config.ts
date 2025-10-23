@@ -19,6 +19,8 @@ const config = createTamagui({
       accentBlack: themeColors.dark.BLACK,
       accentGreen: themeColors.dark.GREEN,
       borderPrimary: themeColors.dark.BORDER_PRIMARY,
+      shimmerPrimary: themeColors.dark.SHIMMER_PRIMARY,
+      shimmerSecondary: themeColors.dark.SHIMMER_SECONDARY,
     },
 
     light: {
@@ -32,6 +34,8 @@ const config = createTamagui({
       accentBlack: themeColors.light.BLACK,
       accentGreen: themeColors.dark.GREEN,
       borderPrimary: themeColors.light.BORDER_PRIMARY,
+      shimmerPrimary: themeColors.light.SHIMMER_PRIMARY,
+      shimmerSecondary: themeColors.light.SHIMMER_SECONDARY,
     },
   },
 });

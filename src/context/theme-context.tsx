@@ -1,9 +1,11 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect } from "react";
+import { useThemeStore } from "src/stores/themeStore";
 
 const ThemeContext = createContext({
-  theme: "light",
+  theme: "dark" as "light" | "dark",
   setTheme: (_: "light" | "dark") => {},
   toggleTheme: () => {},
+  isInitialized: false,
 });
 
 export const ThemeProviderCustom = ({
@@ -11,14 +13,20 @@ export const ThemeProviderCustom = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
+  const { theme, setTheme, toggleTheme, isInitialized, initializeTheme } =
+    useThemeStore();
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  };
+  // Initialize theme on app start
+  useEffect(() => {
+    if (!isInitialized) {
+      initializeTheme();
+    }
+  }, [isInitialized, initializeTheme]);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
+    <ThemeContext.Provider
+      value={{ theme, setTheme, toggleTheme, isInitialized }}
+    >
       {children}
     </ThemeContext.Provider>
   );

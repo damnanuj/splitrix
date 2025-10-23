@@ -39,7 +39,7 @@ const FriendsGroupPage = () => {
         <MyText color={"$textPrimary"} fontSize={scale(16)}>
           {selected === "groups" ? "All Groups" : "All Friends"}
         </MyText>
-        <MyText 
+        <MyText
           color={"$accentYellow"}
           onPress={handleAddNew}
           pressStyle={{ opacity: 0.6 }}

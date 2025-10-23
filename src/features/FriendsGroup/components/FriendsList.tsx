@@ -1,53 +1,31 @@
 import { Avatar, XStack, YStack } from "tamagui";
 import { scale } from "src/utils/functions/dimensions";
-import { FlatList } from "react-native";
+import { FlatList, RefreshControl, ActivityIndicator } from "react-native";
 import MyText from "src/components/customTabBars/styleComponents/MyText";
+import { useFriendsStore } from "src/stores/friendsStore";
+import { useEffect, useCallback, memo } from "react";
+import LoaderWithText from "src/components/common/LoaderWithText";
+import { Friend } from "src/stores/types";
+import { FriendsListSkeleton } from "./skeleton";
 
-const FriendsList = () => {
-  return (
-    <YStack
-      // borderWidth={1}
-      borderColor={"red"}
-      //   mb={scale(100)}
-      flex={1}
-      // gap={scale(0)}
-      mb={scale(80)}
-    >
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        data={dummyFriends}
-        keyExtractor={(item, index) => index.toString()}
-        contentContainerStyle={{
-          paddingBottom: scale(20),
-          gap: scale(30),
-        }}
-        renderItem={({ item }) => (
-          <FriendItem
-            name={item.name}
-            amount={item.amount}
-            type={item.type}
-            image={item.image}
-          />
-        )}
-      />
-    </YStack>
-  );
-};
+interface FriendItemProps {
+  friend: Friend;
+}
 
-export default FriendsList;
+const FriendItem = memo(({ friend }: FriendItemProps) => {
+  const { name, profilePicture, balance } = friend;
 
-const FriendItem = ({ name, amount, image, type }) => {
-  const renderStatus = () => {
-    if (type === "owesYou") {
+  const renderStatus = useCallback(() => {
+    if (balance.status === "friend_owes_me") {
       return (
         <MyText fontSize={scale(12)} color="$textSecondary">
-          Owes you <MyText color="$accentGreen">₹{amount}</MyText>
+          Owes you <MyText color="$accentGreen">₹{balance.amount}</MyText>
         </MyText>
       );
-    } else if (type === "youOwe") {
+    } else if (balance.status === "i_owe_friend") {
       return (
         <MyText fontSize={scale(12)} color="$textSecondary">
-          You owe <MyText color="tomato">₹{amount}</MyText>
+          You owe <MyText color="tomato">₹{balance.amount}</MyText>
         </MyText>
       );
     } else {
@@ -57,141 +35,109 @@ const FriendItem = ({ name, amount, image, type }) => {
         </MyText>
       );
     }
-  };
+  }, [balance.status, balance.amount]);
 
   return (
-    <XStack gap={scale(20)} items="center">
+    <XStack
+      gap={scale(20)}
+      items="center"
+      py={scale(12)}
+      px={scale(4)}
+      hoverStyle={{ bg: "$backgroundSecondary" }}
+    >
       <Avatar rounded={scale(10)} size={scale(60)}>
-        <Avatar.Image accessibilityLabel={name} src={image} />
+        <Avatar.Image
+          accessibilityLabel={name}
+          src={
+            profilePicture || "https://randomuser.me/api/portraits/men/10.jpg"
+          }
+        />
         <Avatar.Fallback delayMs={600} backgroundColor="lightgray" />
       </Avatar>
-      <YStack>
-        <MyText>{name}</MyText>
+      <YStack flex={1}>
+        <MyText fontSize={scale(16)} fontWeight="600" color="$textPrimary">
+          {name}
+        </MyText>
         {renderStatus()}
       </YStack>
     </XStack>
   );
+});
+
+FriendItem.displayName = "FriendItem";
+
+const FriendsList = () => {
+  const { friends, isLoading, isRefreshing, error, fetchFriends } =
+    useFriendsStore();
+
+  useEffect(() => {
+    fetchFriends();
+  }, [fetchFriends]);
+
+  const onRefresh = useCallback(() => {
+    fetchFriends({ refresh: true });
+  }, [fetchFriends]);
+
+  const renderFriendItem = useCallback(
+    ({ item }: { item: Friend }) => <FriendItem friend={item} />,
+    []
+  );
+
+  const keyExtractor = useCallback((item: Friend) => item._id, []);
+
+  if (isLoading && friends.length === 0) {
+    return <FriendsListSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <YStack flex={1} justify="center" items="center" gap={scale(20)}>
+        <MyText color="$textSecondary" fontSize={scale(16)}>
+          Failed to load friends
+        </MyText>
+        <MyText color="$textSecondary" fontSize={scale(14)}>
+          {error}
+        </MyText>
+      </YStack>
+    );
+  }
+
+  if (friends.length === 0) {
+    return (
+      <YStack flex={1} justify="center" items="center" gap={scale(20)}>
+        <MyText color="$textSecondary" fontSize={scale(16)}>
+          No friends yet
+        </MyText>
+        <MyText color="$textSecondary" fontSize={scale(14)}>
+          Add some friends to start splitting expenses
+        </MyText>
+      </YStack>
+    );
+  }
+
+  return (
+    <YStack flex={1} mb={scale(80)}>
+      <FlatList
+        data={friends}
+        keyExtractor={keyExtractor}
+        renderItem={renderFriendItem}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={onRefresh}
+            tintColor="#FFD700"
+            colors={["#FFD700"]}
+          />
+        }
+        contentContainerStyle={{
+          paddingBottom: scale(20),
+          gap: scale(8),
+        }}
+        ItemSeparatorComponent={() => <YStack height={scale(8)} />}
+      />
+    </YStack>
+  );
 };
 
-const dummyFriends = [
-  {
-    name: "Ankit Sharma",
-    amount: 120,
-    type: "owesYou",
-    image: "https://randomuser.me/api/portraits/men/10.jpg",
-  },
-  {
-    name: "Priya Mehra",
-    amount: 85,
-    type: "youOwe",
-    image: "https://randomuser.me/api/portraits/women/21.jpg",
-  },
-  {
-    name: "Ravi Kumar",
-    amount: 0,
-    type: "settled",
-    image: "https://randomuser.me/api/portraits/men/36.jpg",
-  },
-  {
-    name: "Sneha Patil",
-    amount: 60,
-    type: "owesYou",
-    image: "https://randomuser.me/api/portraits/women/44.jpg",
-  },
-  {
-    name: "Amit Joshi",
-    amount: 150,
-    type: "youOwe",
-    image: "https://randomuser.me/api/portraits/men/75.jpg",
-  },
-  {
-    name: "Deepika Sinha",
-    amount: 0,
-    type: "settled",
-    image: "https://randomuser.me/api/portraits/women/52.jpg",
-  },
-  {
-    name: "Vikram Singh",
-    amount: 95,
-    type: "owesYou",
-    image: "https://randomuser.me/api/portraits/men/22.jpg",
-  },
-  {
-    name: "Meena Gupta",
-    amount: 70,
-    type: "youOwe",
-    image: "https://randomuser.me/api/portraits/women/65.jpg",
-  },
-  {
-    name: "Rohan Das",
-    amount: 0,
-    type: "settled",
-    image: "https://randomuser.me/api/portraits/men/32.jpg",
-  },
-  {
-    name: "Neha Rathi",
-    amount: 200,
-    type: "owesYou",
-    image: "https://randomuser.me/api/portraits/women/29.jpg",
-  },
-  {
-    name: "Kunal Verma",
-    amount: 140,
-    type: "youOwe",
-    image: "https://randomuser.me/api/portraits/men/47.jpg",
-  },
-  {
-    name: "Pooja Yadav",
-    amount: 0,
-    type: "settled",
-    image: "https://randomuser.me/api/portraits/women/35.jpg",
-  },
-  {
-    name: "Aditya Narayan",
-    amount: 180,
-    type: "owesYou",
-    image: "https://randomuser.me/api/portraits/men/15.jpg",
-  },
-  {
-    name: "Shweta Ghosh",
-    amount: 50,
-    type: "youOwe",
-    image: "https://randomuser.me/api/portraits/women/18.jpg",
-  },
-  {
-    name: "Manish Tiwari",
-    amount: 0,
-    type: "settled",
-    image: "https://randomuser.me/api/portraits/men/58.jpg",
-  },
-  {
-    name: "Isha Kapoor",
-    amount: 120,
-    type: "owesYou",
-    image: "https://randomuser.me/api/portraits/women/60.jpg",
-  },
-  {
-    name: "Rajeev Nair",
-    amount: 105,
-    type: "youOwe",
-    image: "https://randomuser.me/api/portraits/men/49.jpg",
-  },
-  {
-    name: "Tanvi Chauhan",
-    amount: 0,
-    type: "settled",
-    image: "https://randomuser.me/api/portraits/women/66.jpg",
-  },
-  {
-    name: "Siddharth Rao",
-    amount: 90,
-    type: "owesYou",
-    image: "https://randomuser.me/api/portraits/men/69.jpg",
-  },
-  {
-    name: "Kritika Jain",
-    amount: 110,
-    type: "youOwe",
-    image: "https://randomuser.me/api/portraits/women/71.jpg",
-  },
-];
+export default FriendsList;

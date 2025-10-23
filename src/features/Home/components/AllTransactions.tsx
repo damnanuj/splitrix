@@ -29,6 +29,7 @@ const AllTransactions = () => {
       >
         <ScrollView
           showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             //   borderWidth: 1,
             borderColor: "green",

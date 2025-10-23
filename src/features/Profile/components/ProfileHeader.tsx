@@ -10,6 +10,7 @@ export default function ProfileHeader() {
   const router = useRouter();
   // const logout = useAuthStore((state) => state.logout);
   const { authData, logout }: any = useAuthStore();
+  console.log(authData, "-<<<<<<authData");
   const [logoutLoading, setLoogoutLoading] = useState(false);
 
   const handleLogout = async () => {

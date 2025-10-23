@@ -47,7 +47,13 @@ export const Switch = createSwitch({
 });
 
 export function SwitchUnstyledDemo() {
-  const { theme, toggleTheme } = useThemeController();
+  const { theme, toggleTheme, isInitialized } = useThemeController();
+
+  // Don't render until theme is initialized to prevent flickering
+  if (!isInitialized) {
+    return null;
+  }
+
   return (
     <Switch
       checked={theme === "dark"}

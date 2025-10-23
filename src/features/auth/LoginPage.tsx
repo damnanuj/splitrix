@@ -106,7 +106,7 @@ function SigninForm() {
         if (data.success) {
           await setAuth({
             token: data.token,
-            user: { provider: "google", ...data.user },
+            user: { provider: "google", ...data.data },
           });
           toast.show("Login Successful", {
             message: "You have been signed in with Google.",
@@ -174,7 +174,7 @@ function SigninForm() {
 
   const setAuth = useAuthStore((state) => state.setAuth);
 
-  const { mutate, isPending } = useMutation({
+  const { mutate, isPending } = useMutation({ 
     mutationFn: loginService,
     mutationKey: ["login"],
     onError: (error) => {
@@ -186,7 +186,7 @@ function SigninForm() {
       if (data.success) {
         await setAuth({
           token: data.token,
-          user: { provider: "local", ...data.user },
+          user: { provider: "local", ...data.data },
         });
       } else {
         toast.show("Sign-In Failed", {

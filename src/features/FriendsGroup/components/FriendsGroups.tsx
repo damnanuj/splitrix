@@ -4,10 +4,24 @@ import { scale } from "src/utils/functions/dimensions";
 import Feather from "@expo/vector-icons/Feather";
 import { AccordionDemo } from "./GroupsAccordion";
 import { ChevronDown } from "@tamagui/lucide-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, styled } from "tamagui";
+import { useGroupsStore } from "src/stores/groupsStore";
+import { Group } from "src/stores/types";
+import { formatDate } from "src/utils/functions/formatDate";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { router } from "expo-router";
+import { Pressable } from "react-native";
 
 const FriendsGroups = () => {
+  const { groups, isLoading, isRefreshing, error, fetchGroups } =
+    useGroupsStore();
+
+  useEffect(() => {
+    fetchGroups();
+  }, []);
+
+  console.log(groups, "-<<<<<<groups");
   return (
     <YStack
       //   borderWidth={1}
@@ -19,23 +33,17 @@ const FriendsGroups = () => {
       <YStack borderColor={"red"} flex={1} pb={scale(80)}>
         <ScrollView
           showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={{
-            //   borderWidth: 1,
+            // borderWidth: 1,
             borderColor: "green",
             // gap: scale(15),
           }}
         >
           {/* <AccordionDemo /> */}
 
-          {billsData.map((bill, idx) => (
-            <GroupItem
-              key={idx}
-              iconColor={bill.iconColor}
-              icon={bill.icon}
-              title={bill.title}
-              amount={bill.amount}
-              time={bill.time}
-            />
+          {groups.map((group, idx) => (
+            <GroupItem key={idx} group={group} />
           ))}
         </ScrollView>
       </YStack>
@@ -44,99 +52,77 @@ const FriendsGroups = () => {
 };
 export default FriendsGroups;
 
-interface TransactionItemProps {
-  icon: string;
-  title: string;
-  amount: number;
-  time: string;
-  iconColor: string;
-}
+const GroupItem = ({ group }: { group: Group }) => {
+  const { name: groupName, balance, _id } = group;
+  const { net, amountOwed, amountToReceive } = balance;
 
-const GroupItem = ({
-  icon,
-  title,
-  amount,
-  time,
-  iconColor,
-}: TransactionItemProps) => {
-  const [accordionOpen, setAccordionOpen] = useState(false);
-
-  const toggleAccordion = () => {
-    setAccordionOpen(!accordionOpen);
+  const handleGroupPress = () => {
+    router.push({
+      pathname: "/groupDetails",
+      params: { groupId: _id },
+    });
   };
 
-  const AnimatedYStack = styled(YStack, {
-    name: "AnimatedYStack",
-    animation: "quicker",
-    layout: true,
-  });
-
   return (
-    <XStack
-      onPress={toggleAccordion}
-      gap={scale(20)}
-      borderBottomWidth={1}
-      borderColor={"$backgroundSecondary"}
-      items="center"
-      py={scale(20)}
-    >
-      <Stack
-        bg={"$backgroundSecondary"}
-        width={55}
-        height={55}
-        rounded={scale(10)}
-        justify="center"
+    <Pressable onPress={handleGroupPress}>
+      <XStack
+        gap={scale(20)}
+        borderBottomWidth={1}
+        borderColor={"$backgroundSecondary"}
         items="center"
+        py={scale(20)}
       >
-        <Feather name={icon} size={25} color={iconColor} />
-      </Stack>
-
-      {/* Group details with animated layout */}
-      <AnimatedYStack
-        onPress={toggleAccordion}
-        justify="center"
-        flex={1}
-        pressStyle={{ opacity: 0.6 }}
-      >
-        <MyText
-          color={"$textPrimary"}
-          fontSize={scale(16)}
-          style={{ fontFamily: "MPlusRounded700" }}
+        <Stack
+          bg={"$backgroundSecondary"}
+          width={55}
+          height={55}
+          rounded={scale(10)}
+          justify="center"
+          items="center"
         >
-          {title}
-        </MyText>
+          <FontAwesome name="group" size={25} color="#f1c40f" />
+        </Stack>
 
-        <AnimatePresence>
-          {accordionOpen && (
-            <YStack
-              key="extra-details"
-              animation="quicker"
-              enterStyle={{ opacity: 0, y: -5 }}
-              exitStyle={{ opacity: 0, y: -5 }}
-              opacity={1}
-              y={0}
+        <YStack justify="center" flex={1}>
+          <MyText
+            color={"$textPrimary"}
+            fontSize={scale(16)}
+            style={{ fontFamily: "MPlusRounded700" }}
+          >
+            {groupName}
+          </MyText>
+
+          <YStack>
+            <MyText
+              fontSize={scale(12)}
+              color={
+                amountOwed > 0
+                  ? "tomato"
+                  : amountToReceive > 0
+                  ? "green"
+                  : "gray"
+              }
             >
-              <MyText fontSize={scale(12)} color={"$textSecondary"}>
-                {time}
-              </MyText>
-              <MyText fontSize={scale(12)} color={"$textSecondary"}>
-                {time}
-              </MyText>
-            </YStack>
-          )}
-        </AnimatePresence>
-      </AnimatedYStack>
+              {amountOwed > 0
+                ? `You need to pay Rs. ${amountOwed}`
+                : amountToReceive > 0
+                ? `You are owed Rs. ${amountToReceive}`
+                : "No pending expenses"}
+            </MyText>
+          </YStack>
+        </YStack>
 
-      {/* Chevron icon */}
-      <Square
-        // borderWidth={1}
-        // borderColor={"red"}
-        animation="quick"
-        rotate={accordionOpen ? "-180deg" : "-90deg"}
-      >
-        <ChevronDown size="$1" />
-      </Square>
-    </XStack>
+        {/* Chevron icon */}
+        <Square
+          // borderWidth={1}
+          // borderColor={"red"}
+          animation="quick"
+          rotate={"-90deg"}
+        >
+          <ChevronDown size="$1" />
+        </Square>
+      </XStack>
+    </Pressable>
   );
 };
 

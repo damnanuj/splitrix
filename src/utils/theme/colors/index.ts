@@ -9,6 +9,8 @@ const themeColors = {
     BORDER_PRIMARY: "#707070" as const,
     BLACK: "#1E1E1E" as const,
     GREEN: "#008a20ff" as const,
+    SHIMMER_PRIMARY: "#2F2F2F" as const,
+    SHIMMER_SECONDARY: "#707070" as const,
   },
   light: {
     PRIMARY: "#FFF" as const,
@@ -21,6 +23,8 @@ const themeColors = {
     BLACK: "#1E1E1E" as const,
     BORDER_PRIMARY: "#707070" as const,
     GREEN: "#008a20ff" as const,
+    SHIMMER_PRIMARY: "#EDEDED" as const,
+    SHIMMER_SECONDARY: "#e0e0e0" as const,
   },
 };
 

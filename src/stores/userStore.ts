@@ -36,7 +36,7 @@ export const useUserStore = create<UserState>((set, get) => ({
 
       // Get current user from auth store
       const { authData } = useAuthStore.getState();
-      //   console.log(authData, "-<<<<<<authData");
+      // console.log(authData, "-<<<<<<authData");
       const currentUserId = authData?._id;
 
       if (!currentUserId) {
