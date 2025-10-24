@@ -6,14 +6,16 @@ import { scale } from "src/utils/functions/dimensions";
 import { Avatar } from "tamagui";
 import { useRouter } from "expo-router";
 import { useAuthStore } from "src/stores/authStore";
+import { useNotificationStore } from "src/stores/notificationStore";
+import ICONS from "src/utils/icons";
 
 const UserHeader = () => {
   const theme = useTheme();
-
   const router = useRouter();
-
   const { authData }: any = useAuthStore();
-  // console.log(authData, "sfdsfdfdfsdfsdfs");
+  const { unreadCount } = useNotificationStore();
+
+  console.log(unreadCount, "unreadCount");
 
   return (
     <XStack
@@ -26,10 +28,7 @@ const UserHeader = () => {
       <Avatar circular size={scale(50)}>
         <Avatar.Image
           accessibilityLabel="Nate Wienert"
-          src={
-            authData?.profilePicture ||
-            "https://newprofilepic.photo-cdn.net//assets/images/article/profile.jpg?90af0c8"
-          }
+          src={authData?.profilePicture || ICONS.defaultUser}
         />
         <Avatar.Fallback delayMs={600} backgroundColor="lightgray" />
       </Avatar>
@@ -51,16 +50,45 @@ const UserHeader = () => {
         </MyText>
       </YStack>
 
-      <Stack
+      <XStack
         onPress={() => {
           router.push("/notification");
         }}
         bg={"$backgroundSecondary"}
         p={scale(12)}
         rounded={scale(10)}
+        pressStyle={{ opacity: 0.8 }}
+        animation="quick"
+        items="center"
+        gap={scale(8)}
       >
         <FontAwesome5 name="bell" size={20} color={theme.textPrimary.val} />
-      </Stack>
+
+        {/* Unread count badge */}
+        {unreadCount > 0 && (
+          <Stack
+            position="absolute"
+            bg="$red9"
+            rounded={scale(10)}
+            width={scale(18)}
+            height={scale(18)}
+            items="center"
+            justify="center"
+            animation="bouncy"
+            px={scale(2)}
+            borderWidth={0}
+            style={{ top: scale(1), right: scale(1) }}
+          >
+            <MyText
+              color="white"
+              fontSize={scale(10)}
+              style={{ fontFamily: "MPlusRounded700" }}
+            >
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </MyText>
+          </Stack>
+        )}
+      </XStack>
     </XStack>
   );
 };

@@ -5,11 +5,13 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useAuthStore } from "src/stores/authStore";
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import ICONS from "src/utils/icons";
 export default function ProfileHeader() {
   const theme = useTheme();
   const router = useRouter();
   // const logout = useAuthStore((state) => state.logout);
   const { authData, logout }: any = useAuthStore();
+  console.log(authData, "-<<<<<<authData");
   const [logoutLoading, setLoogoutLoading] = useState(false);
 
   const handleLogout = async () => {
@@ -35,10 +37,7 @@ export default function ProfileHeader() {
         <Avatar circular size={scale(50)}>
           <Avatar.Image
             accessibilityLabel="Nate Wienert"
-            src={
-              authData?.profilePicture ||
-              "https://newprofilepic.photo-cdn.net//assets/images/article/profile.jpg?90af0c8"
-            }
+            src={authData?.profilePicture || ICONS.defaultUser}
           />
           <Avatar.Fallback delayMs={600} backgroundColor="lightgray" />
         </Avatar>

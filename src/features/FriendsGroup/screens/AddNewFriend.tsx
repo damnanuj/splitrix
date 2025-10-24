@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback, memo } from "react";
 import { YStack, XStack, Button, Avatar } from "tamagui";
 import { FlatList, ActivityIndicator, RefreshControl } from "react-native";
 import BackButtonWithHeader from "src/components/common/BackButtonWithHeader";
@@ -9,6 +9,7 @@ import { useUserStore } from "src/stores/userStore";
 import { useAuthStore } from "src/stores/authStore";
 import type { AppUser as User } from "src/stores/userStore";
 import LoaderWithText from "src/components/common/LoaderWithText";
+import { AddNewFriendSkeleton } from "../components/skeleton";
 
 const AddNewFriend = () => {
   const router = useRouter();
@@ -18,90 +19,92 @@ const AddNewFriend = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
 
-  const onRefresh = () => {
+  const onRefresh = useCallback(() => {
     fetchUsers({ refresh: true });
-  };
+  }, [fetchUsers]);
 
-  const handleAddFriend = async (userId: string) => {
-    await addAsFriend(userId);
-  };
+  const handleAddFriend = useCallback(
+    async (userId: string) => {
+      await addAsFriend(userId);
+    },
+    [addAsFriend]
+  );
 
-  const renderUserItem = ({ item }: { item: User }) => {
-    const isAdding = addingIds.has(item._id);
-    const currentUserId = authData?._id;
-    const isAlreadyFriend =
-      item.friends && currentUserId && item.friends.includes(currentUserId);
-    const avatarUrl =
-      item.profilePicture || "https://randomuser.me/api/portraits/men/10.jpg";
+  const renderUserItem = useCallback(
+    ({ item }: { item: User }) => {
+      const isAdding = addingIds.has(item._id);
+      const currentUserId = authData?._id;
+      const isAlreadyFriend =
+        item.friends && currentUserId && item.friends.includes(currentUserId);
+      const avatarUrl =
+        item.profilePicture || "https://randomuser.me/api/portraits/men/10.jpg";
 
-    return (
-      <XStack
-        gap={scale(20)}
-        items="center"
-        justify="space-between"
-        py={scale(15)}
-        borderBottomWidth={1}
-        borderColor="$backgroundSecondary"
-        // bg="$backgroundSecondary"
-      >
+      return (
         <XStack
           gap={scale(20)}
           items="center"
-          flex={1}
-          // borderWidth={1}
-          borderColor="red"
+          justify="space-between"
+          py={scale(15)}
+          px={scale(4)}
+          hoverStyle={{ bg: "$backgroundSecondary" }}
         >
-          <Avatar rounded={scale(10)} size={scale(50)}>
-            <Avatar.Image
-              accessibilityLabel={item.name || "User"}
-              src={avatarUrl}
-            />
-            <Avatar.Fallback delayMs={600} backgroundColor="lightgray" />
-          </Avatar>
-          <YStack flex={1}>
-            <MyText color="$textPrimary" fontSize={scale(16)} fontWeight="600">
-              {item.name || "Unknown User"}
-            </MyText>
-            <MyText color="$textSecondary" fontSize={scale(14)}>
-              {item.email || "No email"}
-            </MyText>
-          </YStack>
-        </XStack>
+          <XStack gap={scale(20)} items="center" flex={1}>
+            <Avatar rounded={scale(10)} size={scale(50)}>
+              <Avatar.Image
+                accessibilityLabel={item.name || "User"}
+                src={avatarUrl}
+              />
+              <Avatar.Fallback delayMs={600} backgroundColor="lightgray" />
+            </Avatar>
+            <YStack flex={1}>
+              <MyText
+                color="$textPrimary"
+                fontSize={scale(16)}
+                fontWeight="600"
+              >
+                {item.name || "Unknown User"}
+              </MyText>
+              <MyText color="$textSecondary" fontSize={scale(14)}>
+                {item.email || "No email"}
+              </MyText>
+            </YStack>
+          </XStack>
 
-        <Button
-          onPress={() => !isAlreadyFriend && handleAddFriend(item._id)}
-          bg={isAlreadyFriend ? "$accentGreen" : "$accentYellow"}
-          color="$textPrimary"
-          fontSize={scale(14)}
-          fontWeight="600"
-          p={scale(10)}
-          px={scale(15)}
-          rounded={scale(8)}
-          disabled={isAdding || !!isAlreadyFriend}
-          opacity={isAdding ? 0.6 : 1}
-          // width={"auto"}
-          width={scale(80)}
-        >
-          {isAdding ? (
-            <ActivityIndicator size="small" color="#000" />
-          ) : isAlreadyFriend ? (
-            "Added"
-          ) : (
-            "Add"
-          )}
-        </Button>
-      </XStack>
-    );
-  };
+          <Button
+            onPress={() => !isAlreadyFriend && handleAddFriend(item._id)}
+            bg={isAlreadyFriend ? "$accentGreen" : "$accentYellow"}
+            color="$textPrimary"
+            fontSize={scale(14)}
+            fontWeight="600"
+            p={scale(10)}
+            px={scale(15)}
+            rounded={scale(8)}
+            disabled={isAdding || !!isAlreadyFriend}
+            opacity={isAdding ? 0.6 : 1}
+            width={scale(80)}
+          >
+            {isAdding ? (
+              <ActivityIndicator size="small" color="#000" />
+            ) : isAlreadyFriend ? (
+              "Added"
+            ) : (
+              "Add"
+            )}
+          </Button>
+        </XStack>
+      );
+    },
+    [addingIds, authData?._id, handleAddFriend]
+  );
 
   return (
     <YStack bg="$background" flex={1} px={scale(25)} gap={scale(20)}>
       <BackButtonWithHeader title="Add New Friend" />
 
       {isLoading ? (
-        <LoaderWithText text="Loading users..." />
+        <AddNewFriendSkeleton />
       ) : (
         <>
           <YStack gap={scale(10)}>
@@ -137,7 +140,9 @@ const AddNewFriend = () => {
                 }
                 contentContainerStyle={{
                   paddingBottom: scale(20),
+                  gap: scale(8),
                 }}
+                ItemSeparatorComponent={() => <YStack height={scale(8)} />}
               />
             )}
           </YStack>

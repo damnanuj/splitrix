@@ -18,7 +18,8 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   setAuth: async (data: { token: string; user: User }) => {
     const { token, user } = data;
-    
+    console.log(data, "-<<<<<<user");
+
     // Store token and user data separately
     await AsyncStorage.setItem("TOKEN", JSON.stringify(token));
     await AsyncStorage.setItem("USER_DATA", JSON.stringify(user));

@@ -1,5 +1,4 @@
-import { TouchableOpacity, StyleSheet } from "react-native";
-import { BlurView } from "expo-blur";
+import { TouchableOpacity, StyleSheet, View as RNView } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -32,8 +31,7 @@ const BottomTabBar = ({ state, descriptors, navigation }) => {
   const theme = useTheme();
 
   return (
-    <BlurView
-      intensity={20}
+    <RNView
       style={[
         styles.container,
         { backgroundColor: theme.backgroundSecondary.val, overflow: "hidden" },
@@ -78,9 +76,13 @@ const BottomTabBar = ({ state, descriptors, navigation }) => {
             style={styles.tabItemWrapper}
           >
             {isFocused ? (
-              <BlurView
-                intensity={80}
-                tint="dark"
+              <LinearGradient
+                colors={[
+                  "rgba(255, 255, 255, 0.15)",
+                  "rgba(255, 255, 255, 0.05)",
+                ]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
                 style={styles.focusedBlurBackground}
               />
             ) : null}
@@ -108,7 +110,7 @@ const BottomTabBar = ({ state, descriptors, navigation }) => {
           </AnimatedTouchableOpacity>
         );
       })}
-    </BlurView>
+    </RNView>
   );
 
   function getIconByRouteName(routeName: string, color: string) {

@@ -1,5 +1,6 @@
 import { API_ENDPOINTS } from "src/config/api.config";
 import apiService from "./api.service";
+import { CreateGroup } from "src/stores/types";
 
 export const getUserData = async () => {
   const response = await apiService.get(API_ENDPOINTS.user.get);
@@ -26,5 +27,31 @@ export const addFriend = async (friendId: string) => {
 
 export const getFriendsList = async () => {
   const response = await apiService.get(API_ENDPOINTS.user.friendsList);
+  return response.data;
+};
+
+export const getGroups = async () => {
+  const response = await apiService.get(API_ENDPOINTS.group.mine);
+  console.log(response.data, "-<<<<<<getGroups");
+  return response.data;
+};
+
+export const createGroup = async (group: CreateGroup) => {
+  const response = await apiService.post(API_ENDPOINTS.group.create, group);
+  return response.data;
+};
+export const inviteToGroup = async (groupId: string, userId: string) => {
+  const response = await apiService.post(API_ENDPOINTS.group.invite, {
+    groupId,
+    userId,
+  });
+  return response.data;
+};
+
+export const inviteRespond = async (groupId: string, userId: string) => {
+  const response = await apiService.post(API_ENDPOINTS.group.inviteRespond, {
+    groupId,
+    userId,
+  });
   return response.data;
 };
