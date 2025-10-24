@@ -20,3 +20,8 @@ export const formatDate = (dateStr: string) => {
 
   return inputDate.toDateString(); // e.g., "Wed Jul 17 2024"
 };
+
+export const formatTime = (dateStr: string) => {
+  const date = new Date(dateStr);
+  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+};

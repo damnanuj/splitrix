@@ -2,11 +2,12 @@ import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { ScrollView } from "tamagui";
 import { YStack } from "tamagui";
-import { expenses } from "../notificationDummyData";
 import { NotificationItem } from "src/features/Notification/components/NotificationItem";
 import { scale } from "src/utils/functions/dimensions";
 import MyText from "src/components/customTabBars/styleComponents/MyText";
 import { formatDate } from "src/utils/functions/formatDate";
+import { expenses } from "../notificationDummyData";
+import { DummyNotificationItem } from "./dummyNotiItem";
 
 const ExpensesHistory = () => {
   return (
@@ -22,7 +23,7 @@ const ExpensesHistory = () => {
             </MyText>
 
             {items.map((item, index) => (
-              <NotificationItem key={index} {...item} />
+              <DummyNotificationItem key={index} {...item} />
             ))}
           </YStack>
         ))}

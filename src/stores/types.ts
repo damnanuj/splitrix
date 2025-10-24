@@ -69,6 +69,66 @@ export interface CreateGroup {
   description: string;
 }
 
+export interface Notification {
+  _id: string;
+  user: string; // Now just the user ID string
+  type:
+    | "invite_sent"
+    | "invite_accepted"
+    | "invite_declined"
+    | "expense_added"
+    | "expense_updated"
+    | "payment_received"
+    | "payment_sent";
+  title: string;
+  message: string;
+  data: {
+    groupId?: string;
+    groupName?: string;
+    groupDescription?: string;
+    groupAvatar?: string;
+    inviterId?: string;
+    inviterName?: string;
+    inviterEmail?: string;
+    inviterProfilePicture?: string;
+    inviteId?: string;
+    expenseId?: string;
+    amount?: number;
+    [key: string]: any;
+  };
+  readAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+export interface UnreadCountResponse {
+  success: boolean;
+  msg: string;
+  data: {
+    unreadCount: number;
+  };
+}
+
+export interface NotificationResponse {
+  success: boolean;
+  msg: string;
+  data: {
+    notifications: Notification[];
+    unreadCount: number;
+  };
+}
+
+export interface NotificationState {
+  notifications: Notification[];
+  unreadCount: number;
+  isLoading: boolean;
+  error: string | null;
+  fetchNotifications: () => Promise<void>;
+  fetchUnreadCount: () => Promise<void>;
+  clearError: () => void;
+}
+
 // {
 //   "_id": "68f6357cef754a62d1e6fc5f",
 //   "name": "Billionaires",

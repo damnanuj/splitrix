@@ -1,19 +1,14 @@
 import BackButtonWithHeader from "src/components/common/BackButtonWithHeader";
-import MyText from "src/components/customTabBars/styleComponents/MyText";
 import { scale } from "src/utils/functions/dimensions";
-import { ScrollView, Stack, useTheme, XStack, YStack } from "tamagui";
-import Feather from "@expo/vector-icons/Feather";
-import { formatDate } from "src/utils/functions/formatDate";
-import { NotificationItem } from "src/features/Notification/components/NotificationItem";
-import { expenses } from "./notificationDummyData";
-import ExpensesHistory from "./components/ExpensesHistory";
-
+import { YStack } from "tamagui";
+import { NotificationList } from "./components";
 
 const NotificationPage = () => {
   return (
     <YStack px={scale(25)} flex={1} bg={"$background"}>
       <BackButtonWithHeader title="Notifications" />
-      <ExpensesHistory />
+
+      <NotificationList />
     </YStack>
   );
 };

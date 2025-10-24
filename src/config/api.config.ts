@@ -17,4 +17,8 @@ export const API_ENDPOINTS = {
     invite: "/group/invite",
     inviteRespond: "/group/invite/respond",
   },
+  notification: {
+    list: "/notifications",
+    unreadCount: "/notifications/unread-count",
+  },
 };
