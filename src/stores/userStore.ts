@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { addFriend, getAllUsers } from "src/services/user.service";
 import { useAuthStore } from "./authStore";
+import { Friend } from "./types";
 
 export interface AppUser {
   _id: string;
@@ -78,6 +79,30 @@ export const useUserStore = create<UserState>((set, get) => ({
           return user;
         });
         set({ users: updatedUsers });
+
+        // Update friends store with the new friend
+        const { useFriendsStore } = await import("./friendsStore");
+        const friendsStore = useFriendsStore.getState();
+
+        // Find the user that was added as friend
+        const addedUser = updatedUsers.find((user) => user._id === userId);
+        if (addedUser) {
+          // Create a Friend object from the user data
+          const newFriend: Friend = {
+            _id: addedUser._id,
+            name: addedUser.name,
+            email: addedUser.email,
+            profilePicture: addedUser.profilePicture,
+            balance: {
+              net: 0,
+              status: "settled",
+              amount: 0,
+            },
+          };
+
+          // Add the friend to the friends store
+          friendsStore.addFriend(newFriend);
+        }
       }
     } catch (error) {
       console.error("addAsFriend error:", error);

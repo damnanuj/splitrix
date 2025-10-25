@@ -20,5 +20,7 @@ export const API_ENDPOINTS = {
   notification: {
     list: "/notifications",
     unreadCount: "/notifications/unread-count",
+    markAsRead: (id: string) => `/notifications/${id}/read`,
+    markAllAsRead: "/notifications/read-all",
   },
 };

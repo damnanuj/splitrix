@@ -7,7 +7,6 @@ const NotificationPage = () => {
   return (
     <YStack px={scale(25)} flex={1} bg={"$background"}>
       <BackButtonWithHeader title="Notifications" />
-
       <NotificationList />
     </YStack>
   );

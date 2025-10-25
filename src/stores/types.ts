@@ -23,6 +23,8 @@ export interface FriendsState {
   error: string | null;
   setFriends: (friends: Friend[]) => void;
   fetchFriends: (opts?: { refresh?: boolean }) => Promise<void>;
+  addFriend: (friend: Friend) => void;
+  refreshFriends: () => Promise<void>;
 }
 
 export interface Group {
@@ -124,9 +126,17 @@ export interface NotificationState {
   unreadCount: number;
   isLoading: boolean;
   error: string | null;
+  // New methods for TanStack Query integration
+  setNotifications: (notifications: Notification[]) => void;
+  updateNotifications: (
+    updater: (notifications: Notification[]) => Notification[]
+  ) => void;
+  setUnreadCount: (unreadCount: number) => void;
+  setError: (error: string | null) => void;
+  clearError: () => void;
+  // Legacy methods for backward compatibility
   fetchNotifications: () => Promise<void>;
   fetchUnreadCount: () => Promise<void>;
-  clearError: () => void;
 }
 
 // {

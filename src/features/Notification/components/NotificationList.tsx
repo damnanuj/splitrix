@@ -1,6 +1,6 @@
-import { useEffect } from "react";
 import { ScrollView, YStack } from "tamagui";
 import { useNotificationStore } from "src/stores/notificationStore";
+import { useNotifications } from "src/hooks/useNotificationQueries";
 import { NotificationItem } from "./NotificationItem";
 import { DateHeader } from "./DateHeader";
 import LoaderWithText from "src/components/common/LoaderWithText";
@@ -13,29 +13,28 @@ import {
 import ExpensesHistory from "./ExpensesHistory";
 
 export const NotificationList = () => {
-  const { notifications, isLoading, error, fetchNotifications, clearError } =
-    useNotificationStore();
-
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
+  const { notifications, error, clearError } = useNotificationStore();
+  const { data, isLoading, error: queryError, refetch } = useNotifications();
 
   if (isLoading) {
     return <LoaderWithText text="Loading notifications..." />;
   }
 
-  if (error) {
+  // Use error from either Zustand store or TanStack Query
+  const displayError = error || queryError?.message;
+
+  if (displayError) {
     return (
       <YStack flex={1} justify="center" items="center" gap={scale(20)}>
         <MyText color="$red10" style={{ fontFamily: "MPlusRounded500" }}>
-          {error}
+          {displayError}
         </MyText>
         <MyText
           color="$blue10"
           style={{ fontFamily: "MPlusRounded400" }}
           onPress={() => {
             clearError();
-            fetchNotifications();
+            refetch();
           }}
           cursor="pointer"
         >

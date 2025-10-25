@@ -34,4 +34,22 @@ export const useFriendsStore = create<FriendsState>((set, get) => ({
       set({ isLoading: false, isRefreshing: false });
     }
   },
+
+  addFriend: (friend: Friend) => {
+    const currentFriends = get().friends;
+    // Check if friend already exists to avoid duplicates
+    const friendExists = currentFriends.some((f) => f._id === friend._id);
+    if (!friendExists) {
+      set({ friends: [...currentFriends, friend] });
+    }
+  },
+
+  refreshFriends: async () => {
+    try {
+      const { data } = await getFriendsList();
+      set({ friends: data || [] });
+    } catch (error) {
+      console.error("refreshFriends error:", error);
+    }
+  },
 }));

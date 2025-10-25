@@ -7,6 +7,26 @@ export const getNotifications = async (): Promise<NotificationResponse> => {
   return response.data;
 };
 
+// Mark a specific notification as read
+// router.put("/:notificationId/read", isAuthenticated, markNotificationAsRead);
+
+// // Mark all notifications as read
+// router.put("/read-all", isAuthenticated, markAllNotificationsAsRead);
+
+export const markNotificationAsRead = async (notificationId: string): Promise<void> => {
+  const response = await apiService.put(
+    API_ENDPOINTS.notification.markAsRead(notificationId)
+  );
+  return response.data;
+};
+
+export const markAllNotificationsAsRead = async (): Promise<void> => {
+  const response = await apiService.put(
+    API_ENDPOINTS.notification.markAllAsRead
+  );
+  return response.data;
+};
+
 export const getUnreadCount = async (): Promise<UnreadCountResponse> => {
   try {
     const response = await apiService.get(
@@ -14,12 +34,7 @@ export const getUnreadCount = async (): Promise<UnreadCountResponse> => {
     );
     return response.data;
   } catch (error) {
-    // Fallback: if the endpoint doesn't exist, return 0
-    console.warn("Unread count endpoint not available, returning 0");
-    return {
-      success: false,
-      msg: "Unread count endpoint not available",
-      data: { unreadCount: 0 },
-    };
+    console.error("getUnreadCount error:", error);
+    throw error;
   }
 };
