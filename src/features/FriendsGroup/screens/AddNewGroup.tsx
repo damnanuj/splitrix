@@ -4,48 +4,18 @@ import BackButtonWithHeader from "src/components/common/BackButtonWithHeader";
 import MyText from "src/components/customTabBars/styleComponents/MyText";
 import { scale } from "src/utils/functions/dimensions";
 import { useRouter } from "expo-router";
+import { useToastController } from "@tamagui/toast";
 
 const AddNewGroup = () => {
   const router = useRouter();
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleCreateGroup = async () => {
-    if (!groupName.trim()) {
-      // Handle validation error
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      // TODO: Implement API call to create group
-      // const response = await createGroup({
-      //   name: groupName,
-      //   description: description,
-      //   memberIds: []
-      // });
-      
-      console.log("Creating group:", { groupName, description });
-      
-      // Navigate back after successful creation
-      router.back();
-    } catch (error) {
-      console.error("Error creating group:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const toast = useToastController();
 
   return (
-    <YStack
-      bg="$background"
-      flex={1}
-      px={scale(25)}
-      gap={scale(20)}
-    >
+    <YStack bg="$background" flex={1} px={scale(25)} gap={scale(20)}>
       <BackButtonWithHeader title="Add New Group" />
-      
+
       <YStack gap={scale(20)}>
         <YStack gap={scale(10)}>
           <MyText color="$textPrimary" fontSize={scale(16)}>
@@ -86,17 +56,18 @@ const AddNewGroup = () => {
 
       <YStack gap={scale(15)} mt={scale(20)}>
         <Button
-          onPress={handleCreateGroup}
+          onPress={() => {}}
           bg="$accentYellow"
           color="$textPrimary"
           fontSize={scale(16)}
           fontWeight="600"
           p={scale(15)}
           rounded={scale(10)}
-          disabled={!groupName.trim() || isLoading}
-          opacity={!groupName.trim() || isLoading ? 0.6 : 1}
+          // disabled={!groupName.trim() || createGroupMutation.isPending}
+          // opacity={!groupName.trim() || createGroupMutation.isPending ? 0.6 : 1}
         >
-          {isLoading ? "Creating..." : "Create Group"}
+          {/* {createGroupMutation.isPending ? "Creating..." : "Create Group"} */}
+          Create Group
         </Button>
 
         <Button
@@ -106,7 +77,7 @@ const AddNewGroup = () => {
           fontSize={scale(16)}
           p={scale(15)}
           rounded={scale(10)}
-          disabled={isLoading}
+          // disabled={createGroupMutation.isPending}
         >
           Cancel
         </Button>

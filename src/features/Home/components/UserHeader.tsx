@@ -8,12 +8,14 @@ import { useRouter } from "expo-router";
 import { useAuthStore } from "src/stores/authStore";
 import { useNotificationStore } from "src/stores/notificationStore";
 import ICONS from "src/utils/icons";
+import { useUnreadCount } from "src/hooks/notification/useUnreadCount";
 
 const UserHeader = () => {
   const theme = useTheme();
   const router = useRouter();
   const { authData }: any = useAuthStore();
-  const { unreadCount } = useNotificationStore();
+
+  const { data: unreadCount = 0, isLoading } = useUnreadCount();
 
   console.log(unreadCount, "unreadCount");
 
@@ -26,10 +28,7 @@ const UserHeader = () => {
       gap={scale(15)}
     >
       <Avatar circular size={scale(50)}>
-        <Avatar.Image
-          accessibilityLabel="Nate Wienert"
-          src={authData?.profilePicture || ICONS.defaultUser}
-        />
+        <Avatar.Image src={authData?.profilePicture || ICONS.defaultUser} />
         <Avatar.Fallback delayMs={600} backgroundColor="lightgray" />
       </Avatar>
       <YStack
@@ -65,7 +64,7 @@ const UserHeader = () => {
         <FontAwesome5 name="bell" size={20} color={theme.textPrimary.val} />
 
         {/* Unread count badge */}
-        {unreadCount > 0 && (
+        {unreadCount > 0 && !isLoading && (
           <Stack
             position="absolute"
             bg="$red9"
@@ -84,7 +83,7 @@ const UserHeader = () => {
               fontSize={scale(10)}
               style={{ fontFamily: "MPlusRounded700" }}
             >
-              {unreadCount > 9 ? "9+" : unreadCount}
+              {unreadCount > 9 ? "9+" : unreadCount || 0}
             </MyText>
           </Stack>
         )}

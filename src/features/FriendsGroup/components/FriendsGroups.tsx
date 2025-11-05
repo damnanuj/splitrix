@@ -6,22 +6,61 @@ import { AccordionDemo } from "./GroupsAccordion";
 import { ChevronDown } from "@tamagui/lucide-icons";
 import { useEffect, useState } from "react";
 import { AnimatePresence, styled } from "tamagui";
-import { useGroupsStore } from "src/stores/groupsStore";
 import { Group } from "src/stores/types";
 import { formatDate } from "src/utils/functions/formatDate";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { router } from "expo-router";
 import { Pressable } from "react-native";
+import { useGroups } from "src/hooks/group/useGroups";
 
 const FriendsGroups = () => {
-  const { groups, isLoading, isRefreshing, error, fetchGroups } =
-    useGroupsStore();
+  const { data, isLoading, error, refetch } = useGroups();
+  console.log("groups", data);
+  const displayGroups = Array.isArray(data) ? data : [];
+  if (isLoading) {
+    return (
+      <YStack flex={1} items="center" justify="center" gap={scale(20)}>
+        <MyText color="$textSecondary" fontSize={scale(16)}>
+          Loading groups...
+        </MyText>
+      </YStack>
+    );
+  }
 
-  useEffect(() => {
-    fetchGroups();
-  }, []);
+  if (error) {
+    return (
+      <YStack flex={1} items="center" justify="center" gap={scale(20)}>
+        <MyText color="$red10" fontSize={scale(16)}>
+          Failed to load groups
+        </MyText>
+        <MyText color="$textSecondary" fontSize={scale(14)}>
+          {error.message}
+        </MyText>
+      </YStack>
+    );
+  }
 
-  console.log(groups, "-<<<<<<groups");
+  if (displayGroups.length === 0) {
+    return (
+      <YStack flex={1} items="center" justify="center" gap={scale(20)}>
+        <MyText color="$textSecondary" fontSize={scale(16)}>
+          No groups found
+        </MyText>
+        <MyText color="$textSecondary" fontSize={scale(14)}>
+          Create a group or wait for invitations
+        </MyText>
+        <MyText
+          color="$blue10"
+          fontSize={scale(14)}
+          style={{ textDecorationLine: "underline" }}
+          onPress={() => refetch()}
+        >
+          Tap to refresh
+        </MyText>
+      </YStack>
+    );
+  }
+
   return (
     <YStack
       //   borderWidth={1}
@@ -42,7 +81,7 @@ const FriendsGroups = () => {
         >
           {/* <AccordionDemo /> */}
 
-          {groups.map((group, idx) => (
+          {displayGroups.map((group, idx) => (
             <GroupItem key={idx} group={group} />
           ))}
         </ScrollView>

@@ -4,6 +4,24 @@ export interface User {
   email: string;
   profilePicture?: string;
 }
+
+export interface GroupDetailsData {
+  group: Group;
+  userMembership: {
+    isMember: boolean;
+    isCreator: boolean;
+    membershipStatus: string;
+    hasPendingInvite: boolean;
+    pendingInviteId?: string;
+    balance: Balance;
+  };
+}
+
+export interface GroupDetailsResponse {
+  success: boolean;
+  msg: string;
+  data: GroupDetailsData;
+}
 export interface Friend {
   _id: string;
   name: string;
@@ -71,38 +89,23 @@ export interface CreateGroup {
   description: string;
 }
 
-export interface Notification {
+export type Notification = {
   _id: string;
-  user: string; // Now just the user ID string
-  type:
-    | "invite_sent"
-    | "invite_accepted"
-    | "invite_declined"
-    | "expense_added"
-    | "expense_updated"
-    | "payment_received"
-    | "payment_sent";
+  user: string;
+  type: string;
+  inviteId?: string;
+  groupId?: string;
+  inviterId?: string;
+  inviterName?: string;
+  groupName?: string;
+  groupAvatar?: string;
+  inviterProfilePicture?: string;
   title: string;
   message: string;
-  data: {
-    groupId?: string;
-    groupName?: string;
-    groupDescription?: string;
-    groupAvatar?: string;
-    inviterId?: string;
-    inviterName?: string;
-    inviterEmail?: string;
-    inviterProfilePicture?: string;
-    inviteId?: string;
-    expenseId?: string;
-    amount?: number;
-    [key: string]: any;
-  };
   readAt: string | null;
   createdAt: string;
   updatedAt: string;
-  __v: number;
-}
+};
 
 export interface UnreadCountResponse {
   success: boolean;
@@ -115,10 +118,13 @@ export interface UnreadCountResponse {
 export interface NotificationResponse {
   success: boolean;
   msg: string;
-  data: {
-    notifications: Notification[];
-    unreadCount: number;
-  };
+  data: Notification[];
+}
+
+export interface MarkAsReadResponse {
+  success: boolean;
+  msg: string;
+  notificationId: string;
 }
 
 export interface NotificationState {

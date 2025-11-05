@@ -8,43 +8,26 @@ import { ModalSheet } from "src/components/common/ModalSheet";
 import { useState } from "react";
 import { GroupInviteRespond } from "./GroupInviteRespond";
 import ICONS from "src/utils/icons";
+import { useMarkAsRead } from "src/hooks/notification/useMarkAsRead";
 
 interface NotificationItemProps {
   notification: Notification;
   onPress?: () => void;
 }
 
-const getNotificationIcon = (type: Notification["type"]) => {
-  switch (type) {
-    case "invite_sent":
-      return { name: "user-plus", color: "#3498db" };
-    case "invite_accepted":
-      return { name: "check-circle", color: "#2ecc71" };
-    case "invite_declined":
-      return { name: "x-circle", color: "#e74c3c" };
-    case "expense_added":
-      return { name: "plus-circle", color: "#f39c12" };
-    case "expense_updated":
-      return { name: "edit", color: "#9b59b6" };
-    case "payment_received":
-      return { name: "arrow-down-circle", color: "#2ecc71" };
-    case "payment_sent":
-      return { name: "arrow-up-circle", color: "#e74c3c" };
-    default:
-      return { name: "bell", color: "#95a5a6" };
-  }
-};
-
 export const NotificationItem = ({ notification }: NotificationItemProps) => {
-  const { name: iconName, color: iconColor } = getNotificationIcon(
-    notification.type
-  );
   const isUnread = !notification.readAt;
   const [sheetOpen, setSheetOpen] = useState(false);
+  const { mutate: markAsRead } = useMarkAsRead();
+
+  console.log(notification, "notification");
 
   const handlePress = () => {
     // Only open sheet for group invite notification
     setSheetOpen(true);
+    if (isUnread && notification?._id) {
+      markAsRead(notification._id);
+    }
   };
 
   return (
@@ -130,35 +113,34 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
             numberOfLines={2}
             lineHeight={scale(18)}
           >
-            {notification.message}
+            {notification?.message}
           </MyText>
 
           {/* Group Context */}
-          {notification.type === "invite_sent" &&
-            notification.data.groupName && (
-              <XStack
-                bg="$blue3"
-                px={scale(8)}
-                py={scale(4)}
-                rounded={scale(6)}
-                items="center"
-                gap={scale(4)}
+          {notification.type === "invite_sent" && notification?.groupId && (
+            <XStack
+              bg="$blue3"
+              px={scale(8)}
+              py={scale(4)}
+              rounded={scale(6)}
+              items="center"
+              gap={scale(4)}
+            >
+              {/* <Feather name="users" size={scale(12)} color="#3498db" /> */}
+              <Image
+                source={{ uri: ICONS.defaultGroup }}
+                width={scale(12)}
+                height={scale(12)}
+              />
+              <MyText
+                color="$blue11"
+                style={{ fontFamily: "MPlusRounded500" }}
+                fontSize={scale(11)}
               >
-                {/* <Feather name="users" size={scale(12)} color="#3498db" /> */}
-                <Image
-                  source={{ uri: ICONS.defaultGroup }}
-                  width={scale(12)}
-                  height={scale(12)}
-                />
-                <MyText
-                  color="$blue11"
-                  style={{ fontFamily: "MPlusRounded500" }}
-                  fontSize={scale(11)}
-                >
-                  {notification.data.groupName}
-                </MyText>
-              </XStack>
-            )}
+                {notification?.groupName}
+              </MyText>
+            </XStack>
+          )}
 
           {/* Time */}
           {/* <XStack items="center" gap={scale(6)}>
@@ -175,18 +157,20 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
       </XStack>
 
       {/* Modal Sheet for group invite notifications */}
-      {notification.type === "invite_sent" && (
-        <ModalSheet
-          snapPoints={[80]}
-          open={sheetOpen}
-          onOpenChange={setSheetOpen}
-          // animation="quick"
-          // overlayAnimation="quick"
-        >
-          {/* {sheetOpen && <GroupInviteRespond notification={notification} />} */}
-          <GroupInviteRespond notification={notification} />
-        </ModalSheet>
-      )}
+
+      <ModalSheet
+        snapPoints={[80]}
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        // animation="quick"
+        // overlayAnimation="quick"
+      >
+        {/* {sheetOpen && <GroupInviteRespond notification={notification} />} */}
+        <GroupInviteRespond
+          groupId={notification?.groupId || ""}
+          onClose={() => setSheetOpen(false)}
+        />
+      </ModalSheet>
     </>
   );
 };

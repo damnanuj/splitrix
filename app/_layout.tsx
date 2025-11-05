@@ -27,7 +27,6 @@ import {
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { ENV } from "src/utils/constants/env";
 import { useAuthStore } from "src/stores/authStore";
-import { useUnreadCount } from "src/hooks/useNotificationQueries";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -125,12 +124,6 @@ function RootLayoutNav() {
   const router = useRouter();
   // isLoading is true initially, while we check for a stored token
   const { authData, isLoading, initializeAuth } = useAuthStore();
-
-  // Use TanStack Query hook for unread count
-  // Only fetch when user is authenticated
-  const { refetch: refetchUnreadCount } = useUnreadCount({
-    enabled: !!authData && !isLoading, // Only fetch when user is authenticated
-  });
 
   useEffect(() => {
     // Check for a stored auth token when the app loads

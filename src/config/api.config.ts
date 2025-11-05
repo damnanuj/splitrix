@@ -16,6 +16,7 @@ export const API_ENDPOINTS = {
     mine: "/group/mine",
     invite: "/group/invite",
     inviteRespond: "/group/invite/respond",
+    getById: (id: string) => `/group/${id}`,
   },
   notification: {
     list: "/notifications",

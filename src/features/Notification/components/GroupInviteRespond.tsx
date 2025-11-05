@@ -1,42 +1,47 @@
 import MyText from "src/components/customTabBars/styleComponents/MyText";
 import { scale } from "src/utils/functions/dimensions";
 import { Button, Stack, XStack, YStack } from "tamagui";
-import { Notification } from "src/stores/types";
 import Feather from "@expo/vector-icons/Feather";
 import { formatDate, formatTime } from "src/utils/functions/formatDate";
 import ICONS from "src/utils/icons";
 import { Image } from "tamagui";
+import { useGroupDetails } from "src/hooks/group/useGroupDetails";
+import { router } from "expo-router";
+import { useRespondToInvite } from "src/hooks/group/useRespondToInvite";
 
 export const GroupInviteRespond = ({
-  notification,
+  groupId,
+  onClose,
 }: {
-  notification: Notification;
+  groupId: string;
+  onClose?: () => void;
 }) => {
-  console.log("notification", notification);
+  const { data: groupDetails, isLoading } = useGroupDetails(groupId);
+  // console.log("group details", groupDetails);
 
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((word) => word.charAt(0))
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
+  const pendingInviteId = groupDetails?.userMembership?.pendingInviteId;
+  const { mutate: respond, isPending } = useRespondToInvite(
+    groupId,
+    pendingInviteId
+  );
+
+  const handleVisitGroup = () => {
+    onClose?.();
+    router.push("/(tabs)/friends");
   };
 
-  const getMemberCount = () => {
-    return notification.data.groupMembers?.length || 1;
-  };
-
-  const getMemberNames = () => {
-    const members = notification.data.groupMembers || [];
-    if (members.length <= 2) {
-      return members.map((member) => member.name).join(", ");
-    }
-    return `${members
-      .slice(0, 2)
-      .map((member) => member.name)
-      .join(", ")} and ${members.length - 2} more`;
-  };
+  if (isLoading) {
+    return (
+      <YStack items="center" justify="center" py={scale(24)}>
+        <MyText
+          color="$textSecondary"
+          style={{ fontFamily: "MPlusRounded500" }}
+        >
+          Loading group details...
+        </MyText>
+      </YStack>
+    );
+  }
 
   return (
     <YStack gap={scale(24)} items="center" px={scale(20)}>
@@ -73,14 +78,6 @@ export const GroupInviteRespond = ({
           >
             Group Invitation
           </MyText>
-          <MyText
-            color="$textSecondary"
-            style={{ fontFamily: "MPlusRounded400", textAlign: "center" }}
-            fontSize={scale(13)}
-          >
-            {formatDate(notification.createdAt)} at{" "}
-            {formatTime(notification.createdAt)}
-          </MyText>
         </YStack>
       </YStack>
 
@@ -99,7 +96,7 @@ export const GroupInviteRespond = ({
           fontSize={scale(16)}
           lineHeight={scale(24)}
         >
-          {notification.message}
+          {groupDetails?.group?.description || "You have a group invitation"}
         </MyText>
       </YStack>
 
@@ -132,7 +129,7 @@ export const GroupInviteRespond = ({
               {/* <Feather name="users" size={scale(20)} color="#3498db" /> */}
               <Image
                 source={{
-                  uri: notification.data.groupAvatar || ICONS.defaultGroup,
+                  uri: groupDetails?.group?.avatar || ICONS.defaultGroup,
                 }}
                 width={scale(25)}
                 height={scale(25)}
@@ -145,15 +142,15 @@ export const GroupInviteRespond = ({
                 style={{ fontFamily: "MPlusRounded700" }}
                 fontSize={scale(18)}
               >
-                {notification.data.groupName || "Group"}
+                {groupDetails?.group?.name || "Group"}
               </MyText>
-              {notification.data.groupDescription && (
+              {groupDetails?.group?.description && (
                 <MyText
                   color="$textSecondary"
                   style={{ fontFamily: "MPlusRounded400" }}
                   fontSize={scale(14)}
                 >
-                  {notification.data.groupDescription}
+                  {groupDetails?.group?.description}
                 </MyText>
               )}
             </YStack>
@@ -173,7 +170,7 @@ export const GroupInviteRespond = ({
             <Image
               source={{
                 uri:
-                  notification.data.groupCreator?.profilePicture ||
+                  groupDetails?.group?.createdBy?.profilePicture ||
                   ICONS.defaultUser,
               }}
               width={scale(35)}
@@ -187,9 +184,7 @@ export const GroupInviteRespond = ({
                 style={{ fontFamily: "MPlusRounded600" }}
                 fontSize={scale(15)}
               >
-                {notification.data.groupCreator?.name ||
-                  notification.data.inviterName ||
-                  "Unknown"}
+                {groupDetails?.group?.createdBy?.name || "Unknown"}
               </MyText>
               {/* <MyText
                 color="$textSecondary"
@@ -200,6 +195,14 @@ export const GroupInviteRespond = ({
                   notification.data.inviterEmail ||
                   ""}
               </MyText> */}
+              <MyText
+                color="$textSecondary"
+                style={{ fontFamily: "MPlusRounded400" }}
+                fontSize={scale(13)}
+              >
+                Created on: {formatDate(groupDetails?.group?.createdAt || "")}{" "}
+                at {formatTime(groupDetails?.group?.createdAt || "")}
+              </MyText>
             </YStack>
           </XStack>
         </YStack>
@@ -212,7 +215,7 @@ export const GroupInviteRespond = ({
               style={{ fontFamily: "MPlusRounded500" }}
               fontSize={scale(13)}
             >
-              Members ({getMemberCount()})
+              Members ({groupDetails?.group?.members?.length || 0})
             </MyText>
             <XStack items="center" gap={scale(4)}>
               <Feather name="users" size={scale(14)} color="#3498db" />
@@ -221,7 +224,8 @@ export const GroupInviteRespond = ({
                 style={{ fontFamily: "MPlusRounded500" }}
                 fontSize={scale(12)}
               >
-                {getMemberCount()} member{getMemberCount() !== 1 ? "s" : ""}
+                {groupDetails?.group?.members?.length || 0} member
+                {groupDetails?.group?.members?.length !== 1 ? "s" : ""}
               </MyText>
             </XStack>
           </XStack>
@@ -232,79 +236,183 @@ export const GroupInviteRespond = ({
             fontSize={scale(14)}
             lineHeight={scale(20)}
           >
-            {getMemberNames()}
+            {groupDetails?.group?.members
+              ?.map((member) => member.name)
+              .join(", ") || ""}
           </MyText>
         </YStack>
       </YStack>
 
       {/* Action Buttons */}
-      <XStack gap={scale(16)} width="100%">
-        <Button
-          flex={1}
-          bg="$red9"
-          borderColor="$red8"
-          borderWidth={1}
-          rounded={scale(16)}
-          height={scale(56)}
-          py={scale(18)}
-          px={scale(16)}
-          pressStyle={{
-            bg: "$red10",
-            scale: 0.98,
-          }}
-          animation="quick"
-          shadowColor="$red8"
-          shadowOffset={{ width: 0, height: 4 }}
-          shadowOpacity={0.3}
-          shadowRadius={8}
-          elevation={4}
-        >
-          <XStack items="center" gap={scale(8)}>
-            <Feather name="x" size={scale(18)} color="white" />
+      {groupDetails?.userMembership?.isMember ? (
+        <YStack gap={scale(16)} width="100%">
+          {/* Success Message */}
+          <YStack
+            bg="$green2"
+            p={scale(16)}
+            rounded={scale(16)}
+            width="100%"
+            borderWidth={1}
+            borderColor="$green6"
+            items="center"
+            gap={scale(8)}
+          >
+            <XStack items="center" gap={scale(8)}>
+              <Feather name="check-circle" size={scale(20)} color="#22c55e" />
+              <MyText
+                color="$green11"
+                style={{ fontFamily: "MPlusRounded600" }}
+                fontSize={scale(16)}
+              >
+                Successfully joined the group!
+              </MyText>
+            </XStack>
             <MyText
-              color="white"
-              style={{ fontFamily: "MPlusRounded600" }}
-              fontSize={scale(15)}
-              lineHeight={scale(20)}
+              color="$green10"
+              style={{ fontFamily: "MPlusRounded400", textAlign: "center" }}
+              fontSize={scale(14)}
             >
-              Decline
+              You can now start splitting expenses with your friends
             </MyText>
-          </XStack>
-        </Button>
+          </YStack>
 
-        <Button
-          flex={1}
-          bg="$green9"
-          borderColor="$green8"
-          borderWidth={1}
+          {/* Visit Group Button */}
+          <Button
+            width="100%"
+            bg="$blue9"
+            borderColor="$blue8"
+            borderWidth={1}
+            rounded={scale(16)}
+            height={scale(56)}
+            py={scale(18)}
+            px={scale(16)}
+            pressStyle={{
+              bg: "$blue10",
+              scale: 0.98,
+            }}
+            animation="quick"
+            shadowColor="$blue8"
+            shadowOffset={{ width: 0, height: 4 }}
+            shadowOpacity={0.3}
+            shadowRadius={8}
+            elevation={4}
+            onPress={handleVisitGroup}
+          >
+            <XStack items="center" gap={scale(8)}>
+              <Feather name="users" size={scale(18)} color="white" />
+              <MyText
+                color="white"
+                style={{ fontFamily: "MPlusRounded600" }}
+                fontSize={scale(15)}
+                lineHeight={scale(20)}
+              >
+                Visit Group
+              </MyText>
+            </XStack>
+          </Button>
+        </YStack>
+      ) : groupDetails?.userMembership?.hasPendingInvite ? (
+        <XStack gap={scale(16)} width="100%">
+          <Button
+            flex={1}
+            bg="$red9"
+            borderColor="$red8"
+            borderWidth={1}
+            rounded={scale(16)}
+            height={scale(56)}
+            py={scale(18)}
+            px={scale(16)}
+            pressStyle={{
+              bg: "$red10",
+              scale: 0.98,
+            }}
+            animation="quick"
+            shadowColor="$red8"
+            shadowOffset={{ width: 0, height: 4 }}
+            shadowOpacity={0.3}
+            shadowRadius={8}
+            elevation={4}
+            disabled={isPending}
+            onPress={() => respond("declined")}
+          >
+            <XStack items="center" gap={scale(8)}>
+              <Feather name="x" size={scale(18)} color="white" />
+              <MyText
+                color="white"
+                style={{ fontFamily: "MPlusRounded600" }}
+                fontSize={scale(15)}
+                lineHeight={scale(20)}
+              >
+                Decline
+              </MyText>
+            </XStack>
+          </Button>
+
+          <Button
+            flex={1}
+            bg="$green9"
+            borderColor="$green8"
+            borderWidth={1}
+            rounded={scale(16)}
+            height={scale(56)}
+            py={scale(18)}
+            px={scale(16)}
+            pressStyle={{
+              bg: "$green10",
+              scale: 0.98,
+            }}
+            animation="quick"
+            shadowColor="$green8"
+            shadowOffset={{ width: 0, height: 4 }}
+            shadowOpacity={0.3}
+            shadowRadius={8}
+            elevation={4}
+            disabled={isPending}
+            onPress={() => respond("accepted")}
+          >
+            <XStack items="center" gap={scale(8)}>
+              <Feather name="check" size={scale(18)} color="white" />
+              <MyText
+                color="white"
+                style={{ fontFamily: "MPlusRounded600" }}
+                fontSize={scale(15)}
+                lineHeight={scale(20)}
+              >
+                Accept
+              </MyText>
+            </XStack>
+          </Button>
+        </XStack>
+      ) : groupDetails?.userMembership?.membershipStatus === "declined" ? (
+        <YStack
+          bg="$backgroundSecondary"
+          p={scale(16)}
           rounded={scale(16)}
-          height={scale(56)}
-          py={scale(18)}
-          px={scale(16)}
-          pressStyle={{
-            bg: "$green10",
-            scale: 0.98,
-          }}
-          animation="quick"
-          shadowColor="$green8"
-          shadowOffset={{ width: 0, height: 4 }}
-          shadowOpacity={0.3}
-          shadowRadius={8}
-          elevation={4}
+          width="100%"
+          borderWidth={1}
+          borderColor="$borderColor"
+          items="center"
+          gap={scale(8)}
         >
           <XStack items="center" gap={scale(8)}>
-            <Feather name="check" size={scale(18)} color="white" />
+            <Feather name="x-circle" size={scale(20)} color="#6b7280" />
             <MyText
-              color="white"
+              color="$textPrimary"
               style={{ fontFamily: "MPlusRounded600" }}
-              fontSize={scale(15)}
-              lineHeight={scale(20)}
+              fontSize={scale(16)}
             >
-              Accept
+              Invitation declined
             </MyText>
           </XStack>
-        </Button>
-      </XStack>
+          <MyText
+            color="$textSecondary"
+            style={{ fontFamily: "MPlusRounded400", textAlign: "center" }}
+            fontSize={scale(14)}
+          >
+            You can still join this group later if you change your mind
+          </MyText>
+        </YStack>
+      ) : null}
     </YStack>
   );
 };

@@ -7,14 +7,41 @@ import BackButtonWithHeader from "../../../components/common/BackButtonWithHeade
 import { Group } from "src/stores/types";
 import { formatDate } from "src/utils/functions/formatDate";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { useGroupsStore } from "src/stores/groupsStore";
+import { useGroups } from "src/hooks/group/useGroups";
+import { useGroupDetails } from "src/hooks/group/useGroupDetails";
 
 const GroupDetailsScreen = () => {
   const { groupId } = useLocalSearchParams<{ groupId: string }>();
-  const { groups } = useGroupsStore();
 
-  // Find the group by ID
-  const group = groups.find((g) => g._id === groupId);
+  const { data: group, isLoading, error } = useGroupDetails(groupId);
+  if (isLoading) {
+    return (
+      <YStack flex={1} bg="$background" justify="center" items="center">
+        <MyText color="$textSecondary" fontSize={scale(16)}>
+          Loading group details...
+        </MyText>
+      </YStack>
+    );
+  }
+
+  if (error) {
+    return (
+      <YStack
+        flex={1}
+        bg="$background"
+        justify="center"
+        items="center"
+        gap={scale(10)}
+      >
+        <MyText color="$red10" fontSize={scale(16)}>
+          Failed to load group
+        </MyText>
+        <MyText color="$textSecondary" fontSize={scale(14)}>
+          {error.message}
+        </MyText>
+      </YStack>
+    );
+  }
 
   if (!group) {
     return (
