@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { XStack, YStack } from "tamagui";
 import { scale } from "src/utils/functions/dimensions";
-import ShimmerSkeleton from "./ShimmerSkeleton";
+import ShimmerSkeleton from "../../../../components/common/ShimmerSkeleton";
 
 interface SkeletonItemProps {
   delay?: number;

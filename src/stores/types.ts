@@ -13,7 +13,7 @@ export interface GroupDetailsData {
     membershipStatus: string;
     hasPendingInvite: boolean;
     pendingInviteId?: string;
-    balance: Balance;
+    balance: Balance | null;
   };
 }
 

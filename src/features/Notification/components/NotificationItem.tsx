@@ -165,11 +165,13 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
         // animation="quick"
         // overlayAnimation="quick"
       >
-        {/* {sheetOpen && <GroupInviteRespond notification={notification} />} */}
-        <GroupInviteRespond
-          groupId={notification?.groupId || ""}
-          onClose={() => setSheetOpen(false)}
-        />
+        {sheetOpen && (
+          <GroupInviteRespond
+            groupId={notification?.groupId || ""}
+            notificationReceivedAt={notification?.createdAt || ""}
+            onClose={() => setSheetOpen(false)}
+          />
+        )}
       </ModalSheet>
     </>
   );

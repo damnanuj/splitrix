@@ -15,7 +15,7 @@ import { ScrollView } from "react-native";
 import MyText from "src/components/customTabBars/styleComponents/MyText";
 import { scale } from "src/utils/functions/dimensions";
 import themeColors from "src/utils/theme/colors";
-import { Check as CheckIcon } from "@tamagui/lucide-icons";
+import { Check as CheckIcon, Eye, EyeOff } from "@tamagui/lucide-icons";
 import { Label } from "tamagui";
 import {
   GoogleSignin,
@@ -136,6 +136,7 @@ function SigninForm() {
   });
 
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (name: string, value: string) => {
     const updatedForm = {
@@ -174,7 +175,7 @@ function SigninForm() {
 
   const setAuth = useAuthStore((state) => state.setAuth);
 
-  const { mutate, isPending } = useMutation({ 
+  const { mutate, isPending } = useMutation({
     mutationFn: loginService,
     mutationKey: ["login"],
     onError: (error) => {
@@ -248,26 +249,59 @@ function SigninForm() {
           <MyText color={"$textPrimary"} fontSize={scale(16)}>
             Password
           </MyText>
-          <Input
-            placeholderTextColor={"$textSecondary"}
-            focusStyle={{ borderColor: theme.accentYellow }}
-            value={signInForm.password}
-            onChangeText={(text) => handleChange("password", text)}
-            htmlFor="password"
-            bg={"transparent"}
-            placeholder="Enter Your Password"
-            secureTextEntry
-            width="100%"
-            height={scale(50)}
-            rounded={scale(8)}
-            borderWidth={scale(1.5)}
-            borderColor={errors.password ? "red" : "$borderPrimary"}
-            style={{
-              fontFamily: "MPlusRounded500",
-              fontSize: scale(14),
-              color: theme.textPrimary.val,
-            }}
-          />
+          <Stack position="relative" width="100%">
+            <Input
+              placeholderTextColor={"$textSecondary"}
+              focusStyle={{ borderColor: theme.accentYellow }}
+              value={signInForm.password}
+              onChangeText={(text) => handleChange("password", text)}
+              htmlFor="password"
+              bg={"transparent"}
+              placeholder="Enter Your Password"
+              secureTextEntry={!showPassword}
+              width="100%"
+              height={scale(50)}
+              rounded={scale(8)}
+              borderWidth={scale(1.5)}
+              borderColor={errors.password ? "red" : "$borderPrimary"}
+              style={{
+                fontFamily: "MPlusRounded500",
+                fontSize: scale(14),
+                color: theme.textPrimary.val,
+                paddingRight: scale(50),
+              }}
+            />
+            <Stack
+              style={{
+                position: "absolute",
+                right: scale(10),
+                top: 0,
+                bottom: 0,
+                width: scale(40),
+                height: scale(50),
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Button
+                unstyled
+                bg="transparent"
+                onPress={() => setShowPassword(!showPassword)}
+                pressStyle={{ opacity: 0.7 }}
+                animation="quick"
+                width="100%"
+                height="100%"
+                items="center"
+                justify="center"
+              >
+                {showPassword ? (
+                  <Eye size={scale(20)} color={theme.textSecondary.val} />
+                ) : (
+                  <EyeOff size={scale(20)} color={theme.textSecondary.val} />
+                )}
+              </Button>
+            </Stack>
+          </Stack>
           {errors.password && <MyText color={"red"}>{errors.password}</MyText>}
         </YStack>
         <XStack width="100%" items={"center"} justify={"space-between"}>

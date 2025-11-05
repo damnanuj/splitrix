@@ -1,19 +1,17 @@
 import React from "react";
-import { ScrollView, XStack, YStack, Stack, Square, Avatar } from "tamagui";
-import { useLocalSearchParams, router } from "expo-router";
+import { ScrollView, XStack, YStack, Stack, Avatar } from "tamagui";
+import { useLocalSearchParams } from "expo-router";
 import { scale } from "src/utils/functions/dimensions";
 import MyText from "../../../components/customTabBars/styleComponents/MyText";
 import BackButtonWithHeader from "../../../components/common/BackButtonWithHeader";
-import { Group } from "src/stores/types";
 import { formatDate } from "src/utils/functions/formatDate";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { useGroups } from "src/hooks/group/useGroups";
 import { useGroupDetails } from "src/hooks/group/useGroupDetails";
 
 const GroupDetailsScreen = () => {
   const { groupId } = useLocalSearchParams<{ groupId: string }>();
 
-  const { data: group, isLoading, error } = useGroupDetails(groupId);
+  const { data: groupData, isLoading, error } = useGroupDetails(groupId);
   if (isLoading) {
     return (
       <YStack flex={1} bg="$background" justify="center" items="center">
@@ -43,7 +41,7 @@ const GroupDetailsScreen = () => {
     );
   }
 
-  if (!group) {
+  if (!groupData?.group) {
     return (
       <YStack flex={1} bg="$background" justify="center" items="center">
         <MyText color="$textPrimary" fontSize={scale(16)}>
@@ -53,8 +51,9 @@ const GroupDetailsScreen = () => {
     );
   }
 
-  const { name, description, createdBy, members, avatar, createdAt, balance } =
-    group;
+  const { name, description, createdBy, members, avatar, createdAt } =
+    groupData.group;
+  const balance = groupData.userMembership?.balance;
 
   return (
     <YStack bg="$background" flex={1} px={scale(25)} gap={scale(20)}>
@@ -111,38 +110,40 @@ const GroupDetailsScreen = () => {
             </YStack>
 
             {/* Balance Information */}
-            <YStack
-              bg="$background"
-              p={scale(15)}
-              rounded={scale(10)}
-              width="100%"
-              items="center"
-            >
-              <MyText
-                color="$textSecondary"
-                fontSize={scale(12)}
-                style={{ fontFamily: "MPlusRounded500" }}
+            {balance && (
+              <YStack
+                bg="$background"
+                p={scale(15)}
+                rounded={scale(10)}
+                width="100%"
+                items="center"
               >
-                Your Balance
-              </MyText>
-              <MyText
-                color={
-                  balance.amountOwed > 0
-                    ? "tomato"
+                <MyText
+                  color="$textSecondary"
+                  fontSize={scale(12)}
+                  style={{ fontFamily: "MPlusRounded500" }}
+                >
+                  Your Balance
+                </MyText>
+                <MyText
+                  color={
+                    balance.amountOwed > 0
+                      ? "tomato"
+                      : balance.amountToReceive > 0
+                      ? "green"
+                      : "$textPrimary"
+                  }
+                  fontSize={scale(18)}
+                  style={{ fontFamily: "MPlusRounded700" }}
+                >
+                  {balance.amountOwed > 0
+                    ? `You owe Rs. ${balance.amountOwed}`
                     : balance.amountToReceive > 0
-                    ? "green"
-                    : "$textPrimary"
-                }
-                fontSize={scale(18)}
-                style={{ fontFamily: "MPlusRounded700" }}
-              >
-                {balance.amountOwed > 0
-                  ? `You owe Rs. ${balance.amountOwed}`
-                  : balance.amountToReceive > 0
-                  ? `You are owed Rs. ${balance.amountToReceive}`
-                  : "All settled up"}
-              </MyText>
-            </YStack>
+                    ? `You are owed Rs. ${balance.amountToReceive}`
+                    : "All settled up"}
+                </MyText>
+              </YStack>
+            )}
           </YStack>
 
           {/* Group Information */}

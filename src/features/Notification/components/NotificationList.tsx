@@ -23,7 +23,7 @@ export const NotificationList = () => {
   if (isError) {
     return <MyText color="$red10">{error?.message}</MyText>;
   }
-  6;
+
   if (notifications?.length === 0) {
     return (
       <YStack flex={1} justify="center" items="center" gap={scale(20)}>

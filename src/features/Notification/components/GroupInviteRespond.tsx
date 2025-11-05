@@ -1,6 +1,6 @@
 import MyText from "src/components/customTabBars/styleComponents/MyText";
 import { scale } from "src/utils/functions/dimensions";
-import { Button, Stack, XStack, YStack } from "tamagui";
+import { Button, Stack, useTheme, XStack, YStack } from "tamagui";
 import Feather from "@expo/vector-icons/Feather";
 import { formatDate, formatTime } from "src/utils/functions/formatDate";
 import ICONS from "src/utils/icons";
@@ -8,17 +8,20 @@ import { Image } from "tamagui";
 import { useGroupDetails } from "src/hooks/group/useGroupDetails";
 import { router } from "expo-router";
 import { useRespondToInvite } from "src/hooks/group/useRespondToInvite";
+import GroupInviteRespondSkeleton from "./skeleton/GroupInviteRespondSkeleton";
 
 export const GroupInviteRespond = ({
   groupId,
   onClose,
+  notificationReceivedAt,
 }: {
   groupId: string;
   onClose?: () => void;
+  notificationReceivedAt?: string;
 }) => {
   const { data: groupDetails, isLoading } = useGroupDetails(groupId);
   // console.log("group details", groupDetails);
-
+  const theme = useTheme();
   const pendingInviteId = groupDetails?.userMembership?.pendingInviteId;
   const { mutate: respond, isPending } = useRespondToInvite(
     groupId,
@@ -27,26 +30,31 @@ export const GroupInviteRespond = ({
 
   const handleVisitGroup = () => {
     onClose?.();
-    router.push("/(tabs)/friends");
+    router.push({
+      pathname: "/groupDetails",
+      params: { groupId },
+    });
   };
 
   if (isLoading) {
-    return (
-      <YStack items="center" justify="center" py={scale(24)}>
-        <MyText
-          color="$textSecondary"
-          style={{ fontFamily: "MPlusRounded500" }}
-        >
-          Loading group details...
-        </MyText>
-      </YStack>
-    );
+    return <GroupInviteRespondSkeleton />;
   }
 
   return (
-    <YStack gap={scale(24)} items="center" px={scale(20)}>
+    <YStack
+      gap={scale(24)}
+      items="center"
+      px={scale(20)}
+      // borderWidth={1}
+      borderColor="blue"
+    >
       {/* Header with Icon and Title */}
-      <YStack items="center" gap={scale(16)}>
+      <YStack
+        items="center"
+        gap={scale(16)}
+        // borderWidth={1}
+        borderColor="green"
+      >
         <Stack
           bg="$blue4"
           width={scale(80)}
@@ -70,7 +78,7 @@ export const GroupInviteRespond = ({
           />
         </Stack>
 
-        <YStack items="center" gap={scale(4)}>
+        <YStack items="center" borderColor="red">
           <MyText
             color="$textPrimary"
             style={{ fontFamily: "MPlusRounded700", textAlign: "center" }}
@@ -78,11 +86,19 @@ export const GroupInviteRespond = ({
           >
             Group Invitation
           </MyText>
+          <MyText
+            color="$textSecondary"
+            style={{ fontFamily: "MPlusRounded400" }}
+            fontSize={scale(13)}
+          >
+            Received on: {formatDate(notificationReceivedAt || "")} at{" "}
+            {formatTime(notificationReceivedAt || "")}
+          </MyText>
         </YStack>
       </YStack>
 
       {/* Invitation Message */}
-      <YStack
+      {/* <YStack
         bg="$blue2"
         p={scale(16)}
         rounded={scale(16)}
@@ -98,7 +114,7 @@ export const GroupInviteRespond = ({
         >
           {groupDetails?.group?.description || "You have a group invitation"}
         </MyText>
-      </YStack>
+      </YStack> */}
 
       {/* Group Details Card */}
       <YStack
@@ -272,38 +288,42 @@ export const GroupInviteRespond = ({
               style={{ fontFamily: "MPlusRounded400", textAlign: "center" }}
               fontSize={scale(14)}
             >
-              You can now start splitting expenses with your friends
+              You can now start splitting expenses
             </MyText>
           </YStack>
 
           {/* Visit Group Button */}
           <Button
             width="100%"
-            bg="$blue9"
-            borderColor="$blue8"
-            borderWidth={1}
+            bg="$accentYellow"
+            // borderColor="$blue8"
+            // borderWidth={1}
             rounded={scale(16)}
             height={scale(56)}
-            py={scale(18)}
-            px={scale(16)}
+            // py={scale(18)}
+            // px={scale(16)}
             pressStyle={{
-              bg: "$blue10",
+              bg: "$accentYellowPressed",
               scale: 0.98,
             }}
-            animation="quick"
-            shadowColor="$blue8"
-            shadowOffset={{ width: 0, height: 4 }}
-            shadowOpacity={0.3}
-            shadowRadius={8}
-            elevation={4}
+            // animation="medium"
+            // shadowColor="$blue8"
+            // shadowOffset={{ width: 0, height: 4 }}
+            // shadowOpacity={0.3}
+            // shadowRadius={8}
+            // elevation={4}
             onPress={handleVisitGroup}
           >
             <XStack items="center" gap={scale(8)}>
-              <Feather name="users" size={scale(18)} color="white" />
+              <Feather
+                name="users"
+                size={scale(18)}
+                color={theme.textPrimary.val}
+              />
               <MyText
-                color="white"
-                style={{ fontFamily: "MPlusRounded600" }}
-                fontSize={scale(15)}
+                color="$textPrimary"
+                style={{ fontFamily: "MPlusRounded700" }}
+                fontSize={scale(14)}
                 lineHeight={scale(20)}
               >
                 Visit Group
