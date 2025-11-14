@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+import { RefreshControl } from "react-native";
 import { ScrollView, YStack } from "tamagui";
 import { NotificationItem } from "./NotificationItem";
 import { DateHeader } from "./DateHeader";
@@ -12,9 +14,20 @@ import ExpensesHistory from "./ExpensesHistory";
 import { useNotifications } from "src/hooks/notification/useNotifications";
 
 export const NotificationList = () => {
-  const { data: notifications, isLoading, isError, error } = useNotifications();
+  const {
+    data: notifications,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    isFetching,
+  } = useNotifications();
 
-  // console.log(notifications[0], "notifications");
+  const onRefresh = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  // console.log(notifications, "notifications");
 
   if (isLoading) {
     return <LoaderWithText text="Loading notifications..." />;
@@ -26,20 +39,35 @@ export const NotificationList = () => {
 
   if (notifications?.length === 0) {
     return (
-      <YStack flex={1} justify="center" items="center" gap={scale(20)}>
-        <MyText
-          color="$textSecondary"
-          style={{ fontFamily: "MPlusRounded500" }}
-        >
-          No notifications yet
-        </MyText>
-        <MyText
-          color="$textSecondary"
-          style={{ fontFamily: "MPlusRounded400" }}
-        >
-          You'll see notifications here when you receive them
-        </MyText>
-      </YStack>
+      <ScrollView
+        contentContainerStyle={{
+          flex: 1,
+        }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isFetching}
+            onRefresh={onRefresh}
+            tintColor="#FFD700"
+            colors={["#FFD700"]}
+          />
+        }
+      >
+        <YStack flex={1} justify="center" items="center" gap={scale(20)}>
+          <MyText
+            color="$textSecondary"
+            style={{ fontFamily: "MPlusRounded500" }}
+          >
+            No notifications yet
+          </MyText>
+          <MyText
+            color="$textSecondary"
+            style={{ fontFamily: "MPlusRounded400" }}
+          >
+            You'll see notifications here when you receive them
+          </MyText>
+        </YStack>
+      </ScrollView>
     );
   }
 
@@ -48,7 +76,19 @@ export const NotificationList = () => {
   const sortedDateKeys = getSortedDateKeys(groupedNotifications);
 
   return (
-    <ScrollView flex={1} showsVerticalScrollIndicator={false} pb={scale(20)}>
+    <ScrollView
+      flex={1}
+      showsVerticalScrollIndicator={false}
+      pb={scale(20)}
+      refreshControl={
+        <RefreshControl
+          refreshing={isFetching}
+          onRefresh={onRefresh}
+          tintColor="#FFD700"
+          colors={["#FFD700"]}
+        />
+      }
+    >
       <YStack gap={scale(16)}>
         {sortedDateKeys.map((dateKey) => (
           <YStack key={dateKey} gap={scale(8)}>

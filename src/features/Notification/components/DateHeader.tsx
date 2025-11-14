@@ -40,9 +40,9 @@ export const DateHeader = ({
           color={getDateColor(dateLabel)}
         />
         <MyText
-          color="$textPrimary"
+          color="$textSecondary"
           style={{ fontFamily: "MPlusRounded700" }}
-          fontSize={scale(16)}
+          fontSize={scale(13)}
         >
           {dateLabel}
         </MyText>

@@ -8,7 +8,7 @@ const BackButtonWithHeader = ({ title = "Provide a title prop" }) => {
   const router = useRouter();
   return (
     <XStack
-      //   borderWidth={1}
+      // borderWidth={1}
       borderColor={"red"}
     >
       <XStack

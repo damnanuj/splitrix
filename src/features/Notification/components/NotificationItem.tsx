@@ -24,7 +24,9 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
 
   const handlePress = () => {
     // Only open sheet for group invite notification
-    setSheetOpen(true);
+    if (notification.type === "group_invite") {
+      setSheetOpen(true);
+    }
     if (isUnread && notification?._id) {
       markAsRead(notification._id);
     }

@@ -12,6 +12,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { router } from "expo-router";
 import { Pressable } from "react-native";
 import { useGroups } from "src/hooks/group/useGroups";
+import GroupsListSkeleton from "./skeleton/GroupsListSkeleton";
 
 const FriendsGroups = () => {
   const { data, isLoading, error, refetch } = useGroups();
@@ -19,10 +20,26 @@ const FriendsGroups = () => {
   const displayGroups = Array.isArray(data) ? data : [];
   if (isLoading) {
     return (
-      <YStack flex={1} items="center" justify="center" gap={scale(20)}>
-        <MyText color="$textSecondary" fontSize={scale(16)}>
-          Loading groups...
-        </MyText>
+      <YStack
+        //   borderWidth={1}
+        borderColor={"red"}
+        flex={1}
+        //   pb={scale(80)}
+        gap={scale(20)}
+      >
+        <YStack borderColor={"red"} flex={1} pb={scale(80)}>
+          <ScrollView
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              // borderWidth: 1,
+              borderColor: "green",
+              // gap: scale(15),
+            }}
+          >
+            <GroupsListSkeleton />
+          </ScrollView>
+        </YStack>
       </YStack>
     );
   }
