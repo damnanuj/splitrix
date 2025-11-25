@@ -44,6 +44,11 @@ export const useFriendsStore = create<FriendsState>((set, get) => ({
     }
   },
 
+  removeFriend: (friendId: string) => {
+    const currentFriends = get().friends;
+    set({ friends: currentFriends.filter((f) => f._id !== friendId) });
+  },
+
   refreshFriends: async () => {
     try {
       const { data } = await getFriendsList();

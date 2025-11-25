@@ -105,6 +105,8 @@ function SigninForm() {
 
         const data = await googleLoginService({ email, name, photo });
 
+        // console.log(data.token, "-<<<<<<data");
+
         if (data.success) {
           await setAuth({
             token: data.token,

@@ -1,15 +1,14 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   ScrollView,
   XStack,
   YStack,
   Stack,
   Avatar,
-  Separator,
   Image,
   useTheme,
 } from "tamagui";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { scale } from "src/utils/functions/dimensions";
 import MyText from "../../../components/customTabBars/styleComponents/MyText";
 import BackButtonWithHeader from "../../../components/common/BackButtonWithHeader";
@@ -17,40 +16,12 @@ import { formatDate } from "src/utils/functions/formatDate";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useGroupDetails } from "src/hooks/group/useGroupDetails";
 import { ModalSheet } from "src/components/common/ModalSheet";
-
-const mockSplitHistory = [
-  {
-    id: "1",
-    date: "13",
-    month: "Nov",
-    title: "sunscreen mask",
-    subtitle: "Pavan Paid ₹200",
-    involvement: "Not involved",
-  },
-  {
-    id: "2",
-    date: "11",
-    month: "Nov",
-    title: "dinner",
-    subtitle: "Pavan Paid ₹250",
-    involvement: "Not involved",
-  },
-  {
-    id: "3",
-    date: "11",
-    month: "Nov",
-    title: "ANKIT",
-    subtitle: "Khushal Paid ₹120",
-    involvement: "Not involved",
-  },
-];
-
-const outstandingPayment = {
-  name: "Khushal Khode AL",
-  amount: 324,
-};
+import { useGroupBills } from "src/hooks/billing/useGroupBills";
+import { useAuthStore } from "src/stores/authStore";
+import { GroupExpense } from "src/stores/types";
 
 const GroupDetailsScreen = () => {
+  const router = useRouter();
   const { groupId } = useLocalSearchParams<{ groupId: string }>();
   const [profileSheetOpen, setProfileSheetOpen] = useState(false);
   const theme = useTheme();
@@ -59,6 +30,17 @@ const GroupDetailsScreen = () => {
   const group = groupData?.group;
   const members = group?.members ?? [];
   const balance = groupData?.userMembership?.balance ?? null;
+  const {
+    data: billsData,
+    isLoading: billsLoading,
+    error: billsError,
+    refetch: refetchBills,
+  } = useGroupBills(groupId);
+  const expenses = billsData?.expenses ?? [];
+  const billMembers = billsData?.members ?? {};
+  const currentUser = useAuthStore((state) => state.authData);
+
+  console.log(groupData, "-<<<<<<groupData");
 
   const memberSummary = useMemo(() => {
     if (!members.length) {
@@ -76,6 +58,104 @@ const GroupDetailsScreen = () => {
     const [first, second, ...rest] = members;
     return `${first.name}, ${second.name} and ${rest.length} more`;
   }, [members]);
+
+  const balanceSummary = useMemo(() => {
+    if (balance?.amountOwed && balance.amountOwed > 0) {
+      return {
+        label: "You owe the group",
+        amount: balance.amountOwed,
+        accent: "#ff6b6b",
+        actionLabel: "Settle Up",
+      };
+    }
+
+    if (balance?.amountToReceive && balance.amountToReceive > 0) {
+      return {
+        label: "Group owes you",
+        amount: balance.amountToReceive,
+        accent: "#22c55e",
+        actionLabel: "Add Payment",
+      };
+    }
+
+    return {
+      label: "All settled up",
+      amount: 0,
+      accent: "#7f8c8d",
+      actionLabel: undefined,
+    };
+  }, [balance]);
+
+  const formatCurrency = (amount: number) =>
+    `₹${Number(amount ?? 0).toLocaleString("en-IN")}`;
+
+  const getDateParts = (dateString: string) => {
+    const date = new Date(dateString);
+    return {
+      day: `${date.getDate()}`.padStart(2, "0"),
+      month: date.toLocaleString("default", { month: "short" }),
+    };
+  };
+
+  const getUserInvolvement = (expense: GroupExpense) => {
+    if (!currentUser) {
+      return {
+        label: `${expense.splits.length} participants`,
+        amount: undefined,
+        color: "#7f8c8d",
+      };
+    }
+
+    const share = expense.splits.find(
+      (split) => split.user.id === currentUser._id
+    );
+
+    if (expense.payerId === currentUser._id) {
+      if (share?.balance && share.balance > 0) {
+        return {
+          label: "You get back",
+          amount: share.balance,
+          color: "#22c55e",
+        };
+      }
+
+      return {
+        label: "You paid",
+        amount: expense.amount,
+        color: "#22c55e",
+      };
+    }
+
+    if (!share) {
+      return {
+        label: expense.yourStake?.displayMsg || "Not involved",
+        amount: undefined,
+        color: "#7f8c8d",
+      };
+    }
+
+    if (share.balance < 0) {
+      return {
+        label: "Your share",
+        amount: share.share,
+        color: "#ef4444",
+      };
+    }
+
+    if (share.balance > 0) {
+      return {
+        label: "You get back",
+        amount: share.balance,
+        color: "#22c55e",
+      };
+    }
+
+    return {
+      label: "Settled",
+      amount: share.share,
+      color: "#7f8c8d",
+    };
+  };
 
   if (isLoading) {
     return (
@@ -116,7 +196,8 @@ const GroupDetailsScreen = () => {
     );
   }
 
-  const { name, description, createdBy, avatar, createdAt } = group;
+  const { name, description, createdBy, avatar, createdAt, memberCount } =
+    group;
 
   return (
     <>
@@ -246,7 +327,7 @@ const GroupDetailsScreen = () => {
                     letterSpacing={1.5}
                     style={{ fontFamily: "MPlusRounded700" }}
                   >
-                    YOU NEED TO PAY
+                    GROUP BALANCE
                   </MyText>
                 </XStack>
 
@@ -281,36 +362,41 @@ const GroupDetailsScreen = () => {
                         fontSize={scale(15)}
                         style={{ fontFamily: "MPlusRounded600" }}
                       >
-                        {outstandingPayment.name}
+                        {balanceSummary.label}
                       </MyText>
                       <MyText
-                        color="#ff6b6b"
+                        color="$textPrimary"
                         fontSize={scale(18)}
-                        style={{ fontFamily: "MPlusRounded700" }}
+                        style={{
+                          fontFamily: "MPlusRounded700",
+                          color: balanceSummary.accent,
+                        }}
                       >
-                        ₹{outstandingPayment.amount}
+                        {formatCurrency(balanceSummary.amount)}
                       </MyText>
                     </YStack>
                   </XStack>
 
-                  <XStack
-                    onPress={() => {}}
-                    bg="$accentYellow"
-                    px={scale(18)}
-                    py={scale(10)}
-                    rounded={scale(5)}
-                    items="center"
-                    pressStyle={{ opacity: 0.9 }}
-                    cursor="pointer"
-                  >
-                    <MyText
-                      color="#fff"
-                      fontSize={scale(14)}
-                      style={{ fontFamily: "MPlusRounded600" }}
+                  {balanceSummary.actionLabel ? (
+                    <XStack
+                      onPress={() => {}}
+                      bg="$accentYellow"
+                      px={scale(18)}
+                      py={scale(10)}
+                      rounded={scale(5)}
+                      items="center"
+                      pressStyle={{ opacity: 0.9 }}
+                      cursor="pointer"
                     >
-                      Pay Now
-                    </MyText>
-                  </XStack>
+                      <MyText
+                        color="#fff"
+                        fontSize={scale(14)}
+                        style={{ fontFamily: "MPlusRounded600" }}
+                      >
+                        {balanceSummary.actionLabel}
+                      </MyText>
+                    </XStack>
+                  ) : null}
                 </XStack>
               </YStack>
 
@@ -334,7 +420,7 @@ const GroupDetailsScreen = () => {
                   </YStack>
 
                   <XStack
-                    bg="$backgroundSecondary"
+                    // bg="$backgroundSecondary"
                     px={scale(14)}
                     py={scale(8)}
                     rounded={scale(16)}
@@ -353,67 +439,139 @@ const GroupDetailsScreen = () => {
                 </XStack>
 
                 <YStack gap={scale(14)}>
-                  {mockSplitHistory.map((item) => (
-                    <XStack key={item.id} gap={scale(14)} items="center">
-                      <YStack
-                        width={scale(58)}
-                        height={scale(70)}
+                  {billsLoading ? (
+                    <YStack items="center" justify="center" py={scale(20)}>
+                      <MyText color="$textSecondary" fontSize={scale(14)}>
+                        Loading expenses...
+                      </MyText>
+                    </YStack>
+                  ) : billsError ? (
+                    <YStack gap={scale(8)} py={scale(20)} items="center">
+                      <MyText color="$red10" fontSize={scale(14)}>
+                        Failed to load expenses
+                      </MyText>
+                      <XStack
+                        onPress={() => refetchBills()}
+                        px={scale(14)}
+                        py={scale(8)}
                         bg="$backgroundSecondary"
-                        rounded={scale(16)}
-                        justify="center"
-                        items="center"
-                        gap={scale(2)}
+                        rounded={scale(10)}
+                        cursor="pointer"
                       >
-                        <MyText
-                          color="$textPrimary"
-                          fontSize={scale(20)}
-                          style={{ fontFamily: "MPlusRounded700" }}
-                        >
-                          {item.date}
+                        <MyText color="$textPrimary" fontSize={scale(13)}>
+                          Try Again
                         </MyText>
-                        <MyText
-                          color="$textSecondary"
-                          fontSize={scale(12)}
-                          style={{ fontFamily: "MPlusRounded500" }}
+                      </XStack>
+                    </YStack>
+                  ) : expenses.length === 0 ? (
+                    <YStack py={scale(20)} items="center">
+                      <MyText color="$textSecondary" fontSize={scale(13)}>
+                        No expenses have been added to this group yet.
+                      </MyText>
+                    </YStack>
+                  ) : (
+                    expenses.map((expense) => {
+                      const { day, month } = getDateParts(expense.date);
+                      const payer = billMembers[expense.payerId];
+                      const payerName =
+                        expense.payerId === currentUser?._id
+                          ? "You"
+                          : payer?.name || "Someone";
+                      const involvement = getUserInvolvement(expense);
+                      return (
+                        <XStack
+                          // borderWidth={1}
+                          borderColor="red"
+                          key={expense.id}
+                          gap={scale(14)}
+                          items="center"
                         >
-                          {item.month}
-                        </MyText>
-                      </YStack>
+                          <YStack
+                            width={scale(58)}
+                            height={scale(58)}
+                            justify="center"
+                            items="center"
+                            // gap={scale(2)}
+                            borderWidth={1}
+                            rounded={scale(12)}
+                            borderColor="$borderColor"
+                          >
+                            <MyText
+                              color="$textPrimary"
+                              fontSize={scale(16)}
+                              style={{ fontFamily: "MPlusRounded700" }}
+                            >
+                              {day}
+                            </MyText>
+                            <MyText
+                              color="$textSecondary"
+                              fontSize={scale(12)}
+                              style={{ fontFamily: "MPlusRounded500" }}
+                            >
+                              {month}
+                            </MyText>
+                          </YStack>
 
-                      <YStack
-                        flex={1}
-                        bg="$backgroundSecondary"
-                        rounded={scale(18)}
-                        px={scale(18)}
-                        py={scale(14)}
-                        gap={scale(6)}
-                      >
-                        <XStack justify="space-between" items="center">
-                          <MyText
-                            color="$textPrimary"
-                            fontSize={scale(15)}
-                            style={{ fontFamily: "MPlusRounded600" }}
+                          <YStack
+                            flex={1}
+                            rounded={scale(12)}
+                            // px={scale(18)}
+                            height={scale(58)}
+                            gap={scale(12)}
+                            // borderWidth={1}
+                            items="center"
+                            borderColor="$borderColor"
+                            justify="center"
                           >
-                            {item.title}
-                          </MyText>
-                          <MyText
-                            color="$textSecondary"
-                            fontSize={scale(12)}
-                            style={{ fontFamily: "MPlusRounded500" }}
-                          >
-                            {item.involvement}
-                          </MyText>
+                            <XStack justify="space-between" items="flex-start">
+                              <YStack gap={scale(4)} flex={1}>
+                                <MyText
+                                  color="$textPrimary"
+                                  fontSize={scale(15)}
+                                  style={{ fontFamily: "MPlusRounded600" }}
+                                >
+                                  {expense.description || "Untitled expense"}
+                                </MyText>
+                                <MyText
+                                  color="$textSecondary"
+                                  fontSize={scale(12)}
+                                  style={{ fontFamily: "MPlusRounded500" }}
+                                >
+                                  {payerName} paid{" "}
+                                  {formatCurrency(expense.amount)}
+                                </MyText>
+                              </YStack>
+
+                              <YStack items="flex-end" gap={scale(4)}>
+                                <MyText
+                                  color="$textSecondary"
+                                  fontSize={scale(12)}
+                                  style={{
+                                    fontFamily: "MPlusRounded600",
+                                    color: involvement.color,
+                                  }}
+                                >
+                                  {involvement.label}
+                                </MyText>
+                                {typeof involvement.amount === "number" ? (
+                                  <MyText
+                                    color="$textPrimary"
+                                    fontSize={scale(14)}
+                                    style={{
+                                      fontFamily: "MPlusRounded700",
+                                      color: involvement.color,
+                                    }}
+                                  >
+                                    {formatCurrency(involvement.amount)}
+                                  </MyText>
+                                ) : null}
+                              </YStack>
+                            </XStack>
+                          </YStack>
                         </XStack>
-                        <MyText
-                          color="$textSecondary"
-                          fontSize={scale(12)}
-                          style={{ fontFamily: "MPlusRounded500" }}
-                        >
-                          {item.subtitle}
-                        </MyText>
-                      </YStack>
-                    </XStack>
-                  ))}
+                      );
+                    })
+                  )}
                 </YStack>
               </YStack>
             </YStack>
@@ -435,7 +593,13 @@ const GroupDetailsScreen = () => {
               shadowRadius={8}
               shadowOffset={{ width: 0, height: 6 }}
               cursor="pointer"
-              onPress={() => {}}
+              onPress={() => {
+                if (!groupId) return;
+                router.push({
+                  pathname: "/createGroupExpense",
+                  params: { groupId },
+                });
+              }}
             >
               <FontAwesome
                 name="plus"
@@ -458,11 +622,17 @@ const GroupDetailsScreen = () => {
       <ModalSheet
         open={profileSheetOpen}
         onOpenChange={setProfileSheetOpen}
-        snapPoints={[70]}
+        snapPoints={[90]}
         padding="$5"
         gap="$5"
       >
-        <YStack gap={scale(16)}>
+        <YStack
+          gap={scale(16)}
+          // borderWidth={1}
+          borderColor="green"
+          flex={1}
+          height="100%"
+        >
           <XStack gap={scale(12)} items="center">
             <Stack
               bg="$backgroundSecondary"
@@ -507,8 +677,9 @@ const GroupDetailsScreen = () => {
           ) : null}
 
           <YStack
-            bg="$backgroundSecondary"
-            rounded={scale(18)}
+            borderWidth={1}
+            borderColor="$backgroundSecondary"
+            rounded={scale(12)}
             px={scale(16)}
             py={scale(16)}
             gap={scale(12)}
@@ -538,110 +709,80 @@ const GroupDetailsScreen = () => {
                   {formatDate(createdAt)}
                 </MyText>
               </XStack>
-              <XStack justify="space-between">
-                <MyText color="$textSecondary" fontSize={scale(13)}>
-                  Members
-                </MyText>
-                <MyText color="$textPrimary" fontSize={scale(13)}>
-                  {members.length}
-                </MyText>
-              </XStack>
-
-              {balance && (
-                <XStack justify="space-between">
-                  <MyText color="$textSecondary" fontSize={scale(13)}>
-                    Your balance
-                  </MyText>
-                  <MyText
-                    color={
-                      balance.amountOwed > 0
-                        ? "#ff6b6b"
-                        : balance.amountToReceive > 0
-                        ? "green"
-                        : "$textPrimary"
-                    }
-                    fontSize={scale(13)}
-                  >
-                    {balance.amountOwed > 0
-                      ? `Owe ₹${balance.amountOwed}`
-                      : balance.amountToReceive > 0
-                      ? `Receive ₹${balance.amountToReceive}`
-                      : "All settled up"}
-                  </MyText>
-                </XStack>
-              )}
             </YStack>
           </YStack>
 
-          <Separator bg="$backgroundSecondary" />
-
-          <YStack gap={scale(12)}>
-            <MyText
-              color="$textPrimary"
-              fontSize={scale(15)}
-              style={{ fontFamily: "MPlusRounded700" }}
-            >
-              Members ({members.length})
-            </MyText>
-
+          <YStack gap={scale(12)} borderColor="red" flex={1}>
             <YStack gap={scale(10)}>
-              {members.map((member) => (
-                <XStack
-                  key={member._id}
-                  bg="$backgroundSecondary"
-                  rounded={scale(14)}
-                  px={scale(14)}
-                  py={scale(12)}
-                  gap={scale(12)}
-                  items="center"
-                >
-                  <Stack
-                    bg="$background"
-                    width={scale(40)}
-                    height={scale(40)}
-                    rounded={scale(20)}
-                    justify="center"
+              <MyText
+                color="$textPrimary"
+                fontSize={scale(15)}
+                style={{ fontFamily: "MPlusRounded700" }}
+              >
+                Members ({memberCount ?? members.length})
+              </MyText>
+
+              <YStack gap={scale(10)}>
+                {members.map((member) => (
+                  <XStack
+                    key={member._id}
+                    bg="$backgroundSecondary"
+                    rounded={scale(14)}
+                    px={scale(14)}
+                    py={scale(12)}
+                    gap={scale(12)}
                     items="center"
                   >
-                    {member.profilePicture ? (
-                      <Avatar circular size="$3">
-                        <Avatar.Image source={{ uri: member.profilePicture }} />
-                        <Avatar.Fallback bg="$backgroundSecondary">
-                          <FontAwesome name="user" size={16} color="#666" />
-                        </Avatar.Fallback>
-                      </Avatar>
-                    ) : (
-                      <FontAwesome name="user" size={16} color="#666" />
-                    )}
-                  </Stack>
-
-                  <YStack flex={1} gap={scale(2)}>
-                    <MyText
-                      color="$textPrimary"
-                      fontSize={scale(14)}
-                      style={{ fontFamily: "MPlusRounded600" }}
-                    >
-                      {member.name}
-                    </MyText>
-                    <MyText color="$textSecondary" fontSize={scale(12)}>
-                      {member.email}
-                    </MyText>
-                  </YStack>
-
-                  {member._id === createdBy._id && (
                     <Stack
-                      bg="#5a31f4"
-                      px={scale(8)}
-                      py={scale(4)}
-                      rounded={scale(10)}
+                      bg="$background"
+                      width={scale(40)}
+                      height={scale(40)}
+                      rounded={scale(20)}
+                      justify="center"
+                      items="center"
                     >
-                      <MyText color="#fff" fontSize={scale(10)}>
-                        Admin
-                      </MyText>
+                      {member.profilePicture ? (
+                        <Avatar circular size="$3">
+                          <Avatar.Image
+                            source={{ uri: member.profilePicture }}
+                          />
+                          <Avatar.Fallback bg="$backgroundSecondary">
+                            <FontAwesome name="user" size={16} color="#666" />
+                          </Avatar.Fallback>
+                        </Avatar>
+                      ) : (
+                        <FontAwesome name="user" size={16} color="#666" />
+                      )}
                     </Stack>
-                  )}
-                </XStack>
-              ))}
+
+                    <YStack flex={1} gap={scale(2)}>
+                      <MyText
+                        color="$textPrimary"
+                        fontSize={scale(14)}
+                        style={{ fontFamily: "MPlusRounded600" }}
+                      >
+                        {member.name}
+                      </MyText>
+                      <MyText color="$textSecondary" fontSize={scale(12)}>
+                        {member.email}
+                      </MyText>
+                    </YStack>
+
+                    {member._id === createdBy._id && (
+                      <Stack
+                        bg="#5a31f4"
+                        px={scale(8)}
+                        py={scale(4)}
+                        rounded={scale(10)}
+                      >
+                        <MyText color="#fff" fontSize={scale(10)}>
+                          Admin
+                        </MyText>
+                      </Stack>
+                    )}
+                  </XStack>
+                ))}
+              </YStack>
             </YStack>
           </YStack>
         </YStack>

@@ -66,7 +66,9 @@ export const ModalSheet = ({
 
       {showHandle && <Sheet.Handle />}
       <Sheet.Frame p={padding}>
-        <YStack gap={gap}>{children}</YStack>
+        <YStack gap={gap} borderColor="green" flex={1}>
+          {children}
+        </YStack>
       </Sheet.Frame>
     </Sheet>
   );

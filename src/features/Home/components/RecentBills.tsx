@@ -5,13 +5,10 @@ import themeColors from "src/utils/theme/colors";
 import { scale } from "src/utils/functions/dimensions";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import BackAndForthMarqueeText from "src/components/common/MarqueeText";
-import { useState } from "react";
-import { PopoverDemo } from "./MenuPopover";
 import { useRouter } from "expo-router";
+import { PopoverDemo } from "./MenuPopover";
 
 const RecentBills = () => {
-  // console.log("RecentBills render");
-
   const theme = useTheme();
   const router = useRouter();
 
@@ -36,7 +33,7 @@ const RecentBills = () => {
           borderColor={"white"}
           bg={"$backgroundSecondary"}
           px={scale(15)}
-          onPress={() => router.push("/addBill")}
+          onPress={() => router.push("/splitTargetSelection")}
         >
           <XStack gap={scale(3)}>
             <Feather name="plus" size={20} color={theme.accentYellow.val} />

@@ -9,6 +9,7 @@ export const API_ENDPOINTS = {
     list: "/user/",
     addFriend: "/user/friends",
     friendsList: "/user/friends/list",
+    removeFriend: (id: string) => `/user/friends/remove/${id}`,
   },
 
   group: {
@@ -23,5 +24,9 @@ export const API_ENDPOINTS = {
     unreadCount: "/notifications/unread-count",
     markAsRead: (id: string) => `/notifications/${id}/read`,
     markAllAsRead: "/notifications/read-all",
+  },
+  billing: {
+    createExpense: "/bill",
+    groupExpenses: (groupId: string) => `/bill/group/${groupId}`,
   },
 };

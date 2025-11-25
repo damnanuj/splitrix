@@ -1,5 +1,9 @@
 import { create } from "zustand";
-import { addFriend, getAllUsers } from "src/services/user.service";
+import {
+  addFriend,
+  getAllUsers,
+  removeFriend,
+} from "src/services/user.service";
 import { useAuthStore } from "./authStore";
 import { Friend } from "./types";
 
@@ -18,6 +22,7 @@ interface UserState {
   addingIds: Set<string>;
   fetchUsers: (opts?: { refresh?: boolean }) => Promise<void>;
   addAsFriend: (userId: string) => Promise<void>;
+  removeAsFriend: (userId: string) => Promise<void>;
 }
 
 export const useUserStore = create<UserState>((set, get) => ({
@@ -32,7 +37,7 @@ export const useUserStore = create<UserState>((set, get) => ({
     else set({ isLoading: true });
 
     try {
-      const { data } = await getAllUsers();
+      const { data = [] } = await getAllUsers();
       // API returns { success, msg, data: AppUser[] }
 
       // Get current user from auth store
@@ -42,12 +47,12 @@ export const useUserStore = create<UserState>((set, get) => ({
 
       if (!currentUserId) {
         console.warn("No current user ID found");
-        set({ users: data || [] });
+        set({ users: data });
         return;
       }
 
       // Show all users without filtering
-      set({ users: data || [] });
+      set({ users: data });
     } catch (error) {
       console.error("fetchUsers error:", error);
     } finally {
@@ -106,6 +111,47 @@ export const useUserStore = create<UserState>((set, get) => ({
       }
     } catch (error) {
       console.error("addAsFriend error:", error);
+    } finally {
+      const adding = new Set(get().addingIds);
+      adding.delete(userId);
+      set({ addingIds: adding });
+    }
+  },
+
+  removeAsFriend: async (userId: string) => {
+    try {
+      const adding = new Set(get().addingIds);
+      adding.add(userId);
+      set({ addingIds: adding });
+
+      await removeFriend(userId);
+
+      // Update the local user data to reflect the removed friendship
+      const { authData } = useAuthStore.getState();
+      const currentUserId = authData?._id;
+
+      if (currentUserId) {
+        const updatedUsers = get().users.map((user) => {
+          if (user._id === userId) {
+            // Remove current user from this user's friends array
+            return {
+              ...user,
+              friends: (user.friends || []).filter(
+                (friendId) => friendId !== currentUserId
+              ),
+            };
+          }
+          return user;
+        });
+        set({ users: updatedUsers });
+
+        // Remove friend from friends store
+        const { useFriendsStore } = await import("./friendsStore");
+        const friendsStore = useFriendsStore.getState();
+        friendsStore.removeFriend(userId);
+      }
+    } catch (error) {
+      console.error("removeAsFriend error:", error);
     } finally {
       const adding = new Set(get().addingIds);
       adding.delete(userId);

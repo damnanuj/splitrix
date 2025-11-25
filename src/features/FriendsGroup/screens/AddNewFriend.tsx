@@ -1,5 +1,5 @@
 import { useEffect, useCallback, memo } from "react";
-import { YStack, XStack, Button, Avatar } from "tamagui";
+import { YStack, XStack, Button, Avatar, useTheme } from "tamagui";
 import { FlatList, ActivityIndicator, RefreshControl } from "react-native";
 import BackButtonWithHeader from "src/components/common/BackButtonWithHeader";
 import MyText from "src/components/customTabBars/styleComponents/MyText";
@@ -13,9 +13,17 @@ import { AddNewFriendSkeleton } from "../components/skeleton";
 
 const AddNewFriend = () => {
   const router = useRouter();
-  const { users, isLoading, isRefreshing, addingIds, fetchUsers, addAsFriend } =
-    useUserStore();
+  const {
+    users,
+    isLoading,
+    isRefreshing,
+    addingIds,
+    fetchUsers,
+    addAsFriend,
+    removeAsFriend,
+  } = useUserStore();
   const { authData } = useAuthStore();
+  const theme = useTheme();
 
   useEffect(() => {
     fetchUsers();
@@ -30,6 +38,13 @@ const AddNewFriend = () => {
       await addAsFriend(userId);
     },
     [addAsFriend]
+  );
+
+  const handleRemoveFriend = useCallback(
+    async (id: string) => {
+      await removeAsFriend(id);
+    },
+    [removeAsFriend]
   );
 
   const renderUserItem = useCallback(
@@ -73,22 +88,26 @@ const AddNewFriend = () => {
           </XStack>
 
           <Button
-            onPress={() => !isAlreadyFriend && handleAddFriend(item._id)}
+            onPress={() =>
+              isAlreadyFriend
+                ? handleRemoveFriend(item._id)
+                : handleAddFriend(item._id)
+            }
             bg={isAlreadyFriend ? "$accentGreen" : "$accentYellow"}
-            color="$textPrimary"
+            color="white"
             fontSize={scale(14)}
             fontWeight="600"
             p={scale(10)}
             px={scale(15)}
             rounded={scale(8)}
-            disabled={isAdding || !!isAlreadyFriend}
+            disabled={isAdding}
             opacity={isAdding ? 0.6 : 1}
-            width={scale(80)}
+            // width={scale(80)}
           >
             {isAdding ? (
-              <ActivityIndicator size="small" color="#000" />
+              <ActivityIndicator size="small" color="white" />
             ) : isAlreadyFriend ? (
-              "Added"
+              "Remove"
             ) : (
               "Add"
             )}
@@ -96,7 +115,7 @@ const AddNewFriend = () => {
         </XStack>
       );
     },
-    [addingIds, authData?._id, handleAddFriend]
+    [addingIds, authData?._id, handleAddFriend, handleRemoveFriend]
   );
 
   return (
@@ -107,21 +126,19 @@ const AddNewFriend = () => {
         <AddNewFriendSkeleton />
       ) : (
         <>
-          <YStack gap={scale(10)}>
-            <MyText color="$textPrimary" fontSize={scale(16)}>
-              Select a user to add as friend
-            </MyText>
-          </YStack>
+          {users.length > 0 && (
+            <YStack gap={scale(10)}>
+              <MyText color="$textPrimary" fontSize={scale(16)}>
+                Select a user to add as friend
+              </MyText>
+            </YStack>
+          )}
 
           <YStack flex={1} mb={scale(80)}>
             {users.length === 0 ? (
               <YStack flex={1} justify="center" items="center" gap={scale(20)}>
                 <MyText color="$textSecondary" fontSize={scale(16)}>
                   No users available to add as friends
-                </MyText>
-                <MyText color="$textSecondary" fontSize={scale(14)}>
-                  All users are already your friends or there are no other users
-                  in the system.
                 </MyText>
               </YStack>
             ) : (

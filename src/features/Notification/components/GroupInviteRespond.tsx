@@ -7,26 +7,21 @@ import ICONS from "src/utils/icons";
 import { Image } from "tamagui";
 import { useGroupDetails } from "src/hooks/group/useGroupDetails";
 import { router } from "expo-router";
-import { useRespondToInvite } from "src/hooks/group/useRespondToInvite";
 import GroupInviteRespondSkeleton from "./skeleton/GroupInviteRespondSkeleton";
 
 export const GroupInviteRespond = ({
   groupId,
   onClose,
   notificationReceivedAt,
+  notificationType,
 }: {
   groupId: string;
   onClose?: () => void;
   notificationReceivedAt?: string;
+  notificationType?: string;
 }) => {
   const { data: groupDetails, isLoading } = useGroupDetails(groupId);
-  // console.log("group details", groupDetails);
   const theme = useTheme();
-  const pendingInviteId = groupDetails?.userMembership?.pendingInviteId;
-  const { mutate: respond, isPending } = useRespondToInvite(
-    groupId,
-    pendingInviteId
-  );
 
   const handleVisitGroup = () => {
     onClose?.();
@@ -35,6 +30,8 @@ export const GroupInviteRespond = ({
       params: { groupId },
     });
   };
+
+  const isGroupAdded = notificationType === "group_added";
 
   if (isLoading) {
     return <GroupInviteRespondSkeleton />;
@@ -84,15 +81,16 @@ export const GroupInviteRespond = ({
             style={{ fontFamily: "MPlusRounded700", textAlign: "center" }}
             fontSize={scale(22)}
           >
-            Group Invitation
+            {isGroupAdded ? "Added to Group" : "Group Invitation"}
           </MyText>
           <MyText
             color="$textSecondary"
             style={{ fontFamily: "MPlusRounded400" }}
             fontSize={scale(13)}
           >
-            Received on: {formatDate(notificationReceivedAt || "")} at{" "}
-            {formatTime(notificationReceivedAt || "")}
+            {isGroupAdded
+              ? `Added on: ${formatDate(notificationReceivedAt || "")} at ${formatTime(notificationReceivedAt || "")}`
+              : `Received on: ${formatDate(notificationReceivedAt || "")} at ${formatTime(notificationReceivedAt || "")}`}
           </MyText>
         </YStack>
       </YStack>
@@ -259,59 +257,50 @@ export const GroupInviteRespond = ({
         </YStack>
       </YStack>
 
-      {/* Action Buttons */}
-      {groupDetails?.userMembership?.isMember ? (
+      {/* Action Button - View Group */}
+      {groupDetails?.group && (
         <YStack gap={scale(16)} width="100%">
-          {/* Success Message */}
-          <YStack
-            bg="$green2"
-            p={scale(16)}
-            rounded={scale(16)}
-            width="100%"
-            borderWidth={1}
-            borderColor="$green6"
-            items="center"
-            gap={scale(8)}
-          >
-            <XStack items="center" gap={scale(8)}>
-              <Feather name="check-circle" size={scale(20)} color="#22c55e" />
-              <MyText
-                color="$green11"
-                style={{ fontFamily: "MPlusRounded600" }}
-                fontSize={scale(16)}
-              >
-                Successfully joined the group!
-              </MyText>
-            </XStack>
-            <MyText
-              color="$green10"
-              style={{ fontFamily: "MPlusRounded400", textAlign: "center" }}
-              fontSize={scale(14)}
+          {isGroupAdded && (
+            <YStack
+              bg="$green2"
+              p={scale(16)}
+              rounded={scale(16)}
+              width="100%"
+              borderWidth={1}
+              borderColor="$green6"
+              items="center"
+              gap={scale(8)}
             >
-              You can now start splitting expenses
-            </MyText>
-          </YStack>
+              <XStack items="center" gap={scale(8)}>
+                <Feather name="check-circle" size={scale(20)} color="#22c55e" />
+                <MyText
+                  color="$green11"
+                  style={{ fontFamily: "MPlusRounded600" }}
+                  fontSize={scale(16)}
+                >
+                  You've been added to this group!
+                </MyText>
+              </XStack>
+              <MyText
+                color="$green10"
+                style={{ fontFamily: "MPlusRounded400", textAlign: "center" }}
+                fontSize={scale(14)}
+              >
+                You can now start splitting expenses with the group
+              </MyText>
+            </YStack>
+          )}
 
-          {/* Visit Group Button */}
+          {/* View Group Button */}
           <Button
             width="100%"
             bg="$accentYellow"
-            // borderColor="$blue8"
-            // borderWidth={1}
             rounded={scale(16)}
             height={scale(56)}
-            // py={scale(18)}
-            // px={scale(16)}
             pressStyle={{
               bg: "$accentYellowPressed",
               scale: 0.98,
             }}
-            // animation="medium"
-            // shadowColor="$blue8"
-            // shadowOffset={{ width: 0, height: 4 }}
-            // shadowOpacity={0.3}
-            // shadowRadius={8}
-            // elevation={4}
             onPress={handleVisitGroup}
           >
             <XStack items="center" gap={scale(8)}>
@@ -323,116 +312,15 @@ export const GroupInviteRespond = ({
               <MyText
                 color="$textPrimary"
                 style={{ fontFamily: "MPlusRounded700" }}
-                fontSize={scale(14)}
+                fontSize={scale(16)}
                 lineHeight={scale(20)}
               >
-                Visit Group
+                View Group
               </MyText>
             </XStack>
           </Button>
         </YStack>
-      ) : groupDetails?.userMembership?.hasPendingInvite ? (
-        <XStack gap={scale(16)} width="100%">
-          <Button
-            flex={1}
-            bg="$red9"
-            borderColor="$red8"
-            borderWidth={1}
-            rounded={scale(16)}
-            height={scale(56)}
-            py={scale(18)}
-            px={scale(16)}
-            pressStyle={{
-              bg: "$red10",
-              scale: 0.98,
-            }}
-            animation="quick"
-            shadowColor="$red8"
-            shadowOffset={{ width: 0, height: 4 }}
-            shadowOpacity={0.3}
-            shadowRadius={8}
-            elevation={4}
-            disabled={isPending}
-            onPress={() => respond("declined")}
-          >
-            <XStack items="center" gap={scale(8)}>
-              <Feather name="x" size={scale(18)} color="white" />
-              <MyText
-                color="white"
-                style={{ fontFamily: "MPlusRounded600" }}
-                fontSize={scale(15)}
-                lineHeight={scale(20)}
-              >
-                Decline
-              </MyText>
-            </XStack>
-          </Button>
-
-          <Button
-            flex={1}
-            bg="$green9"
-            borderColor="$green8"
-            borderWidth={1}
-            rounded={scale(16)}
-            height={scale(56)}
-            py={scale(18)}
-            px={scale(16)}
-            pressStyle={{
-              bg: "$green10",
-              scale: 0.98,
-            }}
-            animation="quick"
-            shadowColor="$green8"
-            shadowOffset={{ width: 0, height: 4 }}
-            shadowOpacity={0.3}
-            shadowRadius={8}
-            elevation={4}
-            disabled={isPending}
-            onPress={() => respond("accepted")}
-          >
-            <XStack items="center" gap={scale(8)}>
-              <Feather name="check" size={scale(18)} color="white" />
-              <MyText
-                color="white"
-                style={{ fontFamily: "MPlusRounded600" }}
-                fontSize={scale(15)}
-                lineHeight={scale(20)}
-              >
-                Accept
-              </MyText>
-            </XStack>
-          </Button>
-        </XStack>
-      ) : groupDetails?.userMembership?.membershipStatus === "declined" ? (
-        <YStack
-          bg="$backgroundSecondary"
-          p={scale(16)}
-          rounded={scale(16)}
-          width="100%"
-          borderWidth={1}
-          borderColor="$borderColor"
-          items="center"
-          gap={scale(8)}
-        >
-          <XStack items="center" gap={scale(8)}>
-            <Feather name="x-circle" size={scale(20)} color="#6b7280" />
-            <MyText
-              color="$textPrimary"
-              style={{ fontFamily: "MPlusRounded600" }}
-              fontSize={scale(16)}
-            >
-              Invitation declined
-            </MyText>
-          </XStack>
-          <MyText
-            color="$textSecondary"
-            style={{ fontFamily: "MPlusRounded400", textAlign: "center" }}
-            fontSize={scale(14)}
-          >
-            You can still join this group later if you change your mind
-          </MyText>
-        </YStack>
-      ) : null}
+      )}
     </YStack>
   );
 };

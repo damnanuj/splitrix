@@ -42,6 +42,7 @@ export interface FriendsState {
   setFriends: (friends: Friend[]) => void;
   fetchFriends: (opts?: { refresh?: boolean }) => Promise<void>;
   addFriend: (friend: Friend) => void;
+  removeFriend: (friendId: string) => void;
   refreshFriends: () => Promise<void>;
 }
 
@@ -51,11 +52,10 @@ export interface Group {
   description: string;
   createdBy: User;
   members: User[];
+  memberCount: number;
   avatar: string;
   createdAt: string;
   updatedAt: string;
-  __v: number;
-  balance: Balance;
 }
 
 export interface Balance {
@@ -87,6 +87,90 @@ export interface CreateGroup {
   name: string;
   memberIds: string[];
   description: string;
+}
+
+export type SplitType = "amount" | "share" | "percent";
+
+export interface ExpenseShare {
+  user: string;
+  amount: number;
+}
+
+export interface CreateExpensePayload {
+  title: string;
+  amount: number;
+  group: string;
+  paidBy: string;
+  createdBy: string;
+  splitType: SplitType;
+  shares: ExpenseShare[];
+}
+
+export interface Expense {
+  _id: string;
+  title: string;
+  amount: number;
+  group: string;
+  paidBy: string;
+  createdBy: string;
+  splitType: SplitType;
+  shares: ExpenseShare[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateExpenseResponse {
+  success: boolean;
+  msg: string;
+  data: Expense;
+}
+
+export interface GroupBillsMember {
+  name: string;
+  email: string;
+  avatar?: string;
+}
+
+export interface GroupExpenseSplitUser {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+}
+
+export interface GroupExpenseSplit {
+  user: GroupExpenseSplitUser;
+  share: number;
+  paid: number;
+  balance: number;
+}
+
+export interface GroupExpenseStake {
+  amount: number;
+  displayMsg: string;
+}
+
+export interface GroupExpense {
+  id: string;
+  description: string;
+  amount: number;
+  date: string;
+  payerId: string;
+  splitType: SplitType;
+  splits: GroupExpenseSplit[];
+  yourStake: GroupExpenseStake;
+}
+
+export interface GroupBillsData {
+  group: { id: string };
+  members: Record<string, GroupBillsMember>;
+  expenses: GroupExpense[];
+}
+
+export interface GroupBillsResponse {
+  success: boolean;
+  msg: string;
+  data: GroupBillsData;
 }
 
 export type Notification = {

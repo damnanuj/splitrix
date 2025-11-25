@@ -1,17 +1,35 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
+import { useState, useEffect } from "react";
 
 import BackButtonWithHeader from "src/components/common/BackButtonWithHeader";
 import MyText from "src/components/customTabBars/styleComponents/MyText";
 import { scale } from "src/utils/functions/dimensions";
-import { Button, Spinner, useTheme, XStack } from "tamagui";
-import { Form, Input, YStack } from "tamagui";
+import { Button, Spinner, useTheme } from "tamagui";
+import { Form, Input, YStack, XStack } from "tamagui";
 import DateTimePickerComponent from "./components/DateTimePickerComponent";
+import MemberSelector from "src/components/common/MemberSelector";
+import { useAuthStore } from "src/stores/authStore";
 
 const AddBillPage = () => {
   const theme = useTheme();
+  const { authData } = useAuthStore();
+  const currentUserId = authData?._id;
+  const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>(() =>
+    currentUserId ? [currentUserId] : []
+  );
+
   const handleDateChange = (selectedDate) => {
-    console.log("Selected Date/Time:", selectedDate);
+    // console.log("Selected Date/Time:", selectedDate);
   };
+
+  useEffect(() => {
+    if (currentUserId) {
+      setSelectedMemberIds((prev) => {
+        if (prev.includes(currentUserId)) return prev;
+        return [currentUserId, ...prev];
+      });
+    }
+  }, [currentUserId]);
   return (
     <YStack px={scale(25)} flex={1} bg={"$background"}>
       <BackButtonWithHeader title="Create New Bill" />
@@ -107,6 +125,18 @@ const AddBillPage = () => {
             }}
           />
           {false && <MyText color={"red"}>Something err</MyText>}
+        </YStack>
+
+        {/* ----------Split Expense------- */}
+        <YStack width="100%" mb={scale(20)}>
+          <MemberSelector
+            label="Split expense with"
+            selectedMemberIds={selectedMemberIds}
+            onSelectionChange={setSelectedMemberIds}
+            helperText={(count) =>
+              `${count} people (including you) will split this expense.`
+            }
+          />
         </YStack>
 
         <Form.Trigger asChild>

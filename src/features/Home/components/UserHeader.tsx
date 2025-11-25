@@ -17,7 +17,7 @@ const UserHeader = () => {
 
   const { data: unreadCount = 0, isLoading } = useUnreadCount();
 
-  console.log(unreadCount, "unreadCount");
+  // console.log(unreadCount, "unreadCount");
 
   return (
     <XStack

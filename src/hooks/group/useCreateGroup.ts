@@ -13,7 +13,7 @@ export const useCreateGroup = () => {
 
   return useMutation<CreateGroupResponse, Error, CreateGroup>({
     mutationFn: async (payload) => {
-      console.log("payload-------->>", payload);
+      // console.log("payload-------->>", payload);
       const res = (await createGroup(payload)) as CreateGroupResponse;
 
       if (res?.success) {

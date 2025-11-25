@@ -13,10 +13,15 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.splitrix.damnanuj"
+      "bundleIdentifier": "com.splitrix.damnanuj",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -33,7 +38,9 @@
     "plugins": [
       "expo-router",
       "expo-font",
-      ["@react-native-google-signin/google-signin"],
+      [
+        "@react-native-google-signin/google-signin"
+      ],
       [
         "expo-build-properties",
         {

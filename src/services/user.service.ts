@@ -24,6 +24,11 @@ export const addFriend = async (friendId: string) => {
   return response.data;
 };
 
+export const removeFriend = async (id: string) => {
+  const response = await apiService.delete(API_ENDPOINTS.user.removeFriend(id));
+  return response.data;
+};
+
 export const getFriendsList = async () => {
   const response = await apiService.get(API_ENDPOINTS.user.friendsList);
   return response.data;

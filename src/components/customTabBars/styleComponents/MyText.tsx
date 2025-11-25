@@ -10,7 +10,7 @@ const MyText: React.FC<MyTextProps> = ({ style, ...rest }) => {
       style={[{ fontFamily: "MPlusRounded500" }, style]}
       //   fontWeight="$4"
       color={"$textPrimary"}
-      {...rest}
+      {...rest} 
     />
   );
 };

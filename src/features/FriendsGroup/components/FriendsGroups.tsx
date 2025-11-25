@@ -10,13 +10,13 @@ import { Group } from "src/stores/types";
 import { formatDate } from "src/utils/functions/formatDate";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { router } from "expo-router";
-import { Pressable } from "react-native";
+import { Pressable, RefreshControl } from "react-native";
 import { useGroups } from "src/hooks/group/useGroups";
 import GroupsListSkeleton from "./skeleton/GroupsListSkeleton";
 
 const FriendsGroups = () => {
-  const { data, isLoading, error, refetch } = useGroups();
-  console.log("groups", data);
+  const { data, isLoading, error, refetch, isFetching } = useGroups();
+  // console.log("groups", data);
   const displayGroups = Array.isArray(data) ? data : [];
   if (isLoading) {
     return (
@@ -57,27 +57,6 @@ const FriendsGroups = () => {
     );
   }
 
-  if (displayGroups.length === 0) {
-    return (
-      <YStack flex={1} items="center" justify="center" gap={scale(20)}>
-        <MyText color="$textSecondary" fontSize={scale(16)}>
-          No groups found
-        </MyText>
-        <MyText color="$textSecondary" fontSize={scale(14)}>
-          Create a group or wait for invitations
-        </MyText>
-        <MyText
-          color="$blue10"
-          fontSize={scale(14)}
-          style={{ textDecorationLine: "underline" }}
-          onPress={() => refetch()}
-        >
-          Tap to refresh
-        </MyText>
-      </YStack>
-    );
-  }
-
   return (
     <YStack
       //   borderWidth={1}
@@ -95,6 +74,14 @@ const FriendsGroups = () => {
             borderColor: "green",
             // gap: scale(15),
           }}
+          refreshControl={
+            <RefreshControl
+              refreshing={isFetching}
+              onRefresh={() => refetch()}
+              tintColor="#FFD700"
+              colors={["#FFD700"]}
+            />
+          }
         >
           {/* <AccordionDemo /> */}
 

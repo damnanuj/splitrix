@@ -20,11 +20,14 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
   const [sheetOpen, setSheetOpen] = useState(false);
   const { mutate: markAsRead } = useMarkAsRead();
 
-  console.log(notification, "notification");
+  // console.log(notification, "notification");
 
   const handlePress = () => {
-    // Only open sheet for group invite notification
-    if (notification.type === "group_invite") {
+    // Open sheet for group-related notifications (invite or added)
+    if (
+      notification.type === "group_invite" ||
+      notification.type === "group_added"
+    ) {
       setSheetOpen(true);
     }
     if (isUnread && notification?._id) {
@@ -164,13 +167,12 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
         snapPoints={[80]}
         open={sheetOpen}
         onOpenChange={setSheetOpen}
-        // animation="quick"
-        // overlayAnimation="quick"
       >
         {sheetOpen && (
           <GroupInviteRespond
             groupId={notification?.groupId || ""}
             notificationReceivedAt={notification?.createdAt || ""}
+            notificationType={notification.type}
             onClose={() => setSheetOpen(false)}
           />
         )}

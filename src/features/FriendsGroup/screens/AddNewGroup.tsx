@@ -1,112 +1,82 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  YStack,
-  XStack,
-  Input,
-  Button,
-  Avatar,
-  ScrollView,
-  Stack,
-  Square,
-  Spinner,
-} from "tamagui";
+import { useCallback, useState, useEffect, useMemo } from "react";
+import { YStack, XStack, Input, Button, Spinner } from "tamagui";
 import BackButtonWithHeader from "src/components/common/BackButtonWithHeader";
 import MyText from "src/components/customTabBars/styleComponents/MyText";
 import { scale } from "src/utils/functions/dimensions";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { useToastController } from "@tamagui/toast";
 import { useCreateGroup } from "src/hooks/group/useCreateGroup";
-import { useFriendsList } from "src/hooks/friends/useFriendsList";
 import { useAuthStore } from "src/stores/authStore";
-import { ModalSheet } from "src/components/common/ModalSheet";
-import { Plus, X as CloseIcon, Check } from "@tamagui/lucide-icons";
-import { Pressable } from "react-native";
-
-interface DisplayMember {
-  _id: string;
-  name: string;
-  email?: string;
-  profilePicture?: string;
-  isCurrentUser?: boolean;
-}
+import MemberSelector from "src/components/common/MemberSelector";
+import { useFriendsList } from "src/hooks/friends/useFriendsList";
 
 const AddNewGroup = () => {
   const router = useRouter();
+  const params = useLocalSearchParams<{
+    selectedFriendId?: string;
+    selectedFriendIds?: string;
+  }>();
   const { authData } = useAuthStore();
   const currentUserId = authData?._id;
+  const { data: friends = [] } = useFriendsList();
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
-  const [memberSheetOpen, setMemberSheetOpen] = useState(false);
   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>(() =>
     currentUserId ? [currentUserId] : []
   );
   const toast = useToastController();
-  const { data: friends = [], isLoading: isFriendsLoading } = useFriendsList();
   const createGroupMutation = useCreateGroup();
 
+  // Handle initial friend selection from route params
+  // Support both selectedFriendId (single) and selectedFriendIds (comma-separated)
   useEffect(() => {
     if (currentUserId) {
-      setSelectedMemberIds((prev) => {
-        if (prev.includes(currentUserId)) return prev;
-        return [currentUserId, ...prev];
-      });
+      const friendIdsParam =
+        params.selectedFriendIds || params.selectedFriendId;
+      if (friendIdsParam) {
+        // Parse comma-separated string or use single ID
+        const friendIds = friendIdsParam.includes(",")
+          ? friendIdsParam.split(",").filter(Boolean)
+          : [friendIdsParam];
+
+        setSelectedMemberIds((prev) => {
+          const newIds = [currentUserId, ...friendIds];
+          // Remove duplicates
+          return Array.from(new Set(newIds));
+        });
+      }
     }
-  }, [currentUserId]);
+  }, [params.selectedFriendId, params.selectedFriendIds, currentUserId]);
 
-  const handleToggleMember = useCallback(
-    (memberId: string) => {
-      if (currentUserId === memberId) return;
-      setSelectedMemberIds((prev) => {
-        if (prev.includes(memberId)) {
-          return prev.filter((id) => id !== memberId);
-        }
-        return [...prev, memberId];
-      });
-    },
-    [currentUserId]
-  );
+  // Auto-fill group name if only one friend is selected (excluding current user)
+  // Only auto-fill when coming from selector (params.selectedFriendId exists) and name is empty
+  const selectedFriends = useMemo(() => {
+    return friends.filter((friend) => selectedMemberIds.includes(friend._id));
+  }, [selectedMemberIds, friends]);
 
-  const handleRemoveMember = useCallback(
-    (memberId: string) => {
-      if (currentUserId === memberId) return;
-      setSelectedMemberIds((prev) => prev.filter((id) => id !== memberId));
-    },
-    [currentUserId]
-  );
-
-  const availableFriends = useMemo(
-    () => friends.filter((friend) => friend._id !== currentUserId),
-    [friends, currentUserId]
-  );
-
-  const selectedMembers = useMemo<DisplayMember[]>(() => {
-    const mapped: DisplayMember[] = [];
-
-    selectedMemberIds.forEach((id) => {
-      if (authData && id === currentUserId) {
-        mapped.push({
-          _id: currentUserId,
-          name: authData.name || "You",
-          email: authData.email,
-          profilePicture: authData.profilePicture,
-          isCurrentUser: true,
-        });
-        return;
-      }
-
-      const friend = friends.find((item) => item._id === id);
-      if (friend) {
-        mapped.push({
-          _id: friend._id,
-          name: friend.name || "Member",
-          email: friend.email,
-          profilePicture: friend.profilePicture,
-        });
-      }
-    });
-
-    return mapped;
-  }, [selectedMemberIds, friends, authData, currentUserId]);
+  useEffect(() => {
+    // Only auto-fill if:
+    // 1. We came from the selector (params.selectedFriendIds or selectedFriendId exists)
+    // 2. Only one friend is selected (excluding current user)
+    // 3. Group name is currently empty
+    const hasFriendParams = params.selectedFriendIds || params.selectedFriendId;
+    if (
+      hasFriendParams &&
+      selectedFriends.length === 1 &&
+      authData?.name &&
+      !groupName.trim()
+    ) {
+      const friendName = selectedFriends[0].name;
+      const autoFillName = `${authData.name} | ${friendName}`;
+      setGroupName(autoFillName);
+    }
+  }, [
+    params.selectedFriendId,
+    params.selectedFriendIds,
+    selectedFriends,
+    authData?.name,
+    groupName,
+  ]);
 
   const handleCreateGroup = useCallback(() => {
     const trimmedName = groupName.trim();
@@ -141,12 +111,20 @@ const AddNewGroup = () => {
       },
       {
         onSuccess: (res) => {
+          const createdGroupId = res?.data?._id;
           toast.show(res?.msg || "Group created successfully", {
             message: trimmedDescription || undefined,
           });
           setGroupName("");
           setDescription("");
-          router.back();
+          if (createdGroupId) {
+            router.replace({
+              pathname: "/createGroupExpense",
+              params: { groupId: createdGroupId },
+            });
+            return;
+          }
+          router.replace("/splitTargetSelection");
         },
         onError: (error) => {
           toast.show("Failed to create group", {
@@ -168,7 +146,6 @@ const AddNewGroup = () => {
 
   const isCreating = createGroupMutation.isPending;
   const canCreate = groupName.trim().length > 0 && !isCreating;
-  const hasAdditionalMembers = selectedMembers.length > 1;
 
   return (
     <YStack
@@ -227,115 +204,14 @@ const AddNewGroup = () => {
         </YStack>
       </YStack>
 
-      <YStack gap={scale(10)}>
-        <MyText color="$textPrimary" fontSize={scale(16)}>
-          Members (optional)
-        </MyText>
-
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <XStack
-            gap={scale(12)}
-            py={scale(4)}
-            pr={scale(10)}
-            borderColor={"red"}
-            // borderWidth={1}
-          >
-            {selectedMembers.map((member) => {
-              const avatarSource =
-                member.profilePicture ||
-                `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                  member.name || "Member"
-                )}&background=2f3640&color=ffffff`;
-
-              return (
-                <Stack
-                  key={member._id}
-                  items="center"
-                  gap={scale(6)}
-                  borderColor={"green"}
-                  // pt={scale(5)}
-                  // borderWidth={1}
-                  p={scale(2)}
-                >
-                  <Stack position="relative">
-                    <Avatar size={scale(54)} rounded={scale(12)}>
-                      <Avatar.Image
-                        accessibilityLabel={member.name}
-                        src={avatarSource}
-                      />
-                      <Avatar.Fallback delayMs={600} backgroundColor="#444" />
-                    </Avatar>
-
-                    {!member.isCurrentUser && (
-                      <Stack
-                        style={{
-                          position: "absolute",
-                          top: -scale(6),
-                          right: -scale(6),
-                        }}
-                      >
-                        <Pressable
-                          onPress={() => handleRemoveMember(member._id)}
-                        >
-                          <Square
-                            size={scale(24)}
-                            rounded={scale(12)}
-                            bg="$backgroundSecondary"
-                            // borderWidth={1}
-                            borderColor="$borderPrimary"
-                            items="center"
-                            justify="center"
-                            shadowColor="$textPrimary"
-                            shadowOffset={{ width: 0, height: 1 }}
-                            shadowOpacity={0.2}
-                            shadowRadius={2}
-                            elevation={3}
-                          >
-                            <CloseIcon size={scale(12)} color="$textPrimary" />
-                          </Square>
-                        </Pressable>
-                      </Stack>
-                    )}
-                  </Stack>
-                  <MyText
-                    color="$textSecondary"
-                    fontSize={scale(12)}
-                    numberOfLines={1}
-                    style={{ textAlign: "center", maxWidth: scale(70) }}
-                  >
-                    {member.isCurrentUser ? "You" : member.name}
-                  </MyText>
-                </Stack>
-              );
-            })}
-
-            <Pressable
-              onPress={() => setMemberSheetOpen(true)}
-              style={{ padding: scale(2) }}
-            >
-              <Square
-                size={scale(54)}
-                rounded={scale(12)}
-                borderWidth={1}
-                borderStyle="dashed"
-                borderColor="$textSecondary"
-                bg="$backgroundSecondary"
-                items="center"
-                justify="center"
-              >
-                <Plus size={scale(20)} color="$textSecondary" />
-              </Square>
-            </Pressable>
-          </XStack>
-        </ScrollView>
-
-        {hasAdditionalMembers && (
-          <MyText color="$textSecondary" fontSize={scale(13)} px={scale(2)}>
-            {selectedMembers.length} people (including you) will be part of this
-            group.
-          </MyText>
-        )}
-      </YStack>
+      <MemberSelector
+        label="Members (optional)"
+        selectedMemberIds={selectedMemberIds}
+        onSelectionChange={setSelectedMemberIds}
+        helperText={(count) =>
+          `${count} people (including you) will be part of this group.`
+        }
+      />
 
       <YStack gap={scale(15)} mb={scale(20)}>
         <Button
@@ -373,7 +249,6 @@ const AddNewGroup = () => {
           bg="$backgroundSecondary"
           color="$textPrimary"
           fontSize={scale(16)}
-          
           height={scale(52)}
           rounded={scale(12)}
           disabled={isCreating}
@@ -387,131 +262,6 @@ const AddNewGroup = () => {
           </MyText>
         </Button>
       </YStack>
-
-      <ModalSheet
-        open={memberSheetOpen}
-        onOpenChange={setMemberSheetOpen}
-        snapPoints={[70]}
-      >
-        <YStack gap={scale(10)}>
-          <XStack items="center" justify="space-between">
-            <MyText color="$textPrimary" fontSize={scale(18)} fontWeight="600">
-              Select members
-            </MyText>
-            <Button
-              size="$2"
-              rounded={scale(20)}
-              bg="$backgroundSecondary"
-              color="$textSecondary"
-              onPress={() => setMemberSheetOpen(false)}
-            >
-              Done
-            </Button>
-          </XStack>
-
-          {isFriendsLoading ? (
-            <YStack
-              items="center"
-              justify="center"
-              py={scale(40)}
-              gap={scale(12)}
-            >
-              <Spinner size="small" color="$textSecondary" />
-              <MyText color="$textSecondary">Loading friends...</MyText>
-            </YStack>
-          ) : availableFriends.length === 0 ? (
-            <YStack
-              items="center"
-              justify="center"
-              py={scale(40)}
-              gap={scale(8)}
-            >
-              <MyText color="$textSecondary" fontSize={scale(14)}>
-                You don't have any friends to add yet.
-              </MyText>
-              <MyText
-                color="$textSecondary"
-                fontSize={scale(12)}
-                style={{ textAlign: "center" }}
-              >
-                Once you add friends, you'll be able to include them here.
-              </MyText>
-            </YStack>
-          ) : (
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <YStack gap={scale(12)} pb={scale(40)}>
-                {availableFriends.map((friend) => {
-                  const isSelected = selectedMemberIds.includes(friend._id);
-                  const avatarSource =
-                    friend.profilePicture ||
-                    `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                      friend.name || "Member"
-                    )}&background=2f3640&color=ffffff`;
-
-                  return (
-                    <Pressable
-                      key={friend._id}
-                      onPress={() => handleToggleMember(friend._id)}
-                    >
-                      <XStack
-                        gap={scale(16)}
-                        items="center"
-                        p={scale(12)}
-                        borderWidth={1}
-                        borderColor={
-                          isSelected ? "$accentYellow" : "$backgroundSecondary"
-                        }
-                        bg="$backgroundSecondary"
-                        rounded={scale(12)}
-                      >
-                        <Avatar size={scale(48)} rounded={scale(12)}>
-                          <Avatar.Image
-                            accessibilityLabel={friend.name}
-                            src={avatarSource}
-                          />
-                          <Avatar.Fallback
-                            delayMs={600}
-                            backgroundColor="#444"
-                          />
-                        </Avatar>
-
-                        <YStack flex={1} gap={scale(4)}>
-                          <MyText
-                            color="$textPrimary"
-                            fontSize={scale(15)}
-                            fontWeight="600"
-                          >
-                            {friend.name}
-                          </MyText>
-                          <MyText color="$textSecondary" fontSize={scale(13)}>
-                            {friend.email}
-                          </MyText>
-                        </YStack>
-
-                        <Square
-                          size={scale(24)}
-                          rounded={scale(8)}
-                          borderWidth={1}
-                          borderColor={
-                            isSelected ? "$accentYellow" : "$borderPrimary"
-                          }
-                          bg={isSelected ? "$accentYellow" : "transparent"}
-                          items="center"
-                          justify="center"
-                        >
-                          {isSelected && (
-                            <Check size={scale(16)} color="$accentBlack" />
-                          )}
-                        </Square>
-                      </XStack>
-                    </Pressable>
-                  );
-                })}
-              </YStack>
-            </ScrollView>
-          )}
-        </YStack>
-      </ModalSheet>
     </YStack>
   );
 };

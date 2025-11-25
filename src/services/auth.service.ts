@@ -12,7 +12,7 @@ export const loginService = async (payload: any) => {
 export const googleLoginService = async (payload: any) => {
   try {
     const res = await apiService.post(API_ENDPOINTS.auth.google, payload);
-    console.log(res.data.data, "-<<<<<<googleLoginService");
+    // console.log(res.data.data, "-<<<<<<googleLoginService");
     return res.data;
   } catch (err: any) {
     return (
