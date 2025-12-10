@@ -1,4 +1,12 @@
-import { ScrollView, XStack, YStack, Stack, Square } from "tamagui";
+import {
+  ScrollView,
+  XStack,
+  YStack,
+  Stack,
+  Square,
+  Image,
+  useTheme,
+} from "tamagui";
 import MyText from "../../../components/customTabBars/styleComponents/MyText";
 import { scale } from "src/utils/functions/dimensions";
 import Feather from "@expo/vector-icons/Feather";
@@ -16,9 +24,9 @@ import GroupsListSkeleton from "./skeleton/GroupsListSkeleton";
 
 const FriendsGroups = () => {
   const { data, isLoading, error, refetch, isFetching } = useGroups();
-  // console.log("groups", data);
+  // console.log("groups", data, isFetching, isLoading, error);
   const displayGroups = Array.isArray(data) ? data : [];
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return (
       <YStack
         //   borderWidth={1}
@@ -44,16 +52,81 @@ const FriendsGroups = () => {
     );
   }
 
+  if (data && data.length === 0) {
+    return (
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          // borderWidth: 1,
+          borderColor: "green",
+          // gap: scale(15),
+        }}
+        refreshControl={
+          <RefreshControl
+            refreshing={isFetching}
+            onRefresh={() => refetch()}
+            tintColor="#FFD700"
+            colors={["#FFD700"]}
+          />
+        }
+      >
+        <YStack
+          // borderWidth={1}
+          borderColor="red"
+          flex={1}
+          mb={scale(80)}
+          items="center"
+          justify="center"
+          gap={scale(3)}
+        >
+          <MyText
+            style={{ textAlign: "center" }}
+            color="$textSecondary"
+            fontSize={scale(16)}
+          >
+            You don't have any groups yet.
+          </MyText>
+          <MyText
+            style={{ textAlign: "center" }}
+            color="$textSecondary"
+            fontSize={scale(14)}
+          >
+            Create a group to start splitting expenses.
+          </MyText>
+        </YStack>
+      </ScrollView>
+    );
+  }
+
   if (error) {
     return (
-      <YStack flex={1} items="center" justify="center" gap={scale(20)}>
-        <MyText color="$red10" fontSize={scale(16)}>
-          Failed to load groups
-        </MyText>
-        <MyText color="$textSecondary" fontSize={scale(14)}>
-          {error.message}
-        </MyText>
-      </YStack>
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          // borderWidth: 1,
+          borderColor: "green",
+          // gap: scale(15),
+        }}
+        refreshControl={
+          <RefreshControl
+            refreshing={isFetching}
+            onRefresh={() => refetch()}
+            tintColor="#FFD700"
+            colors={["#FFD700"]}
+          />
+        }
+      >
+        <YStack flex={1} items="center" justify="center" gap={scale(20)}>
+          <MyText color="$accentRed" fontSize={scale(16)}>
+            Failed to load groups
+          </MyText>
+          <MyText color="$textSecondary" fontSize={scale(14)}>
+            {error.message}
+          </MyText>
+        </YStack>
+      </ScrollView>
     );
   }
 
@@ -96,8 +169,10 @@ const FriendsGroups = () => {
 export default FriendsGroups;
 
 const GroupItem = ({ group }: { group: Group }) => {
+  const theme = useTheme();
   const { name: groupName, balance, _id } = group;
-  const { net, amountOwed, amountToReceive } = balance;
+  const netBalance = balance?.net ?? 0;
+  const normalizedBalance = Math.abs(netBalance);
 
   const handleGroupPress = () => {
     router.push({
@@ -123,7 +198,22 @@ const GroupItem = ({ group }: { group: Group }) => {
           justify="center"
           items="center"
         >
-          <FontAwesome name="group" size={25} color="#f1c40f" />
+          {group.avatar ? (
+            <Image
+              source={{
+                uri: group.avatar,
+              }}
+              width={"100%"}
+              height={scale(55)}
+              rounded={scale(10)}
+            />
+          ) : (
+            <FontAwesome
+              name="group"
+              size={25}
+              color={theme.accentYellow.val}
+            />
+          )}
         </Stack>
 
         <YStack justify="center" flex={1}>
@@ -139,17 +229,17 @@ const GroupItem = ({ group }: { group: Group }) => {
             <MyText
               fontSize={scale(12)}
               color={
-                amountOwed > 0
-                  ? "tomato"
-                  : amountToReceive > 0
-                  ? "green"
+                netBalance < 0
+                  ? "$accentRed"
+                  : netBalance > 0
+                  ? "$accentGreen"
                   : "gray"
               }
             >
-              {amountOwed > 0
-                ? `You need to pay Rs. ${amountOwed}`
-                : amountToReceive > 0
-                ? `You are owed Rs. ${amountToReceive}`
+              {netBalance < 0
+                ? `You need to pay Rs. ${normalizedBalance}`
+                : netBalance > 0
+                ? `You are owed Rs. ${normalizedBalance}`
                 : "No pending expenses"}
             </MyText>
           </YStack>
@@ -168,76 +258,3 @@ const GroupItem = ({ group }: { group: Group }) => {
     </Pressable>
   );
 };
-
-const billsData = [
-  {
-    icon: "film",
-    title: "Movie Fun",
-    amount: 320,
-    time: "Jul 14 25 | 08:30 PM",
-    iconColor: "#3498db", // blue
-  },
-  {
-    icon: "zap",
-    title: "Electricity Bill",
-    amount: 1450,
-    time: "Jul 13 25 | 06:00 PM",
-    iconColor: "#f1c40f", // yellow
-  },
-  {
-    icon: "shopping-cart",
-    title: "Grocery Shopping",
-    amount: 790,
-    time: "Jul 12 25 | 04:15 PM",
-    iconColor: "#2ecc71", // green
-  },
-  {
-    icon: "home",
-    title: "House Rent",
-    amount: 18000,
-    time: "Jul 01 25 | 12:00 PM",
-    iconColor: "#9b59b6", // purple
-  },
-  {
-    icon: "wifi",
-    title: "WiFi Recharge",
-    amount: 499,
-    time: "Jul 10 25 | 10:00 AM",
-    iconColor: "#e74c3c", // red
-  },
-  {
-    icon: "phone",
-    title: "Mobile Bill",
-    amount: 299,
-    time: "Jul 11 25 | 03:45 PM",
-    iconColor: "#1abc9c", // teal
-  },
-  {
-    icon: "coffee",
-    title: "Cafe Snacks",
-    amount: 220,
-    time: "Jul 09 25 | 05:20 PM",
-    iconColor: "#e67e22", // orange
-  },
-  {
-    icon: "gift",
-    title: "Gift Shopping",
-    amount: 2100,
-    time: "Jul 06 25 | 07:00 PM",
-    iconColor: "#ff6b81", // pink
-  },
-  {
-    icon: "globe",
-    title: "Domain Renewal",
-    amount: 799,
-    time: "Jul 02 25 | 11:30 AM",
-    iconColor: "#16a085", // emerald
-  },
-  {
-    icon: "briefcase",
-    title: "Coworking Rent",
-    amount: 4000,
-    time: "Jul 05 25 | 09:00 AM",
-    iconColor: "#34495e", // dark gray
-  },
-];

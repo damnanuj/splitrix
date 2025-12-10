@@ -15,6 +15,9 @@
       "android": {
         "buildType": "apk",
         "resourceClass": "medium"
+      },
+      "env": {
+        "EXPO_PUBLIC_BASE_URL": "https://splitrix-server.vercel.app"
       }
     },
     "production": {

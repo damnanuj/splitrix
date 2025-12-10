@@ -104,7 +104,7 @@ const FriendsList = () => {
 
   if (friends.length === 0) {
     return (
-      <YStack flex={1} justify="center" items="center" gap={scale(20)}>
+      <YStack flex={1}  justify="center" items="center" gap={scale(20)}>
         <MyText color="$textSecondary" fontSize={scale(16)}>
           No friends yet
         </MyText>

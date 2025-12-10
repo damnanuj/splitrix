@@ -97,13 +97,12 @@ function SigninForm() {
       await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
 
-      // console.log(response?.data?.idToken, "-<<<<<<response");
+      console.log(response?.data?.idToken, "-<<<<<<response");
 
       if (isSuccessResponse(response)) {
-        const { user } = response.data;
-        const { name, photo, email } = user;
+        const { idToken } = response.data;
 
-        const data = await googleLoginService({ email, name, photo });
+        const data = await googleLoginService((idToken as string) || "");
 
         // console.log(data.token, "-<<<<<<data");
 

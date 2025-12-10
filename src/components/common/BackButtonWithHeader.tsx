@@ -9,12 +9,12 @@ const BackButtonWithHeader = ({ title = "Provide a title prop" }) => {
   return (
     <XStack
       // borderWidth={1}
-      borderColor={"red"}
+      borderColor={"blue"}
     >
       <XStack
         // borderWidth={1}
         borderColor={"red"}
-        py={scale(15)}
+        py={scale(12)}
         items={"center"}
         gap={scale(10)}
         onPress={() => router.back()}

@@ -8,6 +8,7 @@ import GroupsFriendsSelector from "src/components/common/GroupsFriendsSelector";
 import { useGroups } from "src/hooks/group/useGroups";
 import { useFriendsList } from "src/hooks/friends/useFriendsList";
 import { useRouter } from "expo-router";
+import CustomTabs from "src/components/common/CustomTabs";
 
 type TabKey = "groups" | "friends";
 
@@ -27,24 +28,6 @@ const SplitTargetSelectionPage = () => {
     error: friendsError,
     refetch: refetchFriends,
   } = useFriendsList();
-
-  const renderTabButton = (key: TabKey, label: string) => {
-    const isActive = activeTab === key;
-    return (
-      <Button
-        flex={1}
-        bg={isActive ? "$accentYellow" : "$backgroundSecondary"}
-        color={isActive ? "$accentBlack" : "$textSecondary"}
-        borderWidth={0}
-        fontSize={scale(14)}
-        fontWeight="600"
-        pressStyle={{ opacity: 0.85 }}
-        onPress={() => setActiveTab(key)}
-      >
-        {label}
-      </Button>
-    );
-  };
 
   const getAvatarSource = (name: string, profilePicture?: string) => {
     return (
@@ -228,15 +211,16 @@ const SplitTargetSelectionPage = () => {
         <YStack px={scale(24)} flex={1}>
           <BackButtonWithHeader title="Split Expense" />
 
-          <XStack
-            mb={scale(12)}
-            gap={scale(8)}
-            bg="$backgroundSecondary"
-            rounded={scale(12)}
-          >
-            {renderTabButton("groups", "Groups")}
-            {renderTabButton("friends", "People")}
-          </XStack>
+          <Stack mb={scale(12)}>
+            <CustomTabs
+              tabs={[
+                { key: "groups", label: "Groups" },
+                { key: "friends", label: "People" },
+              ]}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
+          </Stack>
 
           <Stack flex={1}>
             {activeTab === "groups" ? renderGroupsList() : renderFriendsList()}

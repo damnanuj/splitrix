@@ -6,15 +6,15 @@ export interface User {
 }
 
 export interface GroupDetailsData {
-  group: Group;
-  userMembership: {
-    isMember: boolean;
-    isCreator: boolean;
-    membershipStatus: string;
-    hasPendingInvite: boolean;
-    pendingInviteId?: string;
-    balance: Balance | null;
-  };
+  _id: string;
+  name: string;
+  description: string;
+  createdBy: User;
+  members: User[];
+  memberCount: number;
+  avatar: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface GroupDetailsResponse {
@@ -56,6 +56,7 @@ export interface Group {
   avatar: string;
   createdAt: string;
   updatedAt: string;
+  balance: Balance;
 }
 
 export interface Balance {
@@ -63,25 +64,6 @@ export interface Balance {
   amountOwed: number;
   amountToReceive: number;
 }
-
-// {
-//   "_id": "68f6357cef754a62d1e6fc5f",
-//   "name": "Billionaires",
-//   "createdBy": {
-//       "_id": "68f63460ef754a62d1e6fc4f",
-//       "name": "Steve Rogers",
-//       "email": "steve@gmail.com",
-//       "profilePicture": ""
-//   },
-//   "members": [
-//       "68f63460ef754a62d1e6fc4f"
-//   ],
-//   "description": "Office Buddies",
-//   "avatar": "",
-//   "createdAt": "2025-10-20T13:13:32.522Z",
-//   "updatedAt": "2025-10-20T13:13:32.522Z",
-//   "__v": 0
-// }
 
 export interface CreateGroup {
   name: string;
@@ -139,7 +121,7 @@ export interface GroupExpenseSplitUser {
 }
 
 export interface GroupExpenseSplit {
-  user: GroupExpenseSplitUser;
+  user: User;
   share: number;
   paid: number;
   balance: number;
@@ -155,22 +137,15 @@ export interface GroupExpense {
   description: string;
   amount: number;
   date: string;
-  payerId: string;
-  splitType: SplitType;
+  paidBy: User;
   splits: GroupExpenseSplit[];
   yourStake: GroupExpenseStake;
-}
-
-export interface GroupBillsData {
-  group: { id: string };
-  members: Record<string, GroupBillsMember>;
-  expenses: GroupExpense[];
 }
 
 export interface GroupBillsResponse {
   success: boolean;
   msg: string;
-  data: GroupBillsData;
+  data: GroupExpense[];
 }
 
 export type Notification = {

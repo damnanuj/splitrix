@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { getGroupExpenses } from "src/services/billing.service";
-import { GroupBillsData } from "src/stores/types";
+import { GroupExpense } from "src/stores/types";
 
 export const useGroupBills = (groupId: string) => {
-  return useQuery<GroupBillsData, Error>({
+  return useQuery<GroupExpense[], Error>({
     queryKey: ["group", "bills", groupId],
-    queryFn: async (): Promise<GroupBillsData> => {
+    queryFn: async (): Promise<GroupExpense[]> => {
       const res = await getGroupExpenses(groupId);
       if (res.success) return res.data;
       throw new Error(res.msg || "Failed to fetch group expenses");

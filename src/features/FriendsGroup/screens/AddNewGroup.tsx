@@ -204,8 +204,11 @@ const AddNewGroup = () => {
         </YStack>
       </YStack>
 
+      <MyText color="$textPrimary" fontSize={scale(16)}>
+        Members (optional)
+      </MyText>
+
       <MemberSelector
-        label="Members (optional)"
         selectedMemberIds={selectedMemberIds}
         onSelectionChange={setSelectedMemberIds}
         helperText={(count) =>

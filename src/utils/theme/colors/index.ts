@@ -12,6 +12,7 @@ const themeColors = {
     GREEN: "#008a20ff" as const,
     SHIMMER_PRIMARY: "#2F2F2F" as const,
     SHIMMER_SECONDARY: "#707070" as const,
+    RED: "#FF0000" as const,
   },
   light: {
     PRIMARY: "#FFF" as const,
@@ -27,6 +28,7 @@ const themeColors = {
     GREEN: "#008a20ff" as const,
     SHIMMER_PRIMARY: "#EDEDED" as const,
     SHIMMER_SECONDARY: "#e0e0e0" as const,
+    RED: "#FF0000" as const,
   },
 };
 

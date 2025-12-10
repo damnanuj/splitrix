@@ -123,11 +123,7 @@ const MemberSelector = ({
 
   return (
     <>
-      <YStack gap={scale(10)}>
-        <MyText color="$textPrimary" fontSize={scale(16)}>
-          {label}
-        </MyText>
-
+      <YStack gap={scale(10)} borderWidth={1} borderColor="red">
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <XStack gap={scale(12)} py={scale(4)} pr={scale(10)}>
             {selectedMembers.map((member) => {
