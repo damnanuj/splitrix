@@ -21,6 +21,7 @@ import { router } from "expo-router";
 import { Pressable, RefreshControl } from "react-native";
 import { useGroups } from "src/hooks/group/useGroups";
 import GroupsListSkeleton from "./skeleton/GroupsListSkeleton";
+import { formatAmount } from "../screens/GroupDetailsScreen";
 
 const FriendsGroups = () => {
   const { data, isLoading, error, refetch, isFetching } = useGroups();
@@ -237,9 +238,9 @@ const GroupItem = ({ group }: { group: Group }) => {
               }
             >
               {netBalance < 0
-                ? `You need to pay Rs. ${normalizedBalance}`
+                ? `You need to pay  ${formatAmount(normalizedBalance)}`
                 : netBalance > 0
-                ? `You are owed Rs. ${normalizedBalance}`
+                ? `You will get back ${formatAmount(normalizedBalance)}`
                 : "No pending expenses"}
             </MyText>
           </YStack>

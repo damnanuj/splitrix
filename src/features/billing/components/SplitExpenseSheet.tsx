@@ -24,6 +24,7 @@ import { scale } from "src/utils/functions/dimensions";
 import MyText from "src/components/customTabBars/styleComponents/MyText";
 import { ModalSheet } from "src/components/common/ModalSheet";
 import { Pressable } from "react-native";
+import { useRouter } from "expo-router";
 
 type SplitMode = "amount" | "share" | "percent";
 
@@ -53,6 +54,7 @@ const SplitExpenseSheet = ({
   totalAmount,
   onConfirm,
 }: SplitExpenseSheetProps) => {
+  const router = useRouter();
   const [splitMode, setSplitMode] = useState<SplitMode>("amount");
   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
   const [values, setValues] = useState<Record<string, number>>({});
@@ -395,6 +397,8 @@ const SplitExpenseSheet = ({
         selectedMemberIds,
       });
       onOpenChange(false);
+      // Navigate back to the previous screen after successful split confirmation
+      router.back();
     } catch (error) {
       console.error("Failed to confirm split", error);
     } finally {

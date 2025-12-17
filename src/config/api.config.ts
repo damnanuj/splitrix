@@ -17,7 +17,9 @@ export const API_ENDPOINTS = {
     mine: "/group/mine",
     invite: "/group/invite",
     inviteRespond: "/group/invite/respond",
+    addMembers: (id: string) => `/group/add-members/${id}`,
     getById: (id: string) => `/group/${id}`,
+    getGroupBalanceSummary: (id: string) => `/group/balances-summary/${id}`,
   },
   notification: {
     list: "/notifications",

@@ -167,6 +167,7 @@ function RootLayoutNav() {
         <Stack.Screen name="addBill" />
         <Stack.Screen name="addNewGroup" />
         <Stack.Screen name="addNewFriend" />
+        <Stack.Screen name="membersSelector" />
       </Stack>
     </ThemeProvider>
   );

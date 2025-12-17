@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Pressable, ScrollView } from "react-native";
 import {
   YStack,
@@ -19,12 +19,14 @@ import {
 } from "src/hooks/friends/useMemberSelection";
 import { useAuthStore } from "src/stores/authStore";
 import { useFriendsList } from "src/hooks/friends/useFriendsList";
+import { useRouter } from "expo-router";
 
 interface MemberSelectorProps {
   label?: string;
   helperText?: (count: number) => string;
   selectedMemberIds?: string[];
   onSelectionChange?: (memberIds: string[]) => void;
+  excludeMemberIds?: string[]; // IDs of members already in the group (to filter them out)
 }
 
 const MemberSelector = ({
@@ -32,21 +34,41 @@ const MemberSelector = ({
   helperText,
   selectedMemberIds: controlledMemberIds,
   onSelectionChange,
+  excludeMemberIds = [],
 }: MemberSelectorProps) => {
   const [sheetOpen, setSheetOpen] = useState(false);
   const { authData } = useAuthStore();
   const currentUserId = authData?._id;
-  const { data: friends = [], isLoading: isFriendsLoading } = useFriendsList();
+  const {
+    data: friends = [],
+    isLoading: isFriendsLoading,
+    refetch: refetchFriends,
+  } = useFriendsList();
+
+  // Refetch friends when modal sheet opens
+  useEffect(() => {
+    if (sheetOpen) {
+      refetchFriends();
+    }
+  }, [sheetOpen, refetchFriends]);
 
   // Use hook for internal state management
   const {
     selectedMemberIds: internalMemberIds,
     setSelectedMemberIds: setInternalMemberIds,
     selectedMembers: internalSelectedMembers,
-    availableFriends,
+    availableFriends: allAvailableFriends,
     handleToggleMember: internalHandleToggle,
     handleRemoveMember: internalHandleRemove,
   } = useMemberSelection();
+
+  // Filter out friends that are already in the group (excludeMemberIds)
+  const availableFriends = useMemo(() => {
+    if (excludeMemberIds.length === 0) return allAvailableFriends;
+    return allAvailableFriends.filter(
+      (friend) => !excludeMemberIds.includes(friend._id)
+    );
+  }, [allAvailableFriends, excludeMemberIds]);
 
   // Use controlled or internal state
   const isControlled = controlledMemberIds !== undefined;
@@ -121,9 +143,15 @@ const MemberSelector = ({
     );
   };
 
+  const router = useRouter();
+
   return (
     <>
-      <YStack gap={scale(10)} borderWidth={1} borderColor="red">
+      <YStack
+        gap={scale(10)}
+        //  borderWidth={1}
+        borderColor="red"
+      >
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <XStack gap={scale(12)} py={scale(4)} pr={scale(10)}>
             {selectedMembers.map((member) => {
@@ -186,6 +214,7 @@ const MemberSelector = ({
             })}
 
             <Pressable
+              // onPress={() => router.push("/membersSelector")}
               onPress={() => setSheetOpen(true)}
               style={{ padding: scale(2) }}
             >
@@ -217,20 +246,25 @@ const MemberSelector = ({
         onOpenChange={setSheetOpen}
         snapPoints={[70]}
       >
-        <YStack gap={scale(10)}>
+        <YStack gap={scale(10)} flex={1} borderColor="green">
           <XStack items="center" justify="space-between">
-            <MyText color="$textPrimary" fontSize={scale(18)} fontWeight="600">
-              Select members
-            </MyText>
-            <Button
-              size="$2"
-              rounded={scale(20)}
-              bg="$backgroundSecondary"
-              color="$textSecondary"
-              onPress={() => setSheetOpen(false)}
-            >
-              Done
-            </Button>
+            <YStack gap={scale(4)}>
+              <MyText
+                color="$textPrimary"
+                fontSize={scale(18)}
+                fontWeight="600"
+              >
+                Select members
+              </MyText>
+              {!isFriendsLoading && (
+                <MyText color="$textSecondary" fontSize={scale(13)}>
+                  {availableFriends.length} friend
+                  {availableFriends.length !== 1 ? "s" : ""} available
+                  {excludeMemberIds.length > 0 &&
+                    ` (${excludeMemberIds.length} already in group)`}
+                </MyText>
+              )}
+            </YStack>
           </XStack>
 
           {isFriendsLoading ? (
@@ -251,19 +285,38 @@ const MemberSelector = ({
               gap={scale(8)}
             >
               <MyText color="$textSecondary" fontSize={scale(14)}>
-                You don't have any friends to add yet.
+                {excludeMemberIds.length > 0
+                  ? "All your friends are already in this group."
+                  : "You don't have any friends to add yet."}
               </MyText>
               <MyText
                 color="$textSecondary"
                 fontSize={scale(12)}
                 style={{ textAlign: "center" }}
               >
-                Once you add friends, you'll be able to include them here.
+                {excludeMemberIds.length > 0
+                  ? "Add more friends to your account to invite them to this group."
+                  : "Once you add friends, you'll be able to include them here."}
               </MyText>
             </YStack>
           ) : (
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <YStack gap={scale(12)} pb={scale(40)}>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{
+                // borderWidth: 1,
+                borderColor: "red",
+                flex: 1,
+                height: "100%",
+              }}
+            >
+              <YStack
+                gap={scale(12)}
+                pb={scale(40)}
+                // borderWidth={1}
+                flex={1}
+                mb={scale(55)}
+                borderColor="blue"
+              >
                 {availableFriends.map((friend) => {
                   const isSelected = selectedMemberIds.includes(friend._id);
                   const avatarSource = getAvatarSource({
@@ -333,6 +386,19 @@ const MemberSelector = ({
                   );
                 })}
               </YStack>
+
+              <Button
+                bg="$accentYellow"
+                color="$textSecondary"
+                position="absolute"
+                bottom={scale(0)}
+                left={scale(0)}
+                right={scale(0)}
+                height={scale(52)}
+                onPress={() => setSheetOpen(false)}
+              >
+                Done
+              </Button>
             </ScrollView>
           )}
         </YStack>

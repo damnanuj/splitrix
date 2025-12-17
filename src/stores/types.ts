@@ -22,6 +22,18 @@ export interface GroupDetailsResponse {
   msg: string;
   data: GroupDetailsData;
 }
+
+export interface GroupBalanceSummaryData {
+  memberId: string;
+  name: string;
+  profilePicture?: string;
+  amount: number;
+}
+export interface GroupBalanceSummaryResponse {
+  success: boolean;
+  msg: string;
+  data: GroupBalanceSummaryData[];
+}
 export interface Friend {
   _id: string;
   name: string;

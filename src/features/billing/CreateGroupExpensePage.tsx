@@ -25,7 +25,8 @@ import { useCreateExpense } from "src/hooks/billing/useCreateExpense";
 const CreateGroupExpensePage = () => {
   const { groupId } = useLocalSearchParams<{ groupId: string }>();
   const { data, isLoading, error } = useGroupDetails(groupId || "");
-  const group = data?.group;
+  console.log(data, "-<<<<<<data");
+  const group = data;
   const members = group?.members || [];
   const { authData } = useAuthStore();
   const toast = useToastController();
@@ -95,7 +96,8 @@ const CreateGroupExpensePage = () => {
     }
   };
 
-  if (isLoading) {
+  // Only show loading if we don't have cached data
+  if (isLoading && !data) {
     return (
       <YStack
         flex={1}
@@ -145,20 +147,14 @@ const CreateGroupExpensePage = () => {
     setSplitSheetOpen(true);
   };
 
-  const dateString = expenseDate.toDateString();
-  const timeString = expenseTime.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
   return (
     <>
       <YStack flex={1} bg="$background">
         <ScrollView
           contentContainerStyle={{
-            paddingBottom: scale(120),
-            paddingHorizontal: scale(24),
-            paddingTop: scale(16),
+            pb: scale(120),
+            px: scale(24),
+            pt: scale(16),
             gap: scale(18),
           }}
           showsVerticalScrollIndicator={false}
