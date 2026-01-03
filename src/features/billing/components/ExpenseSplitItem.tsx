@@ -69,7 +69,7 @@ const ExpenseSplitItem = ({ splitBill }: { splitBill: GroupExpense }) => {
           fontSize={scale(16)}
           style={{ fontFamily: "MPlusRounded700" }}
         >
-          {description || "Untitled expense"}
+          {description}
         </MyText>
         <MyText fontSize={scale(13)} color={"$textSecondary"}>
           {paidByName} paid {formatAmount(amount)}

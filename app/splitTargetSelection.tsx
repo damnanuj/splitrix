@@ -1,8 +1,7 @@
-import SplitTargetSelectionPage from "src/features/billing/SplitTargetSelectionPage";
+import FriendsGroupPage from "src/features/FriendsGroup/screens/FriendsGroupPage";
 
 const SplitTargetSelection = () => {
-  return <SplitTargetSelectionPage />;
+  return <FriendsGroupPage mode="selectForBill" />;
 };
 
 export default SplitTargetSelection;
-

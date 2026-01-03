@@ -66,7 +66,7 @@ const CreateGroupExpensePage = () => {
     }));
 
     const expensePayload = {
-      title: description.trim() || "Untitled expense",
+      title: description.trim(),
       amount: Number(amount) || 0,
       group: group?._id,
       paidBy: paidById,
@@ -182,6 +182,23 @@ const CreateGroupExpensePage = () => {
 
           <YStack gap={scale(8)}>
             <MyText color="$textSecondary" fontSize={scale(14)}>
+              Title
+            </MyText>
+            <Input
+              placeholder="What was this expense for?"
+              value={description}
+              onChangeText={setDescription}
+              multiline
+              numberOfLines={3}
+              textAlignVertical="top"
+              bg="$backgroundSecondary"
+              borderColor="$backgroundSecondary"
+              color="$textPrimary"
+            />
+          </YStack>
+
+          <YStack gap={scale(8)}>
+            <MyText color="$textSecondary" fontSize={scale(14)}>
               Paid by
             </MyText>
             <Pressable onPress={() => setPaidBySheetOpen(true)}>
@@ -249,23 +266,6 @@ const CreateGroupExpensePage = () => {
                 />
               </YStack>
             </XStack>
-          </YStack>
-
-          <YStack gap={scale(8)}>
-            <MyText color="$textSecondary" fontSize={scale(14)}>
-              Description
-            </MyText>
-            <Input
-              placeholder="What was this expense for?"
-              value={description}
-              onChangeText={setDescription}
-              multiline
-              numberOfLines={3}
-              textAlignVertical="top"
-              bg="$backgroundSecondary"
-              borderColor="$backgroundSecondary"
-              color="$textPrimary"
-            />
           </YStack>
         </ScrollView>
 

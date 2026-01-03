@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Pressable, ScrollView } from "react-native";
+import { BackHandler, Pressable, ScrollView } from "react-native";
 import {
   YStack,
   XStack,
@@ -144,6 +144,25 @@ const MemberSelector = ({
   };
 
   const router = useRouter();
+
+  // Handle Android hardware back button when the member sheet is open
+  useEffect(() => {
+    if (!sheetOpen) return;
+
+    const onBackPress = () => {
+      setSheetOpen(false);
+      return true; // prevent default back navigation
+    };
+
+    const subscription = BackHandler.addEventListener(
+      "hardwareBackPress",
+      onBackPress
+    );
+
+    return () => {
+      subscription.remove();
+    };
+  }, [sheetOpen]);
 
   return (
     <>

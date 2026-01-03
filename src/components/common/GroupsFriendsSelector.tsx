@@ -84,226 +84,251 @@ const GroupsFriendsSelector = ({
       snapPoints={[85]}
       snapPointsMode="percent"
     >
-      <YStack flex={1} gap={scale(20)}>
-        <MyText color="$textPrimary" fontSize={scale(20)} fontWeight="600">
-          Select Group or Friend
-        </MyText>
+      <YStack flex={1} position="relative">
+        <ScrollView
+          style={{ flex: 1 }}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingBottom: selectedFriendIds.length > 0 ? scale(72) : scale(20),
+          }}
+        >
+          <YStack gap={scale(20)}>
+            <MyText color="$textPrimary" fontSize={scale(20)} fontWeight="600">
+              Select Group or Friend
+            </MyText>
 
-        {/* Groups Section - First 50% */}
-        <YStack gap={scale(12)} borderColor="red">
-          <MyText color="$textPrimary" fontSize={scale(16)} fontWeight="600">
-            Groups
-          </MyText>
-          {isGroupsLoading ? (
-            <YStack
-              items="center"
-              justify="center"
-              py={scale(40)}
-              gap={scale(12)}
-            >
-              <Spinner size="small" color="$textSecondary" />
-              <MyText color="$textSecondary">Loading groups...</MyText>
-            </YStack>
-          ) : groups.length === 0 ? (
-            <YStack
-              items="center"
-              justify="center"
-              py={scale(40)}
-              gap={scale(8)}
-            >
-              <MyText color="$textSecondary" fontSize={scale(14)}>
-                You don't have any groups yet.
-              </MyText>
+            {/* Groups Section - First 50% */}
+            <YStack gap={scale(12)} borderColor="red">
               <MyText
-                color="$textSecondary"
-                fontSize={scale(12)}
-                style={{ textAlign: "center" }}
+                color="$textPrimary"
+                fontSize={scale(16)}
+                fontWeight="600"
               >
-                Create a group to start splitting expenses.
+                Groups
               </MyText>
-            </YStack>
-          ) : (
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              //   style={{ flex: 1 }}
-            >
-              <YStack gap={scale(12)} pb={scale(20)}>
-                {groups.map((group) => {
-                  const avatarSource = getAvatarSource(
-                    group.name,
-                    group.avatar
-                  );
+              {isGroupsLoading ? (
+                <YStack
+                  items="center"
+                  justify="center"
+                  py={scale(40)}
+                  gap={scale(12)}
+                >
+                  <Spinner size="small" color="$textSecondary" />
+                  <MyText color="$textSecondary">Loading groups...</MyText>
+                </YStack>
+              ) : groups.length === 0 ? (
+                <YStack
+                  items="center"
+                  justify="center"
+                  py={scale(40)}
+                  gap={scale(8)}
+                >
+                  <MyText color="$textSecondary" fontSize={scale(14)}>
+                    You don't have any groups yet.
+                  </MyText>
+                  <MyText
+                    color="$textSecondary"
+                    fontSize={scale(12)}
+                    style={{ textAlign: "center" }}
+                  >
+                    Create a group to start splitting expenses.
+                  </MyText>
+                </YStack>
+              ) : (
+                <YStack gap={scale(12)}>
+                  {groups.map((group) => {
+                    const avatarSource = getAvatarSource(
+                      group.name,
+                      group.avatar
+                    );
 
-                  return (
-                    <Pressable
-                      key={group._id}
-                      onPress={() => handleGroupSelect(group)}
-                    >
-                      <XStack
-                        gap={scale(16)}
-                        items="center"
-                        p={scale(12)}
-                        borderWidth={1}
-                        borderColor="$backgroundSecondary"
-                        bg="$backgroundSecondary"
-                        rounded={scale(12)}
+                    return (
+                      <Pressable
+                        key={group._id}
+                        onPress={() => handleGroupSelect(group)}
                       >
-                        <Avatar size={scale(48)} rounded={scale(12)}>
-                          <Avatar.Image
-                            accessibilityLabel={group.name}
-                            src={avatarSource}
-                          />
-                          <Avatar.Fallback
-                            delayMs={600}
-                            backgroundColor="#444"
-                          />
-                        </Avatar>
+                        <XStack
+                          gap={scale(16)}
+                          items="center"
+                          p={scale(12)}
+                          borderWidth={1}
+                          borderColor="$backgroundSecondary"
+                          bg="$backgroundSecondary"
+                          rounded={scale(12)}
+                        >
+                          <Avatar size={scale(48)} rounded={scale(12)}>
+                            <Avatar.Image
+                              accessibilityLabel={group.name}
+                              src={avatarSource}
+                            />
+                            <Avatar.Fallback
+                              delayMs={600}
+                              backgroundColor="#444"
+                            />
+                          </Avatar>
 
-                        <YStack flex={1} gap={scale(4)}>
-                          <MyText
-                            color="$textPrimary"
-                            fontSize={scale(15)}
-                            fontWeight="600"
-                          >
-                            {group.name}
-                          </MyText>
-                        </YStack>
-                        <ChevronRight size={scale(24)} color="$textPrimary" />
-                      </XStack>
-                    </Pressable>
-                  );
-                })}
-              </YStack>
-            </ScrollView>
-          )}
-        </YStack>
-
-        {/* Friends Section - Second 50% */}
-        <YStack gap={scale(12)} borderColor="blue">
-          <MyText color="$textPrimary" fontSize={scale(16)} fontWeight="600">
-            Friends
-          </MyText>
-          {isFriendsLoading ? (
-            <YStack
-              items="center"
-              justify="center"
-              py={scale(40)}
-              gap={scale(12)}
-            >
-              <Spinner size="small" color="$textSecondary" />
-              <MyText color="$textSecondary">Loading friends...</MyText>
+                          <YStack flex={1} gap={scale(4)}>
+                            <MyText
+                              color="$textPrimary"
+                              fontSize={scale(15)}
+                              fontWeight="600"
+                            >
+                              {group.name}
+                            </MyText>
+                          </YStack>
+                          <ChevronRight size={scale(24)} color="$textPrimary" />
+                        </XStack>
+                      </Pressable>
+                    );
+                  })}
+                </YStack>
+              )}
             </YStack>
-          ) : friends.length === 0 ? (
-            <YStack
-              items="center"
-              justify="center"
-              py={scale(40)}
-              gap={scale(8)}
-            >
-              <MyText color="$textSecondary" fontSize={scale(14)}>
-                You don't have any friends to add yet.
-              </MyText>
+
+            {/* Friends Section - Second 50% */}
+            <YStack gap={scale(12)} borderColor="blue">
               <MyText
-                color="$textSecondary"
-                fontSize={scale(12)}
-                style={{ textAlign: "center" }}
+                color="$textPrimary"
+                fontSize={scale(16)}
+                fontWeight="600"
               >
-                Add friends to create groups with them.
+                Friends
               </MyText>
-            </YStack>
-          ) : (
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              //   style={{ flex: 1 }}
-            >
-              <YStack gap={scale(12)} pb={scale(20)}>
-                {friends.map((friend) => {
-                  const avatarSource = getAvatarSource(
-                    friend.name,
-                    friend.profilePicture
-                  );
-                  const isSelected = selectedFriendIds.includes(friend._id);
+              {isFriendsLoading ? (
+                <YStack
+                  items="center"
+                  justify="center"
+                  py={scale(40)}
+                  gap={scale(12)}
+                >
+                  <Spinner size="small" color="$textSecondary" />
+                  <MyText color="$textSecondary">Loading friends...</MyText>
+                </YStack>
+              ) : friends.length === 0 ? (
+                <YStack
+                  items="center"
+                  justify="center"
+                  py={scale(40)}
+                  gap={scale(8)}
+                >
+                  <MyText color="$textSecondary" fontSize={scale(14)}>
+                    You don't have any friends to add yet.
+                  </MyText>
+                  <MyText
+                    color="$textSecondary"
+                    fontSize={scale(12)}
+                    style={{ textAlign: "center" }}
+                  >
+                    Add friends to create groups with them.
+                  </MyText>
+                </YStack>
+              ) : (
+                <YStack gap={scale(12)}>
+                  {friends.map((friend) => {
+                    const avatarSource = getAvatarSource(
+                      friend.name,
+                      friend.profilePicture
+                    );
+                    const isSelected = selectedFriendIds.includes(friend._id);
 
-                  return (
-                    <Pressable
-                      key={friend._id}
-                      onPress={() => handleFriendToggle(friend._id)}
-                    >
-                      <XStack
-                        gap={scale(16)}
-                        items="center"
-                        p={scale(12)}
-                        borderWidth={1}
-                        borderColor={
-                          isSelected ? "$accentYellow" : "$backgroundSecondary"
-                        }
-                        bg="$backgroundSecondary"
-                        rounded={scale(12)}
+                    return (
+                      <Pressable
+                        key={friend._id}
+                        onPress={() => handleFriendToggle(friend._id)}
                       >
-                        <Avatar size={scale(48)} rounded={scale(12)}>
-                          <Avatar.Image
-                            accessibilityLabel={friend.name}
-                            src={avatarSource}
-                          />
-                          <Avatar.Fallback
-                            delayMs={600}
-                            backgroundColor="#444"
-                          />
-                        </Avatar>
-
-                        <YStack flex={1} gap={scale(4)}>
-                          <MyText
-                            color="$textPrimary"
-                            fontSize={scale(15)}
-                            fontWeight="600"
-                          >
-                            {friend.name}
-                          </MyText>
-                          <MyText color="$textSecondary" fontSize={scale(13)}>
-                            {friend.email}
-                          </MyText>
-                        </YStack>
-
-                        <Square
-                          size={scale(24)}
-                          rounded={scale(8)}
+                        <XStack
+                          gap={scale(16)}
+                          items="center"
+                          p={scale(12)}
                           borderWidth={1}
                           borderColor={
-                            isSelected ? "$accentYellow" : "$borderPrimary"
+                            isSelected
+                              ? "$accentYellow"
+                              : "$backgroundSecondary"
                           }
-                          bg={isSelected ? "$accentYellow" : "transparent"}
-                          items="center"
-                          justify="center"
+                          bg="$backgroundSecondary"
+                          rounded={scale(12)}
                         >
-                          {isSelected && (
-                            <Check size={scale(16)} color="$accentBlack" />
-                          )}
-                        </Square>
-                      </XStack>
-                    </Pressable>
-                  );
-                })}
-              </YStack>
-            </ScrollView>
-          )}
-        </YStack>
+                          <Avatar size={scale(48)} rounded={scale(12)}>
+                            <Avatar.Image
+                              accessibilityLabel={friend.name}
+                              src={avatarSource}
+                            />
+                            <Avatar.Fallback
+                              delayMs={600}
+                              backgroundColor="#444"
+                            />
+                          </Avatar>
 
-        {/* Next Button - Only show when friends are selected */}
+                          <YStack flex={1} gap={scale(4)}>
+                            <MyText
+                              color="$textPrimary"
+                              fontSize={scale(15)}
+                              fontWeight="600"
+                            >
+                              {friend.name}
+                            </MyText>
+                            <MyText color="$textSecondary" fontSize={scale(13)}>
+                              {friend.email}
+                            </MyText>
+                          </YStack>
+
+                          <Square
+                            size={scale(24)}
+                            rounded={scale(8)}
+                            borderWidth={1}
+                            borderColor={
+                              isSelected ? "$accentYellow" : "$borderPrimary"
+                            }
+                            bg={isSelected ? "$accentYellow" : "transparent"}
+                            items="center"
+                            justify="center"
+                          >
+                            {isSelected && (
+                              <Check size={scale(16)} color="$accentBlack" />
+                            )}
+                          </Square>
+                        </XStack>
+                      </Pressable>
+                    );
+                  })}
+                </YStack>
+              )}
+            </YStack>
+          </YStack>
+        </ScrollView>
+
+        {/* Next Button - Fixed at bottom */}
         {selectedFriendIds.length > 0 && (
-          <Button
-            onPress={handleNext}
-            bg="$accentYellow"
-            color="$accentBlack"
-            fontSize={scale(16)}
-            fontWeight="600"
-            height={scale(52)}
-            rounded={scale(12)}
-            pressStyle={{ opacity: 0.8 }}
+          <YStack
+            position="absolute"
+            bottom={0}
+            left={0}
+            right={0}
+            p={scale(20)}
+            bg="$background"
+            borderTopWidth={1}
+            borderTopColor="$borderPrimary"
           >
-            <MyText color="$accentBlack" fontSize={scale(16)} fontWeight="600">
-              Next ({selectedFriendIds.length} selected)
-            </MyText>
-          </Button>
+            <Button
+              onPress={handleNext}
+              bg="$accentYellow"
+              color="$accentBlack"
+              fontSize={scale(16)}
+              fontWeight="600"
+              height={scale(52)}
+              rounded={scale(12)}
+              pressStyle={{ opacity: 0.8 }}
+            >
+              <MyText
+                color="$accentBlack"
+                fontSize={scale(16)}
+                fontWeight="600"
+              >
+                Next ({selectedFriendIds.length} selected)
+              </MyText>
+            </Button>
+          </YStack>
         )}
       </YStack>
     </ModalSheet>

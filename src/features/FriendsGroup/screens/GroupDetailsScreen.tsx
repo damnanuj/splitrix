@@ -63,7 +63,7 @@ const GroupDetailsScreen = () => {
     refetch: refetchBills,
   } = useGroupBills(groupId);
 
-  console.log(billsData, "-<<<<<<billsData");
+  // console.log(billsData, "-<<<<<<billsData");
 
   const {
     data: balanceSummaryData,
@@ -72,7 +72,7 @@ const GroupDetailsScreen = () => {
     refetch: refetchBalanceSummary,
   } = useGroupBalanceSummary(groupId);
 
-  console.log(balanceSummaryData, "-<<<<<<balanceSummaryData");
+  // console.log(balanceSummaryData, "-<<<<<<balanceSummaryData");
 
   const { amountsToPay, amountsToReceive } = useMemo(() => {
     const toPay = (balanceSummaryData || []).filter((item) => item.amount < 0);
@@ -608,7 +608,7 @@ const GroupDetailsScreen = () => {
       <ModalSheet
         open={inviteSheetOpen}
         onOpenChange={setInviteSheetOpen}
-        snapPoints={[85]}
+        snapPoints={[30]}
       >
         <YStack gap={scale(16)} flex={1}>
           <YStack gap={scale(6)}>
@@ -708,17 +708,17 @@ const GroupDetailsScreen = () => {
       <ModalSheet
         open={profileSheetOpen}
         onOpenChange={setProfileSheetOpen}
-        snapPoints={[85]}
+        snapPoints={[70]}
       >
         <YStack gap={scale(16)} flex={1}>
-          <YStack gap={scale(6)} items="center">
+          {/* <YStack gap={scale(6)} items="center">
             <MyText color="$textPrimary" fontSize={scale(18)} fontWeight="600">
               Group Info
             </MyText>
             <MyText color="$textSecondary" fontSize={scale(13)}>
               View details about this group.
             </MyText>
-          </YStack>
+          </YStack> */}
 
           <YStack gap={scale(14)} items="center">
             <Stack

@@ -32,6 +32,7 @@ export const GroupInviteRespond = ({
   };
 
   const isGroupAdded = notificationType === "group_added";
+  const isBillAdded = notificationType === "bill_added";
 
   if (isLoading) {
     return <GroupInviteRespondSkeleton />;
@@ -89,8 +90,12 @@ export const GroupInviteRespond = ({
             fontSize={scale(13)}
           >
             {isGroupAdded
-              ? `Added on: ${formatDate(notificationReceivedAt || "")} at ${formatTime(notificationReceivedAt || "")}`
-              : `Received on: ${formatDate(notificationReceivedAt || "")} at ${formatTime(notificationReceivedAt || "")}`}
+              ? `Added on: ${formatDate(
+                  notificationReceivedAt || ""
+                )} at ${formatTime(notificationReceivedAt || "")}`
+              : `Received on: ${formatDate(
+                  notificationReceivedAt || ""
+                )} at ${formatTime(notificationReceivedAt || "")}`}
           </MyText>
         </YStack>
       </YStack>
@@ -110,7 +115,7 @@ export const GroupInviteRespond = ({
           fontSize={scale(16)}
           lineHeight={scale(24)}
         >
-          {groupDetails?.group?.description || "You have a group invitation"}
+          {groupDetails?.description || "You have a group invitation"}
         </MyText>
       </YStack> */}
 
@@ -143,7 +148,7 @@ export const GroupInviteRespond = ({
               {/* <Feather name="users" size={scale(20)} color="#3498db" /> */}
               <Image
                 source={{
-                  uri: groupDetails?.group?.avatar || ICONS.defaultGroup,
+                  uri: groupDetails?.avatar || ICONS.defaultGroup,
                 }}
                 width={scale(25)}
                 height={scale(25)}
@@ -156,15 +161,15 @@ export const GroupInviteRespond = ({
                 style={{ fontFamily: "MPlusRounded700" }}
                 fontSize={scale(18)}
               >
-                {groupDetails?.group?.name || "Group"}
+                {groupDetails?.name || "Group"}
               </MyText>
-              {groupDetails?.group?.description && (
+              {groupDetails?.description && (
                 <MyText
                   color="$textSecondary"
                   style={{ fontFamily: "MPlusRounded400" }}
                   fontSize={scale(14)}
                 >
-                  {groupDetails?.group?.description}
+                  {groupDetails?.description}
                 </MyText>
               )}
             </YStack>
@@ -184,8 +189,7 @@ export const GroupInviteRespond = ({
             <Image
               source={{
                 uri:
-                  groupDetails?.group?.createdBy?.profilePicture ||
-                  ICONS.defaultUser,
+                  groupDetails?.createdBy?.profilePicture || ICONS.defaultUser,
               }}
               width={scale(35)}
               height={scale(35)}
@@ -198,7 +202,7 @@ export const GroupInviteRespond = ({
                 style={{ fontFamily: "MPlusRounded600" }}
                 fontSize={scale(15)}
               >
-                {groupDetails?.group?.createdBy?.name || "Unknown"}
+                {groupDetails?.createdBy?.name || "Unknown"}
               </MyText>
               {/* <MyText
                 color="$textSecondary"
@@ -214,8 +218,8 @@ export const GroupInviteRespond = ({
                 style={{ fontFamily: "MPlusRounded400" }}
                 fontSize={scale(13)}
               >
-                Created on: {formatDate(groupDetails?.group?.createdAt || "")}{" "}
-                at {formatTime(groupDetails?.group?.createdAt || "")}
+                Created on: {formatDate(groupDetails?.createdAt || "")} at{" "}
+                {formatTime(groupDetails?.createdAt || "")}
               </MyText>
             </YStack>
           </XStack>
@@ -229,7 +233,7 @@ export const GroupInviteRespond = ({
               style={{ fontFamily: "MPlusRounded500" }}
               fontSize={scale(13)}
             >
-              Members ({groupDetails?.group?.members?.length || 0})
+              Members ({groupDetails?.members?.length || 0})
             </MyText>
             <XStack items="center" gap={scale(4)}>
               <Feather name="users" size={scale(14)} color="#3498db" />
@@ -238,8 +242,8 @@ export const GroupInviteRespond = ({
                 style={{ fontFamily: "MPlusRounded500" }}
                 fontSize={scale(12)}
               >
-                {groupDetails?.group?.members?.length || 0} member
-                {groupDetails?.group?.members?.length !== 1 ? "s" : ""}
+                {groupDetails?.members?.length || 0} member
+                {groupDetails?.members?.length !== 1 ? "s" : ""}
               </MyText>
             </XStack>
           </XStack>
@@ -250,15 +254,33 @@ export const GroupInviteRespond = ({
             fontSize={scale(14)}
             lineHeight={scale(20)}
           >
-            {groupDetails?.group?.members
-              ?.map((member) => member.name)
-              .join(", ") || ""}
+            {(groupDetails?.members &&
+              (() => {
+                const names = groupDetails.members.map((member) => member.name);
+                const firstThree = names.slice(0, 3).join(", ");
+                const remaining = names.length - 3;
+                if (names.length <= 3) {
+                  return firstThree;
+                }
+                return (
+                  <>
+                    {firstThree}{" "}
+                    <MyText
+                      color="$accentYellow"
+                      style={{ fontFamily: "MPlusRounded400" }}
+                    >
+                      and {remaining} more
+                    </MyText>
+                  </>
+                );
+              })()) ||
+              ""}
           </MyText>
         </YStack>
       </YStack>
 
       {/* Action Button - View Group */}
-      {groupDetails?.group && (
+      {groupDetails && (
         <YStack gap={scale(16)} width="100%">
           {isGroupAdded && (
             <YStack

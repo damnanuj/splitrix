@@ -4,6 +4,6 @@ import FriendsGroupPage from "src/features/FriendsGroup/screens/FriendsGroupPage
 export default function TabTwoScreen() {
   return (
     // <ToastControl />
-    <FriendsGroupPage />
+    <FriendsGroupPage mode="tab" />
   );
 }

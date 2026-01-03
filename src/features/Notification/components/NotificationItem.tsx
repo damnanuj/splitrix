@@ -9,6 +9,7 @@ import { useState } from "react";
 import { GroupInviteRespond } from "./GroupInviteRespond";
 import ICONS from "src/utils/icons";
 import { useMarkAsRead } from "src/hooks/notification/useMarkAsRead";
+import { router } from "expo-router";
 
 interface NotificationItemProps {
   notification: Notification;
@@ -20,14 +21,19 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
   const [sheetOpen, setSheetOpen] = useState(false);
   const { mutate: markAsRead } = useMarkAsRead();
 
-  // console.log(notification, "notification");
-
   const handlePress = () => {
-    // Open sheet for group-related notifications (invite or added)
-    if (
+    // Handle different notification types
+    if (notification.type === "bill_added" && notification?.groupId) {
+      // Directly navigate to group details for bill added notifications
+      router.push({
+        pathname: "/groupDetails",
+        params: { groupId: notification?.groupId || "" },
+      });
+    } else if (
       notification.type === "group_invite" ||
       notification.type === "group_added"
     ) {
+      // Open sheet for group-related notifications (invite or added)
       setSheetOpen(true);
     }
     if (isUnread && notification?._id) {
@@ -87,8 +93,8 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
         {/* Content */}
         <YStack flex={1} gap={scale(4)}>
           {/* Title Row */}
-          <XStack items="center" justify="space-between">
-            <MyText
+          {/* <XStack items="center" justify="space-between"> */}
+          {/* <MyText
               color={isUnread ? "$textPrimary" : "$textSecondary"}
               style={{ fontFamily: "MPlusRounded700" }}
               fontSize={scale(15)}
@@ -96,10 +102,10 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
               flex={1}
             >
               {notification.title}
-            </MyText>
+            </MyText> */}
 
-            {/* Unread indicator */}
-            {isUnread && (
+          {/* Unread indicator */}
+          {/* {isUnread && (
               <Stack
                 width={scale(8)}
                 height={scale(8)}
@@ -107,14 +113,14 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
                 rounded={scale(4)}
                 animation="bouncy"
               />
-            )}
-          </XStack>
+            )} */}
+          {/* </XStack> */}
 
           {/* Message */}
           <MyText
             color={isUnread ? "$textPrimary" : "$textSecondary"}
-            style={{ fontFamily: "MPlusRounded400" }}
-            fontSize={scale(13)}
+            style={{ fontFamily: "MPlusRounded700" }}
+            fontSize={scale(15)}
             numberOfLines={2}
             lineHeight={scale(18)}
           >

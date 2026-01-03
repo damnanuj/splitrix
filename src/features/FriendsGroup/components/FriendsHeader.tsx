@@ -2,7 +2,12 @@ import { Stack, useTheme, XStack } from "tamagui";
 import MyText from "../../../components/customTabBars/styleComponents/MyText";
 import { scale } from "src/utils/functions/dimensions";
 import Feather from "@expo/vector-icons/Feather";
-const FriendsHeader = () => {
+
+type FriendsHeaderProps = {
+  title?: string;
+};
+
+const FriendsHeader = ({ title = "Friends List" }: FriendsHeaderProps) => {
   const theme = useTheme();
   return (
     <XStack
@@ -12,7 +17,7 @@ const FriendsHeader = () => {
       justify={"space-between"}
       items={"center"}
     >
-      <MyText fontSize={scale(18)}>Friends List</MyText>
+      <MyText fontSize={scale(18)}>{title}</MyText>
       <Stack
         bg={"$backgroundSecondary"}
         justify={"center"}
