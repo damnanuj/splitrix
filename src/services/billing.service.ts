@@ -4,6 +4,7 @@ import {
   CreateExpensePayload,
   CreateExpenseResponse,
   GroupBillsResponse,
+  MyTransactionsResponse,
 } from "src/stores/types";
 
 export const createExpense = async (
@@ -22,5 +23,10 @@ export const getGroupExpenses = async (
   const response = await apiService.get(
     API_ENDPOINTS.billing.groupExpenses(groupId)
   );
+  return response.data;
+};
+
+export const getMyTransactions = async (): Promise<MyTransactionsResponse> => {
+  const response = await apiService.get(API_ENDPOINTS.billing.myTransactions);
   return response.data;
 };

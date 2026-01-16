@@ -76,25 +76,32 @@ const FriendsGroups = () => {
           // borderWidth={1}
           borderColor="red"
           flex={1}
-          mb={scale(80)}
+          // mb={scale(80)}
           items="center"
-          justify="center"
-          gap={scale(3)}
+          gap={scale(0)}
         >
-          <MyText
-            style={{ textAlign: "center" }}
-            color="$textSecondary"
-            fontSize={scale(16)}
-          >
-            You don't have any groups yet.
-          </MyText>
-          <MyText
-            style={{ textAlign: "center" }}
-            color="$textSecondary"
-            fontSize={scale(14)}
-          >
-            Create a group to start splitting expenses.
-          </MyText>
+          <Image
+            source={require("../../../../assets/images/add-friend.png")}
+            width={scale(200)}
+            height={scale(200)}
+            resizeMode="cover"
+          />
+          <YStack items="center" gap={scale(8)}>
+            <MyText
+              style={{ textAlign: "center" }}
+              color="$textSecondary"
+              fontSize={scale(16)}
+            >
+              You don't have any groups yet.
+            </MyText>
+            <MyText
+              style={{ textAlign: "center" }}
+              color="$textSecondary"
+              fontSize={scale(14)}
+            >
+              Create a group to start splitting expenses.
+            </MyText>
+          </YStack>
         </YStack>
       </ScrollView>
     );

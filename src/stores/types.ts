@@ -160,6 +160,21 @@ export interface GroupBillsResponse {
   data: GroupExpense[];
 }
 
+export interface Transaction {
+  title: string;
+  amount: number;
+  timing: string;
+  groupName: string;
+  groupId: string;
+  groupIcon: string;
+}
+
+export interface MyTransactionsResponse {
+  success: boolean;
+  message: string;
+  data: Transaction[];
+}
+
 export type Notification = {
   _id: string;
   user: string;
@@ -196,6 +211,55 @@ export interface MarkAsReadResponse {
   success: boolean;
   msg: string;
   notificationId: string;
+}
+
+export interface ActivityGroup {
+  _id: string;
+  name: string;
+  description: string;
+  avatar: string;
+}
+
+export interface ActivityActor {
+  _id: string;
+  name: string;
+  email: string;
+  profilePicture?: string;
+}
+
+export interface ActivityData {
+  groupId?: string;
+  addedUserId?: string;
+  addedUserName?: string;
+  addedUserProfilePicture?: string;
+  groupName?: string;
+  addedBy?: string;
+  addedByName?: string;
+  billId?: string;
+  amount?: number;
+  paidBy?: string;
+  participants?: string[];
+  name?: string;
+}
+
+export type ActivityType = "group_joined" | "group_created" | "bill_added";
+
+export interface Activity {
+  _id: string;
+  group: ActivityGroup;
+  actor: ActivityActor;
+  type: ActivityType;
+  summary: string;
+  data: ActivityData;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+export interface ActivityResponse {
+  success: boolean;
+  message: string;
+  data: Activity[];
 }
 
 export interface NotificationState {

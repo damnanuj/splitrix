@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Pressable, ScrollView } from "react-native";
 import { YStack, XStack, Avatar, Spinner, Button, Square } from "tamagui";
 import { Check, ChevronRight } from "@tamagui/lucide-icons";
@@ -23,6 +23,13 @@ const GroupsFriendsSelector = ({
   const { data: groups = [], isLoading: isGroupsLoading } = useGroups();
   const { data: friends = [], isLoading: isFriendsLoading } = useFriendsList();
   const [selectedFriendIds, setSelectedFriendIds] = useState<string[]>([]);
+
+  // Reset selections when modal opens
+  useEffect(() => {
+    if (open) {
+      setSelectedFriendIds([]);
+    }
+  }, [open]);
 
   // Reset selections when sheet closes
   const handleSheetClose = (isOpen: boolean) => {
@@ -89,7 +96,7 @@ const GroupsFriendsSelector = ({
           style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
-            paddingBottom: selectedFriendIds.length > 0 ? scale(72) : scale(20),
+            paddingBottom: selectedFriendIds.length > 0 ? scale(80) : scale(20),
           }}
         >
           <YStack gap={scale(20)}>
@@ -98,7 +105,7 @@ const GroupsFriendsSelector = ({
             </MyText>
 
             {/* Groups Section - First 50% */}
-            <YStack gap={scale(12)} borderColor="red">
+            <YStack gap={scale(12)}>
               <MyText
                 color="$textPrimary"
                 fontSize={scale(16)}
@@ -186,7 +193,7 @@ const GroupsFriendsSelector = ({
             </YStack>
 
             {/* Friends Section - Second 50% */}
-            <YStack gap={scale(12)} borderColor="blue">
+            <YStack gap={scale(12)}>
               <MyText
                 color="$textPrimary"
                 fontSize={scale(16)}
@@ -302,13 +309,17 @@ const GroupsFriendsSelector = ({
         {selectedFriendIds.length > 0 && (
           <YStack
             position="absolute"
-            bottom={0}
-            left={0}
-            right={0}
-            p={scale(20)}
+            style={{
+              bottom: 0,
+              left: -scale(16),
+              right: -scale(16),
+            }}
+            px={scale(20)}
+            pt={scale(16)}
+            pb={0}
             bg="$background"
             borderTopWidth={1}
-            borderTopColor="$borderPrimary"
+            borderTopColor="$backgroundSecondary"
           >
             <Button
               onPress={handleNext}
@@ -316,9 +327,10 @@ const GroupsFriendsSelector = ({
               color="$accentBlack"
               fontSize={scale(16)}
               fontWeight="600"
-              height={scale(52)}
-              rounded={scale(12)}
-              pressStyle={{ opacity: 0.8 }}
+              height={scale(56)}
+              rounded={scale(16)}
+              disabled={selectedFriendIds.length === 0}
+              pressStyle={{ opacity: 0.85 }}
             >
               <MyText
                 color="$accentBlack"

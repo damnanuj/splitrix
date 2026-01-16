@@ -608,7 +608,7 @@ const GroupDetailsScreen = () => {
       <ModalSheet
         open={inviteSheetOpen}
         onOpenChange={setInviteSheetOpen}
-        snapPoints={[30]}
+        snapPoints={[35]}
       >
         <YStack gap={scale(16)} flex={1}>
           <YStack gap={scale(6)}>

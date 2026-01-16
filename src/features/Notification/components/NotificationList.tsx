@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { RefreshControl } from "react-native";
-import { ScrollView, YStack } from "tamagui";
+import { ScrollView, YStack, Image } from "tamagui";
 import { NotificationItem } from "./NotificationItem";
 import { DateHeader } from "./DateHeader";
 import LoaderWithText from "src/components/common/LoaderWithText";
@@ -53,19 +53,27 @@ export const NotificationList = () => {
           />
         }
       >
-        <YStack flex={1} justify="center" items="center" gap={scale(20)}>
-          <MyText
-            color="$textSecondary"
-            style={{ fontFamily: "MPlusRounded500" }}
-          >
-            No notifications yet
-          </MyText>
-          <MyText
-            color="$textSecondary"
-            style={{ fontFamily: "MPlusRounded400" }}
-          >
-            You'll see notifications here when you receive them
-          </MyText>
+        <YStack flex={1} justify="center" items="center" gap={scale(0)}>
+          <Image
+            source={require("../../../../assets/images/new-notification.png")}
+            width={scale(200)}
+            height={scale(200)}
+            resizeMode="cover"
+          />
+          <YStack items="center" gap={scale(8)}>
+            <MyText
+              color="$textSecondary"
+              style={{ fontFamily: "MPlusRounded500" }}
+            >
+              No notifications yet
+            </MyText>
+            <MyText
+              color="$textSecondary"
+              style={{ fontFamily: "MPlusRounded400" }}
+            >
+              You'll see notifications here when you receive them
+            </MyText>
+          </YStack>
         </YStack>
       </ScrollView>
     );
@@ -106,7 +114,7 @@ export const NotificationList = () => {
         ))}
       </YStack>
 
-      <ExpensesHistory />
+      {/* <ExpensesHistory /> */}
     </ScrollView>
   );
 };

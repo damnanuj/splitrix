@@ -1,4 +1,4 @@
-import { Avatar, XStack, YStack } from "tamagui";
+import { Avatar, Image, XStack, YStack } from "tamagui";
 import { scale } from "src/utils/functions/dimensions";
 import { FlatList, RefreshControl, ActivityIndicator } from "react-native";
 import MyText from "src/components/customTabBars/styleComponents/MyText";
@@ -104,13 +104,21 @@ const FriendsList = () => {
 
   if (friends.length === 0) {
     return (
-      <YStack flex={1}  justify="center" items="center" gap={scale(20)}>
-        <MyText color="$textSecondary" fontSize={scale(16)}>
-          No friends yet
-        </MyText>
-        <MyText color="$textSecondary" fontSize={scale(14)}>
-          Add some friends to start splitting expenses
-        </MyText>
+      <YStack flex={1} items="center" gap={scale(0)}>
+        <Image
+          source={require("../../../../assets/images/contact-us.png")}
+          width={scale(200)}
+          height={scale(200)}
+          resizeMode="cover"
+        />
+        <YStack items="center" gap={scale(8)}>
+          <MyText color="$textSecondary" fontSize={scale(16)}>
+            No friends yet
+          </MyText>
+          <MyText color="$textSecondary" fontSize={scale(14)}>
+            Add some friends to start splitting expenses
+          </MyText>
+        </YStack>
       </YStack>
     );
   }

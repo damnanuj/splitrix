@@ -1,11 +1,75 @@
-import { ScrollView, Stack, XStack, YStack } from "tamagui";
+import { ScrollView, Stack, XStack, YStack, Image } from "tamagui";
+import { RefreshControl } from "react-native";
 import MyText from "../../../components/customTabBars/styleComponents/MyText";
 import { scale } from "src/utils/functions/dimensions";
 import themeColors from "src/utils/theme/colors";
 import Feather from "@expo/vector-icons/Feather";
+import { useMyTransactions } from "src/hooks/billing/useMyTransactions";
+import { getRandomIcon } from "src/utils/functions/getRandomIcon";
+import ICONS from "src/utils/icons";
+import { AllTransactionsSkeleton } from "./skeleton";
 
 const AllTransactions = () => {
-  // console.log("AllTransactions render");
+  const {
+    data: transactions = [],
+    isLoading,
+    isError,
+    refetch,
+    isRefetching,
+  } = useMyTransactions();
+
+  const handleRefresh = () => {
+    refetch();
+  };
+
+  const formatTransactionDate = (dateStr: string): string => {
+    const date = new Date(dateStr);
+    const month = date.toLocaleDateString("en-US", { month: "short" });
+    const day = date.getDate();
+    const year = date.getFullYear().toString().slice(-2);
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const displayHours = hours % 12 || 12;
+    const displayMinutes = minutes.toString().padStart(2, "0");
+
+    return `${month} ${day} ${year} | ${displayHours}:${displayMinutes} ${ampm}`;
+  };
+
+  if (isLoading) {
+    return (
+      <YStack borderColor={"red"} flex={1} gap={scale(20)}>
+        <XStack justify={"space-between"} items={"center"}>
+          <MyText color={"$textPrimary"} fontSize={scale(16)}>
+            All Transactions
+          </MyText>
+          {/* <MyText color={"$accentYellow"}>View All</MyText> */}
+        </XStack>
+
+        <YStack borderColor={"white"} flex={1} pb={scale(80)}>
+          <AllTransactionsSkeleton />
+        </YStack>
+      </YStack>
+    );
+  }
+
+  if (isError) {
+    return (
+      <YStack
+        borderColor={"red"}
+        flex={1}
+        gap={scale(20)}
+        justify="center"
+        items="center"
+        py={scale(40)}
+      >
+        <MyText color="$textSecondary" fontSize={scale(14)}>
+          Failed to load transactions
+        </MyText>
+      </YStack>
+    );
+  }
+
   return (
     <YStack
       //   borderWidth={1}
@@ -18,7 +82,7 @@ const AllTransactions = () => {
         <MyText color={"$textPrimary"} fontSize={scale(16)}>
           All Transactions
         </MyText>
-        <MyText color={"$accentYellow"}>View All</MyText>
+        {/* <MyText color={"$accentYellow"}>View All</MyText> */}
       </XStack>
 
       <YStack
@@ -30,22 +94,77 @@ const AllTransactions = () => {
         <ScrollView
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefetching}
+              onRefresh={handleRefresh}
+              tintColor="#FFD700"
+              colors={["#FFD700"]}
+            />
+          }
           contentContainerStyle={{
             //   borderWidth: 1,
             borderColor: "green",
             // gap: scale(15),
           }}
         >
-          {billsData.map((bill, idx) => (
-            <TransactionItem
-              key={idx}
-              iconColor={bill.iconColor}
-              icon={bill.icon}
-              title={bill.title}
-              amount={bill.amount}
-              time={bill.time}
-            />
-          ))}
+          {transactions.length === 0 ? (
+            <YStack
+              items="center"
+              justify="center"
+              py={scale(0)}
+              gap={scale(0)}
+              // borderWidth={1}
+              borderColor="red"
+            >
+              <Image
+                source={require("../../../../assets/images/card-payment.png")}
+                width={scale(280)}
+                height={scale(250)}
+                resizeMode="cover"
+                borderWidth={1}
+                borderColor="red"
+              />
+              <YStack items="center" gap={scale(8)}>
+                <MyText color="$textSecondary" fontSize={scale(16)}>
+                  No transactions yet
+                </MyText>
+                <MyText
+                  color="$textSecondary"
+                  fontSize={scale(14)}
+                  style={{ textAlign: "center" }}
+                >
+                  Your transactions will appear here
+                </MyText>
+              </YStack>
+            </YStack>
+          ) : (
+            transactions.map((transaction, index) => {
+              // Use groupId + timing as unique key
+              const uniqueKey = `${transaction.groupId}-${transaction.timing}-${index}`;
+              // Use timing + title + index for seed to ensure each transaction gets a unique random icon
+              const seed = `${transaction.timing}-${transaction.title}-${index}`;
+              const { icon, iconColor } = getRandomIcon(seed);
+
+              // Use groupIcon if available, otherwise use random icon
+              const hasGroupIcon =
+                transaction.groupIcon &&
+                transaction.groupIcon.trim().length > 0;
+
+              return (
+                <TransactionItem
+                  key={uniqueKey}
+                  iconColor={iconColor}
+                  icon={icon}
+                  groupIcon={hasGroupIcon ? transaction.groupIcon : undefined}
+                  title={transaction.title}
+                  amount={transaction.amount}
+                  time={formatTransactionDate(transaction.timing)}
+                  groupName={transaction.groupName}
+                />
+              );
+            })
+          )}
         </ScrollView>
       </YStack>
     </YStack>
@@ -60,6 +179,8 @@ interface TransactionItemProps {
   amount: number;
   time: string;
   iconColor: string;
+  groupIcon?: string;
+  groupName: string;
 }
 
 const TransactionItem = ({
@@ -68,6 +189,8 @@ const TransactionItem = ({
   amount,
   time,
   iconColor,
+  groupIcon,
+  groupName,
 }: TransactionItemProps) => {
   return (
     <XStack gap={scale(20)} items="center" mb={scale(15)}>
@@ -78,8 +201,18 @@ const TransactionItem = ({
         rounded={scale(10)}
         justify="center"
         items="center"
+        overflow="hidden"
       >
-        <Feather name={icon} size={25} color={iconColor} />
+        {groupIcon ? (
+          <Image
+            source={{ uri: groupIcon }}
+            width={55}
+            height={55}
+            rounded={scale(10)}
+          />
+        ) : (
+          <Feather name={icon as any} size={25} color={iconColor} />
+        )}
       </Stack>
 
       <YStack justify="center" flex={1}>
@@ -92,6 +225,9 @@ const TransactionItem = ({
         </MyText>
         <MyText fontSize={scale(12)} color={"$textSecondary"}>
           {time}
+        </MyText>
+        <MyText fontSize={scale(11)} color={"$textSecondary"} mt={scale(2)}>
+          {groupName}
         </MyText>
       </YStack>
 
@@ -107,76 +243,3 @@ const TransactionItem = ({
     </XStack>
   );
 };
-
-const billsData = [
-  {
-    icon: "film",
-    title: "Movie Tickets",
-    amount: 320,
-    time: "Jul 14 25 | 08:30 PM",
-    iconColor: "#3498db", // blue
-  },
-  {
-    icon: "zap",
-    title: "Electricity Bill",
-    amount: 1450,
-    time: "Jul 13 25 | 06:00 PM",
-    iconColor: "#f1c40f", // yellow
-  },
-  {
-    icon: "shopping-cart",
-    title: "Grocery Shopping",
-    amount: 790,
-    time: "Jul 12 25 | 04:15 PM",
-    iconColor: "#2ecc71", // green
-  },
-  {
-    icon: "home",
-    title: "House Rent",
-    amount: 18000,
-    time: "Jul 01 25 | 12:00 PM",
-    iconColor: "#9b59b6", // purple
-  },
-  {
-    icon: "wifi",
-    title: "WiFi Recharge",
-    amount: 499,
-    time: "Jul 10 25 | 10:00 AM",
-    iconColor: "#e74c3c", // red
-  },
-  {
-    icon: "phone",
-    title: "Mobile Bill",
-    amount: 299,
-    time: "Jul 11 25 | 03:45 PM",
-    iconColor: "#1abc9c", // teal
-  },
-  {
-    icon: "coffee",
-    title: "Cafe Snacks",
-    amount: 220,
-    time: "Jul 09 25 | 05:20 PM",
-    iconColor: "#e67e22", // orange
-  },
-  {
-    icon: "gift",
-    title: "Gift Shopping",
-    amount: 2100,
-    time: "Jul 06 25 | 07:00 PM",
-    iconColor: "#ff6b81", // pink
-  },
-  {
-    icon: "globe",
-    title: "Domain Renewal",
-    amount: 799,
-    time: "Jul 02 25 | 11:30 AM",
-    iconColor: "#16a085", // emerald
-  },
-  {
-    icon: "briefcase",
-    title: "Coworking Rent",
-    amount: 4000,
-    time: "Jul 05 25 | 09:00 AM",
-    iconColor: "#34495e", // dark gray
-  },
-];

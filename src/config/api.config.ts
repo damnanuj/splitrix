@@ -30,5 +30,9 @@ export const API_ENDPOINTS = {
   billing: {
     createExpense: "/bill",
     groupExpenses: (groupId: string) => `/bill/group/${groupId}`,
+    myTransactions: "/bill/my-transactions",
+  },
+  activity: {
+    me: "/activity/me",
   },
 };
